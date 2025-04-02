@@ -64,7 +64,7 @@ const useAgenciasActions = (
     const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
     try {
-      const response = await fetch('/api/agencias', {
+      const response = await fetch('https://triptest.com.ar/agencias', {
         signal: controller.signal,
         headers: { 'Content-Type': 'application/json' }
       });

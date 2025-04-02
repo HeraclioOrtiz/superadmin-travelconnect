@@ -11,32 +11,23 @@ export const createAgencia = async (
     setError: (error: string | null) => void;
   }
 ): Promise<CreateAgenciaResponse> => {
-  // 1. Validación básica
-  if (!formData.nombre || !formData.dominio || !formData.password) {
-    return { 
-      success: false, 
-      error: 'Nombre, dominio y password son requeridos',
-      statusCode: 400
-    };
-  }
-
-  // 2. Preparar datos temporales (con tipo explícito)
+  // 1. Preparar datos temporales (con tipo explícito)
   const tempAgenciaData: Omit<Agencia, 'id'> = {
     ...formData,
     fecha_creacion: new Date().toISOString(),
-    // Campos que podrían ser null en formData pero requeridos en Agencia
+    // Aseguramos valores nulos donde corresponda
     quienes_somos_es: formData.quienes_somos_es ?? null,
     quienes_somos_en: formData.quienes_somos_en ?? null,
     quienes_somos_pt: formData.quienes_somos_pt ?? null,
-    // Repite para otros campos opcionales que necesiten valor por defecto
+    // Podés repetir lo mismo con otros campos opcionales si el backend lo necesita
   };
 
-  // 3. Optimistic Update
+  // 2. Optimistic Update
   const tempId = stateMethods.addTempAgencia(tempAgenciaData);
 
-  // 4. Llamada API
+  // 3. Llamada API
   try {
-    const response = await fetch('/api/public/agencias', {
+    const response = await fetch('https://triptest.com.ar/agencias', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData)
@@ -48,10 +39,10 @@ export const createAgencia = async (
       throw new Error(data.error || 'Error al crear agencia');
     }
 
-    // 5. Confirmar con datos reales
+    // 4. Confirmar con datos reales
     stateMethods.confirmAgencia(tempId, {
       ...data.agencia,
-      id: tempId // Asegura que el ID temporal persista hasta la próxima recarga
+      id: tempId
     });
 
     return { 
@@ -61,7 +52,7 @@ export const createAgencia = async (
     };
 
   } catch (error) {
-    // 6. Revertir y manejar error
+    // 5. Revertir y manejar error
     stateMethods.revertTempAgencia(tempId);
     const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
     stateMethods.setError(errorMessage);

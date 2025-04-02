@@ -15,6 +15,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import dayjs from 'dayjs';
+import { Customer } from './Customer';
 
 import { useSelection } from '@/hooks/use-selection';
 
@@ -22,15 +23,6 @@ function noop(): void {
   // do nothing
 }
 
-export interface Customer {
-  id: string;
-  avatar: string;
-  name: string;
-  email: string;
-  address: { city: string; state: string; country: string; street: string };
-  phone: string;
-  createdAt: Date;
-}
 
 interface CustomersTableProps {
   count?: number;
@@ -58,58 +50,33 @@ export function CustomersTable({
     <Card>
       <Box sx={{ overflowX: 'auto' }}>
         <Table sx={{ minWidth: '800px' }}>
-          <TableHead>
-            <TableRow>
-              <TableCell padding="checkbox">
-                <Checkbox
-                  checked={selectedAll}
-                  indeterminate={selectedSome}
-                  onChange={(event) => {
-                    if (event.target.checked) {
-                      selectAll();
-                    } else {
-                      deselectAll();
-                    }
-                  }}
-                />
-              </TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Location</TableCell>
-              <TableCell>Phone</TableCell>
-              <TableCell>Signed Up</TableCell>
-            </TableRow>
-          </TableHead>
+        <TableHead>
+          <TableRow>
+            
+            <TableCell>Nombre</TableCell>
+            <TableCell>Email</TableCell>
+            <TableCell>Fecha de Alta</TableCell>
+            <TableCell>Estado</TableCell>
+            <TableCell>APIs</TableCell>
+            <TableCell></TableCell> {/* Campo vacío adicional */}
+          </TableRow>
+        </TableHead>
           <TableBody>
             {rows.map((row) => {
               const isSelected = selected?.has(row.id);
 
               return (
-                <TableRow hover key={row.id} selected={isSelected}>
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={isSelected}
-                      onChange={(event) => {
-                        if (event.target.checked) {
-                          selectOne(row.id);
-                        } else {
-                          deselectOne(row.id);
-                        }
-                      }}
-                    />
-                  </TableCell>
+                <TableRow hover key={row.id} selected={isSelected}>                
                   <TableCell>
                     <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                      <Avatar src={row.avatar} />
-                      <Typography variant="subtitle2">{row.name}</Typography>
+                      <Avatar src={row.logo} />
+                      <Typography variant="subtitle2">{row.nombre}</Typography>
                     </Stack>
                   </TableCell>
                   <TableCell>{row.email}</TableCell>
-                  <TableCell>
-                    {row.address.city}, {row.address.state}, {row.address.country}
-                  </TableCell>
-                  <TableCell>{row.phone}</TableCell>
-                  <TableCell>{dayjs(row.createdAt).format('MMM D, YYYY')}</TableCell>
+                  <TableCell>{dayjs(row.fechaAlta).format('MMM D, YYYY')}</TableCell>
+                  <TableCell>{row.estado}</TableCell>
+                  
                 </TableRow>
               );
             })}

@@ -3,10 +3,10 @@ import { paths } from '@/paths';
 
 export const navItems = [
   
-  { key: 'customers', title: 'Clientes', href: paths.dashboard.customers, icon: 'users' },
+  { key: 'customers', title: 'Agencias', href: paths.dashboard.customers, icon: 'users' },
   { key: 'integrations', title: 'Estilos', href: paths.dashboard.integrations, icon: 'plugs-connected' },
   { key: 'settings', title: 'Configuracion', href: paths.dashboard.settings, icon: 'gear-six' },
-  { key: 'account', title: 'Agencia', href: paths.dashboard.account, icon: 'user' },
+  { key: 'account', title: 'Consultas', href: paths.dashboard.account, icon: 'user' },
   
 ] satisfies NavItemConfig[];
 

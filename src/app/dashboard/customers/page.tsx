@@ -7,111 +7,206 @@ import { Download as DownloadIcon } from '@phosphor-icons/react/dist/ssr/Downloa
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
 import dayjs from 'dayjs';
+// import BotonAccion from "./BotonAccion"; // Ensure the file exists or update the path
+import AddBusinessIcon from '@mui/icons-material/AddBusiness';
+import AgenciaModal from '@/components/form/AgenciaModal';
+import useModalAgencia from '@/components/form/hooks/useModalAgencia';
+import BotonAccion from '@/components/form/BotonAccion';
+import { useForm, FormProvider } from 'react-hook-form';
+import { AgenciaFormValues } from '@/contexts/features/Agencias/forms';
 
 import { config } from '@/config';
 import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
 import { CustomersTable } from '@/components/dashboard/customer/customers-table';
-import type { Customer } from '@/components/dashboard/customer/customers-table';
+import type { Customer } from '@/components/dashboard/customer/Customer'
+import { mapValues } from 'lodash';
 
 export const metadata = { title: `Customers | Dashboard | ${config.site.name}` } satisfies Metadata;
 
 const customers = [
   {
-    id: 'USR-010',
-    name: 'Alcides Antonio',
-    avatar: '/assets/avatar-10.png',
-    email: 'alcides.antonio@devias.io',
-    phone: '908-691-3242',
-    address: { city: 'Madrid', country: 'Spain', state: 'Comunidad de Madrid', street: '4158 Hedge Street' },
-    createdAt: dayjs().subtract(2, 'hours').toDate(),
+    id: 'CLI-010',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/0/0e/Shopify_logo_2018.svg',
+    nombre: 'Tienda Shopify',
+    email: 'contacto@tiendashopify.com',
+    fechaAlta: dayjs().subtract(1, 'month').format('YYYY-MM-DD'),
+    estado: 'activo',
+    
   },
   {
-    id: 'USR-009',
-    name: 'Marcus Finn',
-    avatar: '/assets/avatar-9.png',
-    email: 'marcus.finn@devias.io',
-    phone: '415-907-2647',
-    address: { city: 'Carson City', country: 'USA', state: 'Nevada', street: '2188 Armbrester Drive' },
-    createdAt: dayjs().subtract(2, 'hours').toDate(),
+    id: 'CLI-009',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg',
+    nombre: 'Distribuciones Amazon',
+    email: 'info@distribucionesamazon.com',
+    fechaAlta: dayjs().subtract(2, 'weeks').format('YYYY-MM-DD'),
+    estado: 'pendiente',
+    
   },
   {
-    id: 'USR-008',
-    name: 'Jie Yan',
-    avatar: '/assets/avatar-8.png',
-    email: 'jie.yan.song@devias.io',
-    phone: '770-635-2682',
-    address: { city: 'North Canton', country: 'USA', state: 'Ohio', street: '4894 Lakeland Park Drive' },
-    createdAt: dayjs().subtract(2, 'hours').toDate(),
+    id: 'CLI-008',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg',
+    nombre: 'Apple Servicios',
+    email: 'soporte@apple-services.com',
+    fechaAlta: dayjs().subtract(3, 'days').format('YYYY-MM-DD'),
+    estado: 'activo',
+    
   },
   {
-    id: 'USR-007',
-    name: 'Nasimiyu Danai',
-    avatar: '/assets/avatar-7.png',
-    email: 'nasimiyu.danai@devias.io',
-    phone: '801-301-7894',
-    address: { city: 'Salt Lake City', country: 'USA', state: 'Utah', street: '368 Lamberts Branch Road' },
-    createdAt: dayjs().subtract(2, 'hours').toDate(),
+    id: 'CLI-007',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg',
+    nombre: 'Microsoft Cloud',
+    email: 'admin@microsoftcloud.com',
+    fechaAlta: dayjs().subtract(1, 'year').format('YYYY-MM-DD'),
+    estado: 'inactivo',
+    
   },
   {
-    id: 'USR-006',
-    name: 'Iulia Albu',
-    avatar: '/assets/avatar-6.png',
-    email: 'iulia.albu@devias.io',
-    phone: '313-812-8947',
-    address: { city: 'Murray', country: 'USA', state: 'Utah', street: '3934 Wildrose Lane' },
-    createdAt: dayjs().subtract(2, 'hours').toDate(),
+    id: 'CLI-006',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg',
+    nombre: 'Google Workspace',
+    email: 'contact@googleworkspace.com',
+    fechaAlta: dayjs().subtract(6, 'months').format('YYYY-MM-DD'),
+    estado: 'activo',
+    
   },
   {
-    id: 'USR-005',
-    name: 'Fran Perez',
-    avatar: '/assets/avatar-5.png',
-    email: 'fran.perez@devias.io',
-    phone: '712-351-5711',
-    address: { city: 'Atlanta', country: 'USA', state: 'Georgia', street: '1865 Pleasant Hill Road' },
-    createdAt: dayjs().subtract(2, 'hours').toDate(),
-  },
-
-  {
-    id: 'USR-004',
-    name: 'Penjani Inyene',
-    avatar: '/assets/avatar-4.png',
-    email: 'penjani.inyene@devias.io',
-    phone: '858-602-3409',
-    address: { city: 'Berkeley', country: 'USA', state: 'California', street: '317 Angus Road' },
-    createdAt: dayjs().subtract(2, 'hours').toDate(),
+    id: 'CLI-005',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/9/96/Twitter_logo.svg',
+    nombre: 'Twitter Ads',
+    email: 'ventas@twitterads.com',
+    fechaAlta: dayjs().subtract(2, 'months').format('YYYY-MM-DD'),
+    estado: 'activo',
+    
   },
   {
-    id: 'USR-003',
-    name: 'Carson Darrin',
-    avatar: '/assets/avatar-3.png',
-    email: 'carson.darrin@devias.io',
-    phone: '304-428-3097',
-    address: { city: 'Cleveland', country: 'USA', state: 'Ohio', street: '2849 Fulton Street' },
-    createdAt: dayjs().subtract(2, 'hours').toDate(),
+    id: 'CLI-004',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg',
+    nombre: 'Netflix Content',
+    email: 'info@netflixcontent.com',
+    fechaAlta: dayjs().subtract(1, 'week').format('YYYY-MM-DD'),
+    estado: 'pendiente',
+    
   },
   {
-    id: 'USR-002',
-    name: 'Siegbert Gottfried',
-    avatar: '/assets/avatar-2.png',
-    email: 'siegbert.gottfried@devias.io',
-    phone: '702-661-1654',
-    address: { city: 'Los Angeles', country: 'USA', state: 'California', street: '1798 Hickory Ridge Drive' },
-    createdAt: dayjs().subtract(2, 'hours').toDate(),
+    id: 'CLI-003',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/0/01/Ubuntu_logo.svg',
+    nombre: 'Ubuntu Cloud',
+    email: 'soporte@ubuntucloud.com',
+    fechaAlta: dayjs().subtract(8, 'months').format('YYYY-MM-DD'),
+    estado: 'activo',
+    
   },
   {
-    id: 'USR-001',
-    name: 'Miron Vitold',
-    avatar: '/assets/avatar-1.png',
-    email: 'miron.vitold@devias.io',
-    phone: '972-333-4106',
-    address: { city: 'San Diego', country: 'USA', state: 'California', street: '75247' },
-    createdAt: dayjs().subtract(2, 'hours').toDate(),
+    id: 'CLI-002',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/f/ff/Dell_logo_2016.svg',
+    nombre: 'Dell Solutions',
+    email: 'ventas@dellsolutions.com',
+    fechaAlta: dayjs().subtract(3, 'months').format('YYYY-MM-DD'),
+    estado: 'inactivo',
+    
   },
+  {
+    id: 'CLI-001',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/2/20/Adobe_Systems_logo.svg',
+    nombre: 'Adobe Creative',
+    email: 'suscripciones@adobecreative.com',
+    fechaAlta: dayjs().subtract(1, 'day').format('YYYY-MM-DD'),
+    estado: 'activo',
+    
+  }
 ] satisfies Customer[];
 
 export default function Page(): React.JSX.Element {
   const page = 0;
   const rowsPerPage = 5;
+  const { isOpen, openModal, closeModal } = useModalAgencia();
+  const emptyForm: AgenciaFormValues = {
+    estado: false,
+    nombre: '',
+    password: '',
+    dominio: '',
+    quienes_somos_es: null,
+    quienes_somos_en: null,
+    quienes_somos_pt: null,
+    favicon: '',
+    logo: null,
+    fondo_1: null,
+    fondo_2: null,
+    color_principal: '',
+    color_barra_superior: '',
+    filtro_imagen_1: false,
+    filtro_imagen_2: false,
+  
+    // --- Datos Generales ---
+    tipografia_agencia: null,
+    color_tipografia_agencia: null,
+    color_fondo_app: null,
+    color_primario: null,
+    color_secundario: null,
+    color_terciario: null,
+  
+    // --- Header ---
+    header_imagen_background: null,
+    header_imagen_background_opacidad: null,
+    header_video_background: null,
+    header_video_background_opacidad: null,
+  
+    // --- Buscador ---
+    buscador_tipografia: null,
+    buscador_tipografia_color: null,
+    buscador_tipografia_color_label: null,
+    buscador_color_primario: null,
+    buscador_color_secundario: null,
+    buscador_color_terciario: null,
+  
+    // --- Publicidad ---
+    publicidad_existe: false,
+    publicidad_titulo: null,
+    publicidad_tipografia_color: null,
+    publicidad_color_primario: null,
+    publicidad_color_secundario: null,
+    publicidad_color_terciario: null,
+    publicidad_imagen_1: null,
+    publicidad_imagen_2: null,
+    publicidad_imagen_3: null,
+  
+    // --- Tarjetas ---
+    tarjetas_titulo: null,
+    tarjetas_tipografia: null,
+    tarjetas_tipografia_color: null,
+    tarjetas_tipografia_color_titulo: null,
+    tarjetas_tipografia_color_contenido: null,
+    tarjetas_color_primario: null,
+    tarjetas_color_secundario: null,
+    tarjetas_color_terciario: null,
+  
+    // --- Banner Registro ---
+    banner_registro_titulo: null,
+    banner_registro_tipografia_color: null,
+    banner_registro_color_primario: null,
+    banner_registro_color_secundario: null,
+    banner_registro_color_terciario: null,
+  
+    // --- Footer ---
+    footer_texto: null,
+    footer_tipografia: null,
+    footer_tipografia_color: null,
+    footer_color_primario: null,
+    footer_color_secundario: null,
+    footer_color_terciario: null,
+    footer_facebook: null,
+    footer_twitter: null,
+    footer_instagram: null,
+    footer_whatsapp: null,
+    footer_telefono: null,
+    footer_email: null,
+    footer_direccion: null,
+    footer_ciudad: null,
+    footer_pais: null,
+  };
+  const methods = useForm<AgenciaFormValues>({
+    defaultValues: emptyForm,
+  });
 
   const paginatedCustomers = applyPagination(customers, page, rowsPerPage);
 
@@ -119,20 +214,22 @@ export default function Page(): React.JSX.Element {
     <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">Customers</Typography>
+          <Typography variant="h4">Agencias</Typography>
           <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-            <Button color="inherit" startIcon={<UploadIcon fontSize="var(--icon-fontSize-md)" />}>
-              Import
-            </Button>
+            
             <Button color="inherit" startIcon={<DownloadIcon fontSize="var(--icon-fontSize-md)" />}>
               Export
             </Button>
           </Stack>
         </Stack>
         <div>
-          <Button startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />} variant="contained">
-            Add
-          </Button>
+        <BotonAccion
+      icono={<AddBusinessIcon />}
+      label="Crear Agencia"
+      color="primary"
+      variant="contained"
+      onClickHooks={[useModalAgencia().openModal]}
+    />
         </div>
       </Stack>
       <CustomersFilters />
@@ -142,7 +239,15 @@ export default function Page(): React.JSX.Element {
         rows={paginatedCustomers}
         rowsPerPage={rowsPerPage}
       />
+      <FormProvider {...methods}>
+      <AgenciaModal
+        isOpen={isOpen}
+        onClose={closeModal}
+        onSubmit={(data) => console.log(data)} // Reemplaza luego con tu función de guardado
+      />
+      </FormProvider>
     </Stack>
+    
   );
 }
 

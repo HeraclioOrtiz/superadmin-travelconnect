@@ -14,13 +14,14 @@ export interface AgenciaFormValues {
   quienes_somos_en: string | null;
   quienes_somos_pt: string | null;
   favicon: string | null;
-  logo: string | null;
+  logo: File| string | null;
   fondo_1: string | null;
   fondo_2: string | null;
   color_principal: string;
   color_barra_superior: string;
   filtro_imagen_1: boolean;
   filtro_imagen_2: boolean;
+  
 
   // === Datos Generales ===
   tipografia_agencia: string | null;
@@ -31,9 +32,9 @@ export interface AgenciaFormValues {
   color_terciario: string | null;
 
   // === Header ===
-  header_imagen_background: string | null;
+  header_imagen_background: File| string | null;
   header_imagen_background_opacidad: number | null;
-  header_video_background: string | null;
+  header_video_background: File|string | null;
   header_video_background_opacidad: number | null;
 
   // === Buscador ===
@@ -51,9 +52,9 @@ export interface AgenciaFormValues {
   publicidad_color_primario: string | null;
   publicidad_color_secundario: string | null;
   publicidad_color_terciario: string | null;
-  publicidad_imagen_1: string | null;
-  publicidad_imagen_2: string | null;
-  publicidad_imagen_3: string | null;
+  publicidad_imagen_1: File| string | null;
+  publicidad_imagen_2: File |string | null;
+  publicidad_imagen_3: File| string | null;
 
   // === Tarjetas ===
   tarjetas_titulo: string | null;
@@ -93,13 +94,18 @@ export interface AgenciaFormValues {
 /**
  * Respuesta estándar para operaciones CRUD
  */
-export type CrudAgenciaResponse = {
+export type CrudAgenciaCreateResponse = {
+    success: boolean;
+    agencia?: AgenciaFormValues;
+    error?: string;
+    statusCode?: number;  // <-- Añade esta línea
+  };
+  export type CrudAgenciaUpdateResponse = {
     success: boolean;
     agencia?: Agencia;
     error?: string;
     statusCode?: number;  // <-- Añade esta línea
   };
-  
-  export type CreateAgenciaResponse = CrudAgenciaResponse;
-  export type UpdateAgenciaResponse = CrudAgenciaResponse;
-  export type DeleteAgenciaResponse = Pick<CrudAgenciaResponse, 'success' | 'error' | 'statusCode'>;  // <--
+  export type CreateAgenciaResponse = CrudAgenciaCreateResponse;
+  export type UpdateAgenciaResponse = CrudAgenciaUpdateResponse;
+  export type DeleteAgenciaResponse = Pick<CrudAgenciaUpdateResponse, 'success' | 'error' | 'statusCode'>;  // <--
