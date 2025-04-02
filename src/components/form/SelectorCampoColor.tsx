@@ -1,3 +1,4 @@
+'use client';
 import { Box, OutlinedInput, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 
@@ -15,7 +16,7 @@ const SelectorColorCampo = ({
   descripcion,
   error = false,
   helperText,
-  ...rest // ← viene todo desde register
+  ...rest
 }: SelectorColorCampoProps) => {
   const [color, setColor] = useState(rest.value || "#000000");
 
@@ -31,7 +32,14 @@ const SelectorColorCampo = ({
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 1.5,
+        mb: 4, // <- separación vertical externa
+      }}
+    >
       <Typography variant="body2" sx={{ fontWeight: 600 }}>
         {label}
       </Typography>

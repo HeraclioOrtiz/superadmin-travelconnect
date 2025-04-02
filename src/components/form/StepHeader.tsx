@@ -6,34 +6,38 @@ const StepHeader = () => {
   const { register, formState: { errors } } = useFormContext();
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8 px-4 md:px-6 lg:px-8 py-6">
       {/* ----- Imagen de fondo ----- */}
-      <BotonImportarArchivo
-        label="Importar Imagen de Fondo del Header"
-        name="header_imagen_background"
-        accept="image/*"
-        register={register}
-      />
+      <div className="space-y-4">
+        <BotonImportarArchivo
+          label="Importar Imagen de Fondo del Header"
+          name="header_imagen_background"
+          accept="image/*"
+          register={register}
+        />
 
-      <InputFormulario
-        label="Opacidad de la Imagen"
-        type="number"
-        {...register('header_imagen_background_opacidad')}
-      />
+        <InputFormulario
+          label="Opacidad de la Imagen"
+          type="number"
+          {...register('header_imagen_background_opacidad')}
+        />
+      </div>
 
       {/* ----- Video de fondo ----- */}
-      <BotonImportarArchivo
-        label="Importar Video de Fondo del Header"
-        name="header_video_background"
-        accept="video/*"
-        register={register}
-      />
+      <div className="space-y-4">
+        <BotonImportarArchivo
+          label="Importar Video de Fondo del Header"
+          name="header_video_background"
+          accept="video/*"
+          register={register}
+        />
 
-      <InputFormulario
-        label="Opacidad del Video"
-        type="number"
-        {...register('header_video_background_opacidad')}
-      />
+        <InputFormulario
+          label="Opacidad del Video"
+          type="number"
+          {...register('header_video_background_opacidad')}
+        />
+      </div>
     </div>
   );
 };

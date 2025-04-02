@@ -11,11 +11,6 @@ const RETRY_DELAY_MS = 2000;
 const FETCH_TIMEOUT_MS = 10000;
 const DEFAULT_REFRESH_INTERVAL = 300000; // 5 minutos
 
-type FetchError = {
-  type: 'network' | 'validation' | 'server';
-  message: string;
-};
-
 const useAgenciasActions = (
   state: AgenciasContextState,
   stateMethods: {
@@ -28,7 +23,6 @@ const useAgenciasActions = (
     revertTempAgencia: (tempId: string) => void;
   }
 ) => {
-  // Generador de mensajes de error
   const getErrorMessage = useCallback((error: unknown): string => {
     if (error instanceof Error) {
       return error.message.includes('aborted') 
@@ -38,28 +32,10 @@ const useAgenciasActions = (
     return 'Error desconocido al cargar agencias';
   }, []);
 
-  // Validación de tipo Agencia
-  const isValidAgencia = useCallback((item: any): item is Agencia => {
-    const requiredFields = [
-      'estado', 'nombre', 'dominio', 
-      'color_principal', 'color_barra_superior',
-      'filtro_imagen_1', 'filtro_imagen_2'
-    ];
-    return (
-      typeof item === 'object' &&
-      item !== null &&
-      requiredFields.every(field => field in item) &&
-      typeof item.estado === 'boolean' &&
-      typeof item.nombre === 'string' &&
-      typeof item.dominio === 'string'
-    );
-  }, []);
-
-  // Fetch principal
   const fetchAgencias = useCallback(async (retryCount = 0): Promise<void> => {
     stateMethods.setLoading(true);
     stateMethods.setError(null);
-    
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
@@ -76,16 +52,13 @@ const useAgenciasActions = (
       }
 
       const data = await response.json();
-      if (!Array.isArray(data) || !data.every(isValidAgencia)) {
-        throw new Error('Datos no válidos');
-      }
 
       stateMethods.setAgencias(data);
       stateMethods.setLastUpdated(new Date());
     } catch (error) {
       clearTimeout(timeoutId);
       const errorMessage = getErrorMessage(error);
-      
+
       if (retryCount < MAX_RETRIES) {
         await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
         return fetchAgencias(retryCount + 1);
@@ -95,20 +68,14 @@ const useAgenciasActions = (
     } finally {
       stateMethods.setLoading(false);
     }
-  }, [stateMethods, isValidAgencia, getErrorMessage]);
+  }, [stateMethods, getErrorMessage]);
 
-  // Auto-refresh
   const { startAutoRefresh, stopAutoRefresh } = useAutoRefresh(
     fetchAgencias,
     DEFAULT_REFRESH_INTERVAL,
     true
   );
 
-  /**
-   * Crea una agencia (endpoint público)
-   * @param formData Campos requeridos para creación
-   * @returns Promesa con resultado de la operación
-   */
   const handleCreateAgencia = async (formData: AgenciaFormValues) => {
     return createAgencia(formData, state, {
       addTempAgencia: stateMethods.addTempAgencia,

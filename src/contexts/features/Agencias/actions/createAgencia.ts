@@ -27,7 +27,7 @@ export const createAgencia = async (
 
   // 3. Llamada API
   try {
-    const response = await fetch('https://triptest.com.ar/agencias', {
+    const response = await fetch('https://triptest.com.ar/store_agencia', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData)

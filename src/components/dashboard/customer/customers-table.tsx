@@ -1,5 +1,4 @@
 'use client';
-
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
@@ -51,15 +50,7 @@ export function CustomersTable({
       <Box sx={{ overflowX: 'auto' }}>
         <Table sx={{ minWidth: '800px' }}>
         <TableHead>
-          <TableRow>
-            
-            <TableCell>Nombre</TableCell>
-            <TableCell>Email</TableCell>
-            <TableCell>Fecha de Alta</TableCell>
-            <TableCell>Estado</TableCell>
-            <TableCell>APIs</TableCell>
-            <TableCell></TableCell> {/* Campo vacío adicional */}
-          </TableRow>
+          <TableRow><TableCell>Nombre</TableCell><TableCell>Email</TableCell><TableCell>Fecha de Alta</TableCell><TableCell>Estado</TableCell><TableCell>APIs</TableCell><TableCell></TableCell></TableRow>
         </TableHead>
           <TableBody>
             {rows.map((row) => {

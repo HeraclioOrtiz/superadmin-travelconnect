@@ -1,3 +1,4 @@
+'use client';
 import React, { createContext, useContext } from 'react';
 import useAgenciasState from './state/useAgenciasState';
 import useAgenciasActions from './actions/useAgenciasActions';

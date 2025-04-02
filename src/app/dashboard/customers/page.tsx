@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import type { Metadata } from 'next';
 import Button from '@mui/material/Button';
@@ -7,116 +8,32 @@ import { Download as DownloadIcon } from '@phosphor-icons/react/dist/ssr/Downloa
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
 import dayjs from 'dayjs';
-// import BotonAccion from "./BotonAccion"; // Ensure the file exists or update the path
 import AddBusinessIcon from '@mui/icons-material/AddBusiness';
 import AgenciaModal from '@/components/form/AgenciaModal';
 import useModalAgencia from '@/components/form/hooks/useModalAgencia';
 import BotonAccion from '@/components/form/BotonAccion';
 import { useForm, FormProvider } from 'react-hook-form';
-import { AgenciaFormValues } from '@/contexts/features/Agencias/forms';
-
+import { AgenciaFormValues, CreateAgenciaResponse } from '@/contexts/features/Agencias/forms';
+import { useAgenciasContext } from '@/contexts/features/Agencias/AgenciaProvider';
+import { agenciasToCustomers } from "./agenciasToCustomers"
 import { config } from '@/config';
 import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
 import { CustomersTable } from '@/components/dashboard/customer/customers-table';
 import type { Customer } from '@/components/dashboard/customer/Customer'
-import { mapValues } from 'lodash';
 
-export const metadata = { title: `Customers | Dashboard | ${config.site.name}` } satisfies Metadata;
 
-const customers = [
-  {
-    id: 'CLI-010',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/0/0e/Shopify_logo_2018.svg',
-    nombre: 'Tienda Shopify',
-    email: 'contacto@tiendashopify.com',
-    fechaAlta: dayjs().subtract(1, 'month').format('YYYY-MM-DD'),
-    estado: 'activo',
-    
-  },
-  {
-    id: 'CLI-009',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg',
-    nombre: 'Distribuciones Amazon',
-    email: 'info@distribucionesamazon.com',
-    fechaAlta: dayjs().subtract(2, 'weeks').format('YYYY-MM-DD'),
-    estado: 'pendiente',
-    
-  },
-  {
-    id: 'CLI-008',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg',
-    nombre: 'Apple Servicios',
-    email: 'soporte@apple-services.com',
-    fechaAlta: dayjs().subtract(3, 'days').format('YYYY-MM-DD'),
-    estado: 'activo',
-    
-  },
-  {
-    id: 'CLI-007',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg',
-    nombre: 'Microsoft Cloud',
-    email: 'admin@microsoftcloud.com',
-    fechaAlta: dayjs().subtract(1, 'year').format('YYYY-MM-DD'),
-    estado: 'inactivo',
-    
-  },
-  {
-    id: 'CLI-006',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg',
-    nombre: 'Google Workspace',
-    email: 'contact@googleworkspace.com',
-    fechaAlta: dayjs().subtract(6, 'months').format('YYYY-MM-DD'),
-    estado: 'activo',
-    
-  },
-  {
-    id: 'CLI-005',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/9/96/Twitter_logo.svg',
-    nombre: 'Twitter Ads',
-    email: 'ventas@twitterads.com',
-    fechaAlta: dayjs().subtract(2, 'months').format('YYYY-MM-DD'),
-    estado: 'activo',
-    
-  },
-  {
-    id: 'CLI-004',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg',
-    nombre: 'Netflix Content',
-    email: 'info@netflixcontent.com',
-    fechaAlta: dayjs().subtract(1, 'week').format('YYYY-MM-DD'),
-    estado: 'pendiente',
-    
-  },
-  {
-    id: 'CLI-003',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/0/01/Ubuntu_logo.svg',
-    nombre: 'Ubuntu Cloud',
-    email: 'soporte@ubuntucloud.com',
-    fechaAlta: dayjs().subtract(8, 'months').format('YYYY-MM-DD'),
-    estado: 'activo',
-    
-  },
-  {
-    id: 'CLI-002',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/f/ff/Dell_logo_2016.svg',
-    nombre: 'Dell Solutions',
-    email: 'ventas@dellsolutions.com',
-    fechaAlta: dayjs().subtract(3, 'months').format('YYYY-MM-DD'),
-    estado: 'inactivo',
-    
-  },
-  {
-    id: 'CLI-001',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/2/20/Adobe_Systems_logo.svg',
-    nombre: 'Adobe Creative',
-    email: 'suscripciones@adobecreative.com',
-    fechaAlta: dayjs().subtract(1, 'day').format('YYYY-MM-DD'),
-    estado: 'activo',
-    
-  }
-] satisfies Customer[];
+
 
 export default function Page(): React.JSX.Element {
+  const { state, actions } = useAgenciasContext();
+  const { agencias, loading, error } = state;
+
+  React.useEffect(() => {
+    actions.fetchAgencias(); // O se puede usar en un custom hook
+  }, []);
+
+  const customers = agenciasToCustomers(agencias); 
+
   const page = 0;
   const rowsPerPage = 5;
   const { isOpen, openModal, closeModal } = useModalAgencia();
@@ -217,9 +134,7 @@ export default function Page(): React.JSX.Element {
           <Typography variant="h4">Agencias</Typography>
           <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
             
-            <Button color="inherit" startIcon={<DownloadIcon fontSize="var(--icon-fontSize-md)" />}>
-              Export
-            </Button>
+            
           </Stack>
         </Stack>
         <div>
@@ -228,7 +143,7 @@ export default function Page(): React.JSX.Element {
       label="Crear Agencia"
       color="primary"
       variant="contained"
-      onClickHooks={[useModalAgencia().openModal]}
+      onClickHooks={[openModal]}
     />
         </div>
       </Stack>
@@ -254,3 +169,7 @@ export default function Page(): React.JSX.Element {
 function applyPagination(rows: Customer[], page: number, rowsPerPage: number): Customer[] {
   return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 }
+function useEffect(arg0: () => void, arg1: { fetchAgencias: () => Promise<void>; createAgencia: (formData: AgenciaFormValues) => Promise<CreateAgenciaResponse>; startAutoRefresh: () => void; stopAutoRefresh: () => void; }[]) {
+  throw new Error('Function not implemented.');
+}
+

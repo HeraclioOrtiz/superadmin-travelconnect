@@ -1,7 +1,6 @@
 "use client";
 
-
-import { Button } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import UploadIcon from '@mui/icons-material/Upload';
 import { useRef } from 'react';
 
@@ -9,7 +8,7 @@ interface BotonImportarArchivoProps {
   label: string;
   name: string;
   register: any;
-  accept?: string; // ← opcional
+  accept?: string;
   multiple?: boolean;
 }
 
@@ -27,7 +26,7 @@ const BotonImportarArchivo = ({
   };
 
   return (
-    <>
+    <Box sx={{ mb: 4 }}>
       <input
         type="file"
         hidden
@@ -47,7 +46,7 @@ const BotonImportarArchivo = ({
       >
         {label}
       </Button>
-    </>
+    </Box>
   );
 };
 
