@@ -3,7 +3,7 @@ import InputFormulario from './InputFormulario';
 import SelectorColorCampo from './SelectorCampoColor';
 
 const StepFooter = () => {
-  const { register, formState: { errors } } = useFormContext();
+  const { register } = useFormContext();
 
   return (
     <div className="space-y-8 px-4 md:px-6 lg:px-8 py-6">
@@ -12,19 +12,16 @@ const StepFooter = () => {
         <InputFormulario
           label="Texto del Footer"
           {...register('footer_texto')}
-          optional
         />
 
         <InputFormulario
           label="Tipografía"
           {...register('footer_tipografia')}
-          optional
         />
 
         <SelectorColorCampo
           label="Color de la Tipografía"
           {...register('footer_tipografia_color')}
-          error={!!errors.footer_tipografia_color}
         />
       </div>
 
@@ -33,19 +30,16 @@ const StepFooter = () => {
         <SelectorColorCampo
           label="Color Primario"
           {...register('footer_color_primario')}
-          error={!!errors.footer_color_primario}
         />
 
         <SelectorColorCampo
           label="Color Secundario"
           {...register('footer_color_secundario')}
-          error={!!errors.footer_color_secundario}
         />
 
         <SelectorColorCampo
           label="Color Terciario"
           {...register('footer_color_terciario')}
-          error={!!errors.footer_color_terciario}
         />
       </div>
 
@@ -54,25 +48,21 @@ const StepFooter = () => {
         <InputFormulario
           label="Facebook"
           {...register('footer_facebook')}
-          optional
         />
 
         <InputFormulario
           label="Twitter"
           {...register('footer_twitter')}
-          optional
         />
 
         <InputFormulario
           label="Instagram"
           {...register('footer_instagram')}
-          optional
         />
 
         <InputFormulario
           label="WhatsApp"
           {...register('footer_whatsapp')}
-          optional
         />
       </div>
 
@@ -81,31 +71,26 @@ const StepFooter = () => {
         <InputFormulario
           label="Teléfono"
           {...register('footer_telefono')}
-          optional
         />
 
         <InputFormulario
           label="Email"
           {...register('footer_email')}
-          optional
         />
 
         <InputFormulario
           label="Dirección"
           {...register('footer_direccion')}
-          optional
         />
 
         <InputFormulario
           label="Ciudad"
           {...register('footer_ciudad')}
-          optional
         />
 
         <InputFormulario
           label="País"
           {...register('footer_pais')}
-          optional
         />
       </div>
     </div>

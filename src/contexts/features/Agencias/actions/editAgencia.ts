@@ -1,17 +1,24 @@
-import type { AgenciaFormValues, CreateAgenciaResponse } from '../forms';
+import type { AgenciaFormValues } from '../forms';
 import type { AgenciasContextState } from '../types';
 
-export const createAgencia = async (
-  formData: AgenciaFormValues,
+export const editAgencia = async (
+  formData: AgenciaFormValues & { id: number },
   contextState: AgenciasContextState,
   stateMethods: { setError: (error: string | null) => void }
-): Promise<CreateAgenciaResponse> => {
+): Promise<{
+  success: boolean;
+  error?: string;
+  statusCode?: number;
+}> => {
   try {
-    console.group('[createAgencia] Inicio');
+    console.group('[editAgencia] Inicio');
 
-    // 1. Armado de FormData (sin validaciones previas)
+    if (!formData.id) {
+      throw new Error('ID de agencia no especificado para edición');
+    }
+
     const formDataToSend = new FormData();
-    formDataToSend.append('fecha_creacion', new Date().toISOString());
+    formDataToSend.append('id', String(formData.id));
 
     for (const [clave, valor] of Object.entries(formData)) {
       if (
@@ -27,12 +34,10 @@ export const createAgencia = async (
       }
     }
 
-    // 2. Configuración del timeout
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-    // 3. Envío al backend
-    const response = await fetch('https://triptest.com.ar/store_agencia', {
+    const response = await fetch('https://triptest.com.ar/update_agencia', {
       method: 'POST',
       body: formDataToSend,
       signal: controller.signal,
@@ -53,28 +58,24 @@ export const createAgencia = async (
     }
 
     if (!data.agencia) {
-      throw new Error('El servidor no devolvió datos de agencia');
+      throw new Error('El servidor no devolvió datos de la agencia modificada');
     }
 
-    console.log('[createAgencia] Éxito', data.agencia);
+    console.log('[editAgencia] Éxito', data.agencia);
 
     return {
       success: true,
-      agencia: {
-        ...data.agencia,
-        fecha_creacion: data.agencia.fecha_creacion || new Date().toISOString()
-      },
       statusCode: response.status
     };
 
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Error de red';
-    console.error('[createAgencia] Error capturado:', errorMessage);
-    stateMethods.setError(errorMessage);
+    const message = error instanceof Error ? error.message : 'Error de red';
+    console.error('[editAgencia] Error capturado:', message);
+    stateMethods.setError(message);
 
     return {
       success: false,
-      error: errorMessage,
+      error: message,
       statusCode: (error as any)?.status || 500
     };
   } finally {

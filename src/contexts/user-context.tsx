@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-
 import type { User } from '@/types/user';
 import { authClient } from '@/lib/auth/client';
 import { logger } from '@/lib/default-logger';
@@ -36,7 +35,14 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
         return;
       }
 
-      setState((prev) => ({ ...prev, user: data ?? null, error: null, isLoading: false }));
+      // Limpieza de datos sensibles antes de guardar en estado
+      const cleanUserData = data ? {
+        ...data,
+        password: undefined, // Elimina cualquier campo de contraseña
+        token: undefined     // Elimina tokens si existen
+      } : null;
+
+      setState((prev) => ({ ...prev, user: cleanUserData, error: null, isLoading: false }));
     } catch (err) {
       logger.error(err);
       setState((prev) => ({ ...prev, user: null, error: 'Something went wrong', isLoading: false }));
@@ -44,9 +50,14 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
   }, []);
 
   React.useEffect(() => {
+    // Limpieza inicial de cualquier dato de autenticación almacenado
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('tempAuthData');
+      localStorage.removeItem('authCache');
+    }
+
     checkSession().catch((err: unknown) => {
       logger.error(err);
-      // noop
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Expected
   }, []);
@@ -54,4 +65,11 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
   return <UserContext.Provider value={{ ...state, checkSession }}>{children}</UserContext.Provider>;
 }
 
-export const UserConsumer = UserContext.Consumer;
+// Hook de consumo seguro
+export function useUserContext(): UserContextValue {
+  const context = React.useContext(UserContext);
+  if (context === undefined) {
+    throw new Error('useUserContext must be used within a UserProvider');
+  }
+  return context;
+}

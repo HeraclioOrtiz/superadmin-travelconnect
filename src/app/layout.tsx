@@ -7,6 +7,7 @@ import { UserProvider } from '@/contexts/user-context';
 import { LocalizationProvider } from '@/components/core/localization-provider';
 import { ThemeProvider } from '@/components/core/theme-provider/theme-provider';
 import { AgenciasProvider } from '@/contexts/features/Agencias/AgenciaProvider';
+import { ModalAgenciaProvider } from '@/contexts/ModalAgenciaProvider';
 
 export const viewport = { width: 'device-width', initialScale: 1 } satisfies Viewport;
 
@@ -21,8 +22,11 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
         <LocalizationProvider>
           <UserProvider>
             <AgenciasProvider>
+              <ModalAgenciaProvider>
 
             <ThemeProvider>{children}</ThemeProvider>
+
+            </ModalAgenciaProvider>
             </AgenciasProvider>
           </UserProvider>
         </LocalizationProvider>

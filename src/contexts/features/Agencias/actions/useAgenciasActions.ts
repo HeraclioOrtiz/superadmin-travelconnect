@@ -1,95 +1,92 @@
 import { useCallback } from 'react';
-import { Agencia } from '../types';
-import { useAutoRefresh } from '../../../hooks/useAutoRefresh';
 import { createAgencia } from './createAgencia';
-import { AgenciasContextState } from '../types';
-import { AgenciaFormValues } from '../forms';
-
-// Constantes configurables
-const MAX_RETRIES = 2;
-const RETRY_DELAY_MS = 2000;
-const FETCH_TIMEOUT_MS = 10000;
-const DEFAULT_REFRESH_INTERVAL = 300000; // 5 minutos
+import { editAgencia } from './editAgencia'; // ✅ nuevo
+import { fetchAgencias } from './fetchAgencias';
+import type { Agencia, AgenciasContextState } from '../types';
+import type { AgenciaFormValues } from '../forms';
 
 const useAgenciasActions = (
   state: AgenciasContextState,
   stateMethods: {
     setAgencias: (agencias: Agencia[]) => void;
-    setLoading: (loading: boolean) => void;
     setError: (error: string | null) => void;
-    setLastUpdated: (date: Date | null) => void;
-    addTempAgencia: (tempAgencia: Omit<Agencia, 'id'>) => string;
-    confirmAgencia: (tempId: string, realAgencia: Agencia) => void;
-    revertTempAgencia: (tempId: string) => void;
   }
 ) => {
-  const getErrorMessage = useCallback((error: unknown): string => {
-    if (error instanceof Error) {
-      return error.message.includes('aborted') 
-        ? 'La solicitud tardó demasiado'
-        : error.message;
-    }
-    return 'Error desconocido al cargar agencias';
-  }, []);
-
-  const fetchAgencias = useCallback(async (retryCount = 0): Promise<void> => {
-    stateMethods.setLoading(true);
-    stateMethods.setError(null);
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-
+  const cargarAgencias = useCallback(async (): Promise<boolean> => {
     try {
-      const response = await fetch('https://triptest.com.ar/agencias', {
-        signal: controller.signal,
-        headers: { 'Content-Type': 'application/json' }
+      const data = await fetchAgencias();
+      stateMethods.setAgencias(data);
+      return true;
+    } catch (error) {
+      stateMethods.setError(error instanceof Error ? error.message : 'Error desconocido');
+      return false;
+    }
+  }, [stateMethods]);
+
+  const handleCreateAgencia = useCallback(async (
+    formData: AgenciaFormValues
+  ): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const creationResult = await createAgencia(formData, state, {
+        setError: stateMethods.setError
       });
 
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      if (!creationResult.success) {
+        return {
+          success: false,
+          error: creationResult.error
+        };
       }
 
-      const data = await response.json();
-
-      stateMethods.setAgencias(data);
-      stateMethods.setLastUpdated(new Date());
+      const refreshSuccess = await cargarAgencias();
+      return {
+        success: refreshSuccess,
+        error: refreshSuccess ? undefined : 'Error actualizando lista'
+      };
     } catch (error) {
-      clearTimeout(timeoutId);
-      const errorMessage = getErrorMessage(error);
+      const message = error instanceof Error ? error.message : 'Error desconocido';
+      stateMethods.setError(message);
+      return {
+        success: false,
+        error: message
+      };
+    }
+  }, [state, stateMethods, cargarAgencias]);
 
-      if (retryCount < MAX_RETRIES) {
-        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
-        return fetchAgencias(retryCount + 1);
+  const handleEditAgencia = useCallback(async (
+    formData: AgenciaFormValues & { id: number } // ✅ especificamos que se espera un ID
+  ): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const updateResult = await editAgencia(formData, state, {
+        setError: stateMethods.setError
+      });
+
+      if (!updateResult.success) {
+        return {
+          success: false,
+          error: updateResult.error
+        };
       }
 
-      stateMethods.setError(`Error al cargar agencias: ${errorMessage}`);
-    } finally {
-      stateMethods.setLoading(false);
+      const refreshSuccess = await cargarAgencias();
+      return {
+        success: refreshSuccess,
+        error: refreshSuccess ? undefined : 'Error actualizando lista'
+      };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Error desconocido';
+      stateMethods.setError(message);
+      return {
+        success: false,
+        error: message
+      };
     }
-  }, [stateMethods, getErrorMessage]);
-
-  const { startAutoRefresh, stopAutoRefresh } = useAutoRefresh(
-    fetchAgencias,
-    DEFAULT_REFRESH_INTERVAL,
-    true
-  );
-
-  const handleCreateAgencia = async (formData: AgenciaFormValues) => {
-    return createAgencia(formData, state, {
-      addTempAgencia: stateMethods.addTempAgencia,
-      confirmAgencia: stateMethods.confirmAgencia,
-      revertTempAgencia: stateMethods.revertTempAgencia,
-      setError: stateMethods.setError
-    });
-  };
+  }, [state, stateMethods, cargarAgencias]);
 
   return {
-    fetchAgencias,
-    startAutoRefresh,
-    stopAutoRefresh,
-    createAgencia: handleCreateAgencia
+    fetchAgencias: cargarAgencias,
+    createAgencia: handleCreateAgencia,
+    editAgencia: handleEditAgencia // ✅ agregado correctamente
   };
 };
 

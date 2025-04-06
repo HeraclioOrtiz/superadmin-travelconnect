@@ -1,16 +1,17 @@
 'use client';
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useMemo } from 'react';
 import useAgenciasState from './state/useAgenciasState';
 import useAgenciasActions from './actions/useAgenciasActions';
 import useAgenciasQueries from './queries/useAgenciasQueries';
 import { Agencia, AgenciasContextState } from './types';
-import { AgenciaFormValues, CreateAgenciaResponse } from './forms';
+import { AgenciaFormValues } from './forms';
 
 interface AgenciasContextType {
   state: AgenciasContextState;
   actions: {
-    fetchAgencias: () => Promise<void>;
-    createAgencia: (formData: AgenciaFormValues) => Promise<CreateAgenciaResponse>;
+    fetchAgencias: () => Promise<boolean>;
+    createAgencia: (formData: AgenciaFormValues) => Promise<{ success: boolean; error?: string }>;
+    editAgencia: (formData: AgenciaFormValues & { id: number }) => Promise<{ success: boolean; error?: string }>;
     startAutoRefresh: () => void;
     stopAutoRefresh: () => void;
   };
@@ -23,39 +24,41 @@ interface AgenciasContextType {
 const AgenciasContext = createContext<AgenciasContextType | undefined>(undefined);
 
 export const AgenciasProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { 
-    state, 
-    setAgencias, 
-    setLoading, 
-    setError, 
+  const {
+    state,
+    setAgencias,
+    setLoading,
+    setError,
     setLastUpdated,
     addTempAgencia,
     confirmAgencia,
-    revertTempAgencia 
+    revertTempAgencia
   } = useAgenciasState();
 
-  const actions = useAgenciasActions(state, { 
-    setAgencias, 
-    setLoading, 
-    setError, 
+  const stableStateMethods = useMemo(() => ({
+    setAgencias,
+    setLoading,
+    setError,
     setLastUpdated,
     addTempAgencia,
     confirmAgencia,
-    revertTempAgencia 
-  });
+    revertTempAgencia
+  }), []);
 
+  const actions = useAgenciasActions(state, stableStateMethods);
   const queries = useAgenciasQueries(state.agencias);
 
-  const contextValue: AgenciasContextType = {
+  const contextValue = useMemo(() => ({
     state,
     actions: {
       fetchAgencias: actions.fetchAgencias,
       createAgencia: actions.createAgencia,
-      startAutoRefresh: actions.startAutoRefresh,
-      stopAutoRefresh: actions.stopAutoRefresh
+      editAgencia: actions.editAgencia, // ✅ ← agregado acá
+      startAutoRefresh: () => {},
+      stopAutoRefresh: () => {}
     },
-    queries // Ahora incluye filterAgencias
-  };
+    queries
+  }), [state, actions, queries]);
 
   return (
     <AgenciasContext.Provider value={contextValue}>

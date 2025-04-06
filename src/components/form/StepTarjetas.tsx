@@ -3,7 +3,7 @@ import InputFormulario from './InputFormulario';
 import SelectorColorCampo from './SelectorCampoColor';
 
 const StepTarjetas = () => {
-  const { register, formState: { errors } } = useFormContext();
+  const { register } = useFormContext();
 
   return (
     <div className="space-y-8 px-4 md:px-6 lg:px-8 py-6">
@@ -12,13 +12,11 @@ const StepTarjetas = () => {
         <InputFormulario
           label="Título de la Sección de Tarjetas"
           {...register('tarjetas_titulo')}
-          optional
         />
 
         <InputFormulario
           label="Tipografía"
           {...register('tarjetas_tipografia')}
-          optional
         />
       </div>
 
@@ -27,19 +25,16 @@ const StepTarjetas = () => {
         <SelectorColorCampo
           label="Color del Texto"
           {...register('tarjetas_tipografia_color')}
-          error={!!errors.tarjetas_tipografia_color}
         />
 
         <SelectorColorCampo
           label="Color del Título"
           {...register('tarjetas_tipografia_color_titulo')}
-          error={!!errors.tarjetas_tipografia_color_titulo}
         />
 
         <SelectorColorCampo
           label="Color del Contenido"
           {...register('tarjetas_tipografia_color_contenido')}
-          error={!!errors.tarjetas_tipografia_color_contenido}
         />
       </div>
 
@@ -48,19 +43,16 @@ const StepTarjetas = () => {
         <SelectorColorCampo
           label="Color Primario"
           {...register('tarjetas_color_primario')}
-          error={!!errors.tarjetas_color_primario}
         />
 
         <SelectorColorCampo
           label="Color Secundario"
           {...register('tarjetas_color_secundario')}
-          error={!!errors.tarjetas_color_secundario}
         />
 
         <SelectorColorCampo
           label="Color Terciario"
           {...register('tarjetas_color_terciario')}
-          error={!!errors.tarjetas_color_terciario}
         />
       </div>
     </div>

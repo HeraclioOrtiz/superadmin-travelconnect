@@ -3,7 +3,6 @@ import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Checkbox from '@mui/material/Checkbox';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
@@ -15,19 +14,18 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import dayjs from 'dayjs';
 import { Customer } from './Customer';
-
 import { useSelection } from '@/hooks/use-selection';
 
 function noop(): void {
   // do nothing
 }
 
-
 interface CustomersTableProps {
   count?: number;
   page?: number;
   rows?: Customer[];
   rowsPerPage?: number;
+  onEdit?: (customer: Customer) => void; // 🆕 NUEVA PROP
 }
 
 export function CustomersTable({
@@ -35,6 +33,7 @@ export function CustomersTable({
   rows = [],
   page = 0,
   rowsPerPage = 0,
+  onEdit,
 }: CustomersTableProps): React.JSX.Element {
   const rowIds = React.useMemo(() => {
     return rows.map((customer) => customer.id);
@@ -49,15 +48,22 @@ export function CustomersTable({
     <Card>
       <Box sx={{ overflowX: 'auto' }}>
         <Table sx={{ minWidth: '800px' }}>
-        <TableHead>
-          <TableRow><TableCell>Nombre</TableCell><TableCell>Email</TableCell><TableCell>Fecha de Alta</TableCell><TableCell>Estado</TableCell><TableCell>APIs</TableCell><TableCell></TableCell></TableRow>
-        </TableHead>
+          <TableHead>
+            <TableRow>
+              <TableCell>Nombre</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Fecha de Alta</TableCell>
+              <TableCell>Estado</TableCell>
+              <TableCell>Modificar</TableCell>
+              <TableCell>Eliminar</TableCell>
+            </TableRow>
+          </TableHead>
           <TableBody>
             {rows.map((row) => {
               const isSelected = selected?.has(row.id);
 
               return (
-                <TableRow hover key={row.id} selected={isSelected}>                
+                <TableRow hover key={row.id} selected={isSelected}>
                   <TableCell>
                     <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
                       <Avatar src={row.logo} />
@@ -66,8 +72,26 @@ export function CustomersTable({
                   </TableCell>
                   <TableCell>{row.email}</TableCell>
                   <TableCell>{dayjs(row.fechaAlta).format('MMM D, YYYY')}</TableCell>
-                  <TableCell>{row.estado}</TableCell>
-                  
+                  <TableCell>{row.estado ? 'Activa' : 'Inactiva'}</TableCell>
+                  <TableCell>
+                    <button
+                      onClick={() => onEdit?.(row)}
+                      style={{
+                        background: '#1976d2',
+                        color: 'white',
+                        border: 'none',
+                        padding: '6px 12px',
+                        borderRadius: 4,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Modificar
+                    </button>
+                  </TableCell>
+                  <TableCell>
+                    {/* Podés agregar lógica de eliminación después */}
+                    <Typography variant="body2" color="text.secondary">—</Typography>
+                  </TableCell>
                 </TableRow>
               );
             })}
