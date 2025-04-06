@@ -131,7 +131,7 @@ const AgenciaContenidoInterno = ({
         isEditMode={!!datosEdicion}
         onBack={handleBack}
         onNext={handleNext}
-        onSubmit={handleSubmitClick}
+        onSubmit={handleSubmitClick} 
       />
     </div>
   );
