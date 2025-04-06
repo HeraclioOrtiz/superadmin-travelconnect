@@ -3,9 +3,9 @@ import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { defaultAgenciaFormValues } from '../formDefaults';
 import { useModalAgenciaGlobal } from '@/contexts/ModalAgenciaProvider';
-import { adaptarAgenciaParaEdicion } from './adaptarAgenciaParaEdicio';
+import { adaptarAgenciaParaEdicion } from './adaptarAgenciaParaEdicion';
 import type { AgenciaFormValues } from '@/contexts/features/Agencias/forms';
-import type { UrlsAgencia } from './adaptarAgenciaParaEdicio';
+import type { UrlsAgencia } from './adaptarAgenciaParaEdicion';
 
 export const useAgenciaForm = () => {
   const { datosEdicion } = useModalAgenciaGlobal();
