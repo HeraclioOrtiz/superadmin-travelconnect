@@ -17,14 +17,12 @@ export interface NextAppDirEmotionCacheProviderProps {
   children: React.ReactNode;
 }
 
-// Adapted from https://github.com/garronej/tss-react/blob/main/src/next/appDir.tsx
 export default function NextAppDirEmotionCacheProvider(props: NextAppDirEmotionCacheProviderProps): React.JSX.Element {
   const { options, CacheProvider = DefaultCacheProvider, children } = props;
 
   const [registry] = React.useState<Registry>(() => {
     const cache = createCache(options);
     cache.compat = true;
-    // eslint-disable-next-line @typescript-eslint/unbound-method -- Expected
     const prevInsert = cache.insert;
     let inserted: { name: string; isGlobal: boolean }[] = [];
     cache.insert = (...args) => {
@@ -61,7 +59,9 @@ export default function NextAppDirEmotionCacheProvider(props: NextAppDirEmotionC
 
       if (typeof style !== 'boolean') {
         if (isGlobal) {
-          globals.push({ name, style });
+          if (typeof style === 'string') {  // Validación explícita añadida
+            globals.push({ name, style });
+          }
         } else {
           styles += style;
           dataEmotionAttribute += ` ${name}`;

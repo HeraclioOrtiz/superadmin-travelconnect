@@ -11,54 +11,34 @@ const useAgenciasState = (initialState?: Partial<AgenciasContextState>) => {
   });
 
   // --- Optimistic Update Functions --- //
-  /**
-   * Añade una agencia temporal al estado
-   * @param tempAgencia Datos de la agencia (sin ID)
-   * @returns ID temporal generado
-   */
   const addTempAgencia = useCallback((tempAgencia: Omit<Agencia, 'id'>) => {
-    const tempId = `temp-${Date.now()}`;
+    const tempId = Date.now(); // Usamos timestamp numérico directamente
     setState(prev => ({
       ...prev,
       agencias: [...prev.agencias, { 
         ...tempAgencia,
-        id: tempId,
-        // Garantiza valores por defecto para campos requeridos
-        fecha_creacion: tempAgencia.fecha_creacion || new Date().toISOString()
+        id: tempId, // Ahora es number
+        // Campos requeridos con valores por defecto
+        fecha_creacion: tempAgencia.fecha_alta || new Date().toISOString(),
+        estado: tempAgencia.estado || true
       }],
       loading: true
     }));
     return tempId;
   }, []);
 
-  /**
-   * Confirma una agencia temporal con datos reales del backend
-   * @param tempId ID temporal
-   * @param realAgencia Datos confirmados
-   */
-  const confirmAgencia = useCallback((tempId: string, realAgencia: Agencia) => {
+  const confirmAgencia = useCallback((tempId: number, realAgencia: Agencia) => {
     setState(prev => ({
       ...prev,
       agencias: prev.agencias.map(a => 
-        a.id === tempId ? { 
-          ...realAgencia, 
-          // Mantiene campos no devueltos por el backend
-          ...(a.id === tempId ? { 
-            // Aquí puedes preservar campos específicos si es necesario
-          } : {})
-        } : a
+        a.id === tempId ? realAgencia : a
       ),
       loading: false,
       lastUpdated: new Date()
     }));
   }, []);
 
-  /**
-   * Revierte una agencia temporal
-   * @param tempId ID a eliminar
-   * @param error Mensaje opcional de error
-   */
-  const revertTempAgencia = useCallback((tempId: string, error?: string) => {
+  const revertTempAgencia = useCallback((tempId: number, error?: string) => {
     setState(prev => ({
       ...prev,
       agencias: prev.agencias.filter(a => a.id !== tempId),
