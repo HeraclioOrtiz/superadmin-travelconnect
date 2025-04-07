@@ -1,6 +1,6 @@
 'use client';
 
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, Controller } from 'react-hook-form';
 import InputFormulario from './InputFormulario';
 import SelectorColorCampo from './SelectorCampoColor';
 import BotonImportarArchivo from './ImportButton';
@@ -9,7 +9,7 @@ import { usePrevisualizacionArchivo } from './hooks/usePrevisualizacionArchivo';
 import { Box } from '@mui/material';
 
 const StepPublicidadCliente = () => {
-  const { register, watch, setValue } = useFormContext();
+  const { register, watch, setValue, control } = useFormContext();
   const { datosEdicion } = useModalAgenciaGlobal();
 
   const preview1 = usePrevisualizacionArchivo({
@@ -53,27 +53,51 @@ const StepPublicidadCliente = () => {
           {...register('publicidad_titulo')}
         />
 
-        <SelectorColorCampo
-          label="Color de la Tipografía"
-          {...register('publicidad_tipografia_color')}
+        <Controller
+          name="publicidad_tipografia_color"
+          control={control}
+          render={({ field }) => (
+            <SelectorColorCampo
+              label="Color de la Tipografía"
+              {...field}
+            />
+          )}
         />
       </div>
 
       {/* ----- Paleta de colores ----- */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <SelectorColorCampo
-          label="Color Primario"
-          {...register('publicidad_color_primario')}
+        <Controller
+          name="publicidad_color_primario"
+          control={control}
+          render={({ field }) => (
+            <SelectorColorCampo
+              label="Color Primario"
+              {...field}
+            />
+          )}
         />
 
-        <SelectorColorCampo
-          label="Color Secundario"
-          {...register('publicidad_color_secundario')}
+        <Controller
+          name="publicidad_color_secundario"
+          control={control}
+          render={({ field }) => (
+            <SelectorColorCampo
+              label="Color Secundario"
+              {...field}
+            />
+          )}
         />
 
-        <SelectorColorCampo
-          label="Color Terciario"
-          {...register('publicidad_color_terciario')}
+        <Controller
+          name="publicidad_color_terciario"
+          control={control}
+          render={({ field }) => (
+            <SelectorColorCampo
+              label="Color Terciario"
+              {...field}
+            />
+          )}
         />
       </div>
 

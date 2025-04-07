@@ -1,9 +1,11 @@
-import { useFormContext } from 'react-hook-form';
+'use client';
+
+import { useFormContext, Controller } from 'react-hook-form';
 import InputFormulario from './InputFormulario';
 import SelectorColorCampo from './SelectorCampoColor';
 
 const StepDatosGenerales = () => {
-  const { register } = useFormContext();
+  const { register, control } = useFormContext();
 
   return (
     <div className="space-y-8 px-4 md:px-6 lg:px-8 py-6">
@@ -13,37 +15,67 @@ const StepDatosGenerales = () => {
           label="Tipografía de la Agencia"
           {...register('tipografia_agencia')}
         />
-        <SelectorColorCampo
-          label="Color de la Tipografía"
-          descripcion="Color principal del texto en la aplicación"
-          {...register('color_tipografia_agencia')}
+        <Controller
+          name="color_tipografia_agencia"
+          control={control}
+          render={({ field }) => (
+            <SelectorColorCampo
+              label="Color de la Tipografía"
+              descripcion="Color principal del texto en la aplicación"
+              {...field}
+            />
+          )}
         />
       </div>
 
       {/* ----- Colores Base ----- */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <SelectorColorCampo
-          label="Color de Fondo de la App"
-          descripcion="Color general de fondo de toda la aplicación"
-          {...register('color_fondo_app')}
+        <Controller
+          name="color_fondo_app"
+          control={control}
+          render={({ field }) => (
+            <SelectorColorCampo
+              label="Color de Fondo de la App"
+              descripcion="Color general de fondo de toda la aplicación"
+              {...field}
+            />
+          )}
         />
 
-        <SelectorColorCampo
-          label="Color Principal"
-          descripcion="Color utilizado para elementos principales"
-          {...register('color_principal')}
+        <Controller
+          name="color_principal"
+          control={control}
+          render={({ field }) => (
+            <SelectorColorCampo
+              label="Color Principal"
+              descripcion="Color utilizado para elementos principales"
+              {...field}
+            />
+          )}
         />
 
-        <SelectorColorCampo
-          label="Color Secundario"
-          descripcion="Color para elementos secundarios y destacados"
-          {...register('color_secundario')}
+        <Controller
+          name="color_secundario"
+          control={control}
+          render={({ field }) => (
+            <SelectorColorCampo
+              label="Color Secundario"
+              descripcion="Color para elementos secundarios y destacados"
+              {...field}
+            />
+          )}
         />
 
-        <SelectorColorCampo
-          label="Color Terciario"
-          descripcion="Color adicional para acentos u otros elementos"
-          {...register('color_terciario')}
+        <Controller
+          name="color_terciario"
+          control={control}
+          render={({ field }) => (
+            <SelectorColorCampo
+              label="Color Terciario"
+              descripcion="Color adicional para acentos u otros elementos"
+              {...field}
+            />
+          )}
         />
       </div>
     </div>

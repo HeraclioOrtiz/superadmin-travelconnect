@@ -1,25 +1,30 @@
 'use client';
 
+'use client';
+
 import * as React from 'react';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import AddBusinessIcon from '@mui/icons-material/AddBusiness';
-import AgenciaModal from '@/components/form/AgenciaModal';
+
 import BotonAccion from '@/components/form/BotonAccion';
+import AgenciaModal from '@/components/form/AgenciaModal'; // ✅ IMPORT NECESARIO
+import BotonSimulacionAgencia from '@/components/form/BotonSimulacionAgencia';
+
 import { useAgenciasContext } from '@/contexts/features/Agencias/AgenciaProvider';
+import { useModalAgenciaGlobal } from '@/contexts/ModalAgenciaProvider';
+
 import { agenciasToCustomers } from './agenciasToCustomers';
 import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
 import { CustomersTable } from '@/components/dashboard/customer/customers-table';
 import type { Customer } from '@/components/dashboard/customer/Customer';
-import BotonSimulacionAgencia from '@/components/form/BotonSimulacionAgencia';
-import { useModalAgenciaGlobal } from '@/contexts/ModalAgenciaProvider';
-import type { Agencia } from '@/contexts/features/Agencias/types'; // ✅ Usamos el tipo correcto
+
 
 export default function Page(): React.JSX.Element {
   const { state, actions } = useAgenciasContext();
   const { agencias } = state;
 
-  const { openModal, setDatosEdicion } = useModalAgenciaGlobal(); // ✅ Usamos el contexto global
+  const { isOpen, openModal, setDatosEdicion } = useModalAgenciaGlobal();
 
   React.useEffect(() => {
     actions.fetchAgencias();
@@ -36,13 +41,21 @@ export default function Page(): React.JSX.Element {
   };
 
   const handleEditarAgencia = (customer: Customer) => {
+    // Buscar la agencia original que corresponde al ID del customer
     const agenciaOriginal = agencias.find((a) => a.id === customer.id);
-
+  
+    // Si encontramos la agencia, asignamos los datos de edición y abrimos el modal
     if (agenciaOriginal) {
-      setDatosEdicion(agenciaOriginal); // ✅ Usamos directamente Agencia
-      openModal();
+      console.log("Datos de Customer:", customer);
+      console.log("Agencia encontrada:", agenciaOriginal);
+  
+      setDatosEdicion(agenciaOriginal); // Guardamos los datos de la agencia para la edición
+      openModal(); // Abrimos el modal en modo edición
+    } else {
+      console.log("No se encontró una agencia con el ID proporcionado:", customer.id);
     }
   };
+  
 
   return (
     <Stack spacing={3}>
@@ -72,7 +85,7 @@ export default function Page(): React.JSX.Element {
         onEdit={handleEditarAgencia}
       />
 
-      <AgenciaModal /> {/* ✅ Sin props */}
+      {isOpen && <AgenciaModal />}
     </Stack>
   );
 }

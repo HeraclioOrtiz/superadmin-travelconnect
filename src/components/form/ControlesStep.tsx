@@ -10,7 +10,7 @@ interface ControlesStepProps {
   currentStep: number;
   totalSteps: number;
   isLoading: boolean;
-  isEditMode: boolean;
+  isEditMode: boolean;  // Controla si estamos en modo edición o creación
   onBack: () => void;
   onNext: () => void;
   onSubmit: () => void;
@@ -20,7 +20,7 @@ const ControlesStep: React.FC<ControlesStepProps> = ({
   currentStep,
   totalSteps,
   isLoading,
-  isEditMode,
+  isEditMode, // Utilizamos el estado isEditMode para determinar si estamos editando o creando
   onBack,
   onNext,
   onSubmit,
@@ -56,8 +56,8 @@ const ControlesStep: React.FC<ControlesStepProps> = ({
             isLoading
               ? 'Guardando...'
               : isEditMode
-              ? 'Modificar'
-              : 'Guardar'
+              ? 'Modificar'  // Si estamos en modo edición, el botón dice "Modificar"
+              : 'Guardar'    // Si estamos en modo creación, el botón dice "Guardar"
           }
           icono={
             isLoading ? (

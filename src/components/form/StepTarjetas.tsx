@@ -1,9 +1,11 @@
-import { useFormContext } from 'react-hook-form';
+'use client';
+
+import { useFormContext, Controller } from 'react-hook-form';
 import InputFormulario from './InputFormulario';
 import SelectorColorCampo from './SelectorCampoColor';
 
 const StepTarjetas = () => {
-  const { register } = useFormContext();
+  const { register, control } = useFormContext();
 
   return (
     <div className="space-y-8 px-4 md:px-6 lg:px-8 py-6">
@@ -22,37 +24,73 @@ const StepTarjetas = () => {
 
       {/* ----- Colores de Tipografía ----- */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <SelectorColorCampo
-          label="Color del Texto"
-          {...register('tarjetas_tipografia_color')}
+        <Controller
+          name="tarjetas_tipografia_color"
+          control={control}
+          render={({ field }) => (
+            <SelectorColorCampo
+              label="Color del Texto"
+              {...field}
+            />
+          )}
         />
 
-        <SelectorColorCampo
-          label="Color del Título"
-          {...register('tarjetas_tipografia_color_titulo')}
+        <Controller
+          name="tarjetas_tipografia_color_titulo"
+          control={control}
+          render={({ field }) => (
+            <SelectorColorCampo
+              label="Color del Título"
+              {...field}
+            />
+          )}
         />
 
-        <SelectorColorCampo
-          label="Color del Contenido"
-          {...register('tarjetas_tipografia_color_contenido')}
+        <Controller
+          name="tarjetas_tipografia_color_contenido"
+          control={control}
+          render={({ field }) => (
+            <SelectorColorCampo
+              label="Color del Contenido"
+              {...field}
+            />
+          )}
         />
       </div>
 
       {/* ----- Paleta de Colores ----- */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <SelectorColorCampo
-          label="Color Primario"
-          {...register('tarjetas_color_primario')}
+        <Controller
+          name="tarjetas_color_primario"
+          control={control}
+          render={({ field }) => (
+            <SelectorColorCampo
+              label="Color Primario"
+              {...field}
+            />
+          )}
         />
 
-        <SelectorColorCampo
-          label="Color Secundario"
-          {...register('tarjetas_color_secundario')}
+        <Controller
+          name="tarjetas_color_secundario"
+          control={control}
+          render={({ field }) => (
+            <SelectorColorCampo
+              label="Color Secundario"
+              {...field}
+            />
+          )}
         />
 
-        <SelectorColorCampo
-          label="Color Terciario"
-          {...register('tarjetas_color_terciario')}
+        <Controller
+          name="tarjetas_color_terciario"
+          control={control}
+          render={({ field }) => (
+            <SelectorColorCampo
+              label="Color Terciario"
+              {...field}
+            />
+          )}
         />
       </div>
     </div>

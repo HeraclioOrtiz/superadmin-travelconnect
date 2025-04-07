@@ -1,9 +1,11 @@
-import { useFormContext } from 'react-hook-form';
+'use client';
+
+import { useFormContext, Controller } from 'react-hook-form';
 import InputFormulario from './InputFormulario';
 import SelectorColorCampo from './SelectorCampoColor';
 
 const StepFooter = () => {
-  const { register } = useFormContext();
+  const { register, control } = useFormContext();
 
   return (
     <div className="space-y-8 px-4 md:px-6 lg:px-8 py-6">
@@ -19,27 +21,51 @@ const StepFooter = () => {
           {...register('footer_tipografia')}
         />
 
-        <SelectorColorCampo
-          label="Color de la Tipografía"
-          {...register('footer_tipografia_color')}
+        <Controller
+          name="footer_tipografia_color"
+          control={control}
+          render={({ field }) => (
+            <SelectorColorCampo
+              label="Color de la Tipografía"
+              {...field}
+            />
+          )}
         />
       </div>
 
       {/* ----- Paleta de Colores ----- */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <SelectorColorCampo
-          label="Color Primario"
-          {...register('footer_color_primario')}
+        <Controller
+          name="footer_color_primario"
+          control={control}
+          render={({ field }) => (
+            <SelectorColorCampo
+              label="Color Primario"
+              {...field}
+            />
+          )}
         />
 
-        <SelectorColorCampo
-          label="Color Secundario"
-          {...register('footer_color_secundario')}
+        <Controller
+          name="footer_color_secundario"
+          control={control}
+          render={({ field }) => (
+            <SelectorColorCampo
+              label="Color Secundario"
+              {...field}
+            />
+          )}
         />
 
-        <SelectorColorCampo
-          label="Color Terciario"
-          {...register('footer_color_terciario')}
+        <Controller
+          name="footer_color_terciario"
+          control={control}
+          render={({ field }) => (
+            <SelectorColorCampo
+              label="Color Terciario"
+              {...field}
+            />
+          )}
         />
       </div>
 
