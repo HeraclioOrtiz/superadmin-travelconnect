@@ -22,6 +22,7 @@ module.exports = {
     },
   },
   rules: {
+    // ✳️ Variables sin usar
     '@typescript-eslint/no-unused-vars': [
       'error',
       {
@@ -31,52 +32,64 @@ module.exports = {
         caughtErrorsIgnorePattern: '^_',
       },
     ],
+
+    // ✳️ Interfaces vacías
     '@typescript-eslint/no-empty-interface': [
       'error',
       {
         allowSingleExtends: true,
       },
     ],
+
+    // ✳️ Sombras de nombres
     '@typescript-eslint/no-shadow': [
       'error',
       {
         ignoreOnInitialization: true,
       },
     ],
+
+    // ✅ Logs y alertas permitidos durante desarrollo
+    'no-console': 'warn',
+    'no-alert': 'off',
+
+    // ✅ Relajamos tipado forzado en funciones
+    '@typescript-eslint/explicit-function-return-type': 'off',
+
+    // ✅ Permitimos `any` y asignaciones inseguras (para prototipo)
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-unsafe-assignment': 'off',
+    '@typescript-eslint/no-unsafe-member-access': 'off',
+    '@typescript-eslint/no-unsafe-call': 'off',
+    '@typescript-eslint/no-unsafe-return': 'off',
+    '@typescript-eslint/no-unsafe-argument': 'off',
+
+    // ✅ Desactivamos filename-case (para no renombrar ahora)
+    'unicorn/filename-case': 'off',
+
+    // ✅ No obliga a usar `import type`
+    '@typescript-eslint/consistent-type-imports': 'off',
+
+    // ✳️ Estilo general
     'import/newline-after-import': 'error',
     'react/jsx-uses-react': 'error',
     'react/react-in-jsx-scope': 'error',
-    'unicorn/filename-case': [
-      'error',
-      {
-        cases: {
-          kebabCase: true, // personal style
-          pascalCase: true,
-        },
-      },
-    ],
 
-    // Deactivated
-    '@typescript-eslint/dot-notation': 'off', // paths are used with a dot notation
-    '@typescript-eslint/no-misused-promises': 'off', // onClick with async fails
-    '@typescript-eslint/no-non-null-assertion': 'off', // sometimes compiler is unable to detect
-    '@typescript-eslint/no-unnecessary-condition': 'off', // remove when no static data is used
-    '@typescript-eslint/require-await': 'off', // Server Actions require async flag always
-    '@typescript-eslint/prefer-nullish-coalescing': 'off', // personal style
-    '@typescript-eslint/restrict-template-expressions': [
-      'error',
-      {
-        allowNumber: true,
-      },
-    ],
-    'import/no-default-export': 'off', // Next.js components must be exported as default
-    'import/no-extraneous-dependencies': 'off', // conflict with sort-imports plugin
-    'import/order': 'off', // using custom sort plugin
-    'no-nested-ternary': 'off', // personal style
-    'no-redeclare': 'off', // conflict with TypeScript function overloads
-    'react/jsx-fragments': 'off', // personal style
-    'react/prop-types': 'off', // TypeScript is used for type checking
-
-    '@next/next/no-img-element': 'off', // Temporary disabled
+    // 🚫 Reglas desactivadas por preferencia o compatibilidad
+    '@typescript-eslint/dot-notation': 'off',
+    '@typescript-eslint/no-misused-promises': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'off',
+    '@typescript-eslint/no-unnecessary-condition': 'off',
+    '@typescript-eslint/require-await': 'off',
+    '@typescript-eslint/prefer-nullish-coalescing': 'off',
+    '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
+    'import/no-default-export': 'off',
+    'import/no-extraneous-dependencies': 'off',
+    'import/order': 'off',
+    'no-nested-ternary': 'off',
+    'no-redeclare': 'off',
+    'react/jsx-fragments': 'off',
+    'react/prop-types': 'off',
+    '@next/next/no-img-element': 'off',
   },
 };
