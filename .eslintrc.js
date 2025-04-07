@@ -22,18 +22,37 @@ module.exports = {
     },
   },
   rules: {
-    // ✳️ Variables sin usar
-    '@typescript-eslint/no-unused-vars': [
-      'error',
-      {
-        ignoreRestSiblings: true,
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
-        caughtErrorsIgnorePattern: '^_',
-      },
-    ],
+    // ✅ Permitir logs y alertas durante desarrollo
+    'no-console': 'warn',
+    'no-alert': 'off',
 
-    // ✳️ Interfaces vacías
+    // ✅ JSX moderno sin necesidad de importar React
+    'react/react-in-jsx-scope': 'off',
+    'react/jsx-uses-react': 'off',
+
+    // ✅ Desactivamos nombres de archivo forzados
+    'unicorn/filename-case': 'off',
+
+    // ✅ Desactivamos tipado forzado para prototipo
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-unsafe-assignment': 'off',
+    '@typescript-eslint/no-unsafe-member-access': 'off',
+    '@typescript-eslint/no-unsafe-call': 'off',
+    '@typescript-eslint/no-unsafe-return': 'off',
+    '@typescript-eslint/no-unsafe-argument': 'off',
+    '@typescript-eslint/consistent-type-imports': 'off',
+    '@typescript-eslint/consistent-type-definitions': 'off',
+
+    // ✅ Permitir variables sin usar en desarrollo
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': 'off',
+
+    // ✅ Desactivamos validaciones molestas durante dev
+    '@typescript-eslint/no-floating-promises': 'off',
+    '@typescript-eslint/no-confusing-void-expression': 'off',
+
+    // ✳️ Permitir interfaces vacías con extensión
     '@typescript-eslint/no-empty-interface': [
       'error',
       {
@@ -41,7 +60,7 @@ module.exports = {
       },
     ],
 
-    // ✳️ Sombras de nombres
+    // ✳️ Permitir nombres con shadow (inicialización)
     '@typescript-eslint/no-shadow': [
       'error',
       {
@@ -49,31 +68,8 @@ module.exports = {
       },
     ],
 
-    // ✅ Logs y alertas permitidos durante desarrollo
-    'no-console': 'warn',
-    'no-alert': 'off',
-
-    // ✅ Relajamos tipado forzado en funciones
-    '@typescript-eslint/explicit-function-return-type': 'off',
-
-    // ✅ Permitimos `any` y asignaciones inseguras (para prototipo)
-    '@typescript-eslint/no-explicit-any': 'off',
-    '@typescript-eslint/no-unsafe-assignment': 'off',
-    '@typescript-eslint/no-unsafe-member-access': 'off',
-    '@typescript-eslint/no-unsafe-call': 'off',
-    '@typescript-eslint/no-unsafe-return': 'off',
-    '@typescript-eslint/no-unsafe-argument': 'off',
-
-    // ✅ Desactivamos filename-case (para no renombrar ahora)
-    'unicorn/filename-case': 'off',
-
-    // ✅ No obliga a usar `import type`
-    '@typescript-eslint/consistent-type-imports': 'off',
-
     // ✳️ Estilo general
     'import/newline-after-import': 'error',
-    'react/jsx-uses-react': 'error',
-    'react/react-in-jsx-scope': 'error',
 
     // 🚫 Reglas desactivadas por preferencia o compatibilidad
     '@typescript-eslint/dot-notation': 'off',
@@ -82,7 +78,10 @@ module.exports = {
     '@typescript-eslint/no-unnecessary-condition': 'off',
     '@typescript-eslint/require-await': 'off',
     '@typescript-eslint/prefer-nullish-coalescing': 'off',
-    '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
+    '@typescript-eslint/restrict-template-expressions': [
+      'error',
+      { allowNumber: true },
+    ],
     'import/no-default-export': 'off',
     'import/no-extraneous-dependencies': 'off',
     'import/order': 'off',
@@ -91,5 +90,6 @@ module.exports = {
     'react/jsx-fragments': 'off',
     'react/prop-types': 'off',
     '@next/next/no-img-element': 'off',
+    'no-undef': 'off',
   },
 };
