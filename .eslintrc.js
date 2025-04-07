@@ -82,6 +82,9 @@ module.exports = {
     'jsx-a11y/label-has-associated-control': 'off',
     'no-lone-blocks': 'off',
     'tsdoc/syntax': 'off',
+    'no-implicit-coercion': 'off',
+    'import/no-named-as-default-member': 'off',
+    '@typescript-eslint/no-empty-function': 'off',
 
     // 🚫 Reglas desactivadas por preferencia o compatibilidad
     '@typescript-eslint/dot-notation': 'off',
