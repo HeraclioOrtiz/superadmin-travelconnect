@@ -69,7 +69,7 @@ module.exports = {
     ],
 
     // ✳️ Estilo general
-    'import/newline-after-import': 'error',
+    'import/newline-after-import': 'off',
 
     // 🚫 Reglas desactivadas por errores en deploy
     'react-hooks/exhaustive-deps': 'off',
@@ -82,10 +82,6 @@ module.exports = {
     'jsx-a11y/label-has-associated-control': 'off',
     'no-lone-blocks': 'off',
     'tsdoc/syntax': 'off',
-    'import/no-named-as-default-member': 'off',
-    'no-implicit-coercion': 'off',
-    '@typescript-eslint/no-empty-function': 'off',
-    'eslint-comments/no-unused-disable': 'off',
 
     // 🚫 Reglas desactivadas por preferencia o compatibilidad
     '@typescript-eslint/dot-notation': 'off',
