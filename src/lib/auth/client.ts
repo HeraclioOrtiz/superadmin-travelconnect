@@ -34,7 +34,9 @@ class AuthClient {
 
   async getUser(): Promise<{ data?: User | null; error?: string }> {
     const token = localStorage.getItem(TOKEN_KEY);
-    if (!token) return { data: null };
+    if (!token) {
+      return { data: null, error: 'No token found' }; // 👈 Agregado
+    }
 
     try {
       const res = await fetch(`${API_BASE_URL}/me`, {
@@ -43,12 +45,14 @@ class AuthClient {
         },
       });
 
-      if (!res.ok) return { data: null };
+      if (!res.ok) {
+        return { data: null, error: 'Failed to fetch user' }; // 👈 Agregado
+      }
 
       const data = await res.json();
       return { data };
     } catch {
-      return { data: null };
+      return { data: null, error: 'Network error' }; // 👈 Agregado
     }
   }
 

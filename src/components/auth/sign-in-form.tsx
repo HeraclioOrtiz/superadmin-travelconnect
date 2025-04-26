@@ -20,7 +20,7 @@ import { z as zod } from 'zod';
 
 import { paths } from '@/paths';
 import { authClient } from '@/lib/auth/client';
-import { useUser } from '@/hooks/use-user';
+import { useUserContext } from '@/contexts/user-context'; // 👈 corregido
 
 const schema = zod.object({
   email: zod.string().min(1, { message: 'Email is required' }).email(),
@@ -33,11 +33,9 @@ const defaultValues = { email: 'sofia@devias.io', password: 'Secret1' } satisfie
 
 export function SignInForm(): React.JSX.Element {
   const router = useRouter();
+  const { checkSession, isLoading, error } = useUserContext(); // 👈 corregido
 
-  const { checkSession } = useUser();
-
-  const [showPassword, setShowPassword] = React.useState<boolean>();
-
+  const [showPassword, setShowPassword] = React.useState<boolean>(false);
   const [isPending, setIsPending] = React.useState<boolean>(false);
 
   const {
@@ -59,15 +57,20 @@ export function SignInForm(): React.JSX.Element {
         return;
       }
 
-      // Refresh the auth state
       await checkSession?.();
-
-      // UserProvider, for this case, will not refresh the router
-      // After refresh, GuestGuard will handle the redirect
       router.refresh();
     },
     [checkSession, router, setError]
   );
+
+  // 🧠 NUEVO: Manejamos estados de carga y error antes de mostrar el formulario
+  if (isLoading) {
+    return <div>Cargando...</div>; // Podés poner un Spinner acá si querés
+  }
+
+  if (error) {
+    return <Alert color="error">Something went wrong</Alert>;
+  }
 
   return (
     <Stack spacing={4}>
@@ -106,17 +109,13 @@ export function SignInForm(): React.JSX.Element {
                       <EyeIcon
                         cursor="pointer"
                         fontSize="var(--icon-fontSize-md)"
-                        onClick={(): void => {
-                          setShowPassword(false);
-                        }}
+                        onClick={(): void => setShowPassword(false)}
                       />
                     ) : (
                       <EyeSlashIcon
                         cursor="pointer"
                         fontSize="var(--icon-fontSize-md)"
-                        onClick={(): void => {
-                          setShowPassword(true);
-                        }}
+                        onClick={(): void => setShowPassword(true)}
                       />
                     )
                   }

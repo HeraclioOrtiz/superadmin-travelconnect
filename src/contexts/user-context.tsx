@@ -29,37 +29,31 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
     try {
       const { data, error } = await authClient.getUser();
 
-      if (error) {
+      if (error && error !== 'No token found') {
+        // Solo tratamos como error grave si el error no es "No token found"
         logger.error(error);
-        setState((prev) => ({ ...prev, user: null, error: 'Something went wrong', isLoading: false }));
+        setState({ user: null, error: 'Something went wrong', isLoading: false });
         return;
       }
 
-      // Limpieza de datos sensibles antes de guardar en estado
       const cleanUserData = data ? {
         ...data,
-        password: undefined, // Elimina cualquier campo de contraseña
-        token: undefined     // Elimina tokens si existen
+        password: undefined,
+        token: undefined,
       } : null;
 
-      setState((prev) => ({ ...prev, user: cleanUserData, error: null, isLoading: false }));
+      setState({ user: cleanUserData, error: null, isLoading: false });
     } catch (err) {
       logger.error(err);
-      setState((prev) => ({ ...prev, user: null, error: 'Something went wrong', isLoading: false }));
+      setState({ user: null, error: 'Something went wrong', isLoading: false });
     }
   }, []);
 
   React.useEffect(() => {
-    // Limpieza inicial de cualquier dato de autenticación almacenado
-    if (typeof window !== 'undefined') {
-      sessionStorage.removeItem('tempAuthData');
-      localStorage.removeItem('authCache');
-    }
-
     checkSession().catch((err: unknown) => {
       logger.error(err);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Expected
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <UserContext.Provider value={{ ...state, checkSession }}>{children}</UserContext.Provider>;

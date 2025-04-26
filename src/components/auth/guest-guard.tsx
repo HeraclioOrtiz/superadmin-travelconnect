@@ -3,10 +3,11 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress'; // 👈 Agregamos spinner visual
 
 import { paths } from '@/paths';
 import { logger } from '@/lib/default-logger';
-import { useUser } from '@/hooks/use-user';
+import { useUserContext } from '@/contexts/user-context'; // 👈 Usamos el contexto correcto
 
 export interface GuestGuardProps {
   children: React.ReactNode;
@@ -14,7 +15,7 @@ export interface GuestGuardProps {
 
 export function GuestGuard({ children }: GuestGuardProps): React.JSX.Element | null {
   const router = useRouter();
-  const { user, error, isLoading } = useUser();
+  const { user, error, isLoading } = useUserContext(); // 👈 corregido
   const [isChecking, setIsChecking] = React.useState<boolean>(true);
 
   const checkPermissions = async (): Promise<void> => {
@@ -22,7 +23,7 @@ export function GuestGuard({ children }: GuestGuardProps): React.JSX.Element | n
       return;
     }
 
-    if (error) {
+    if (error && error !== 'No token found') { // 👈 Solo consideramos error grave si no es "No token found"
       setIsChecking(false);
       return;
     }
@@ -40,15 +41,20 @@ export function GuestGuard({ children }: GuestGuardProps): React.JSX.Element | n
     checkPermissions().catch(() => {
       // noop
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Expected
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, error, isLoading]);
 
-  if (isChecking) {
-    return null;
+  if (isChecking || isLoading) {
+    // 🧠 Mientras carga o chequea, mostramos spinner
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '100px' }}>
+        <CircularProgress />
+      </div>
+    );
   }
 
-  if (error) {
-    return <Alert color="error">{error}</Alert>;
+  if (error && error !== 'No token found') {
+    return <Alert color="error">Something went wrong</Alert>;
   }
 
   return <React.Fragment>{children}</React.Fragment>;
