@@ -31,6 +31,5 @@ export const useSubmitAgenciaSimulada = () => {
       console.groupEnd();
     }
   };
-
   return submitAgenciaSimulada;
 };

@@ -15,6 +15,10 @@ import Typography from '@mui/material/Typography';
 import dayjs from 'dayjs';
 import { Customer } from './Customer';
 import { useSelection } from '@/hooks/use-selection';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 
 function noop(): void {
   // do nothing
@@ -25,7 +29,9 @@ interface CustomersTableProps {
   page?: number;
   rows?: Customer[];
   rowsPerPage?: number;
-  onEdit?: (customer: Customer) => void; // 🆕 NUEVA PROP
+  onEdit?: (customer: Customer) => void;
+  onServicios?: (customer: Customer) => void;
+  onEliminar?: (customer: Customer) => void;
 }
 
 export function CustomersTable({
@@ -34,6 +40,8 @@ export function CustomersTable({
   page = 0,
   rowsPerPage = 0,
   onEdit,
+  onServicios,
+  onEliminar,
 }: CustomersTableProps): React.JSX.Element {
   const rowIds = React.useMemo(() => {
     return rows.map((customer) => customer.id);
@@ -47,7 +55,7 @@ export function CustomersTable({
   return (
     <Card>
       <Box sx={{ overflowX: 'auto' }}>
-        <Table sx={{ minWidth: '800px' }}>
+        <Table sx={{ minWidth: '900px' }}>
           <TableHead>
             <TableRow>
               <TableCell>Nombre</TableCell>
@@ -55,6 +63,7 @@ export function CustomersTable({
               <TableCell>Fecha de Alta</TableCell>
               <TableCell>Estado</TableCell>
               <TableCell>Modificar</TableCell>
+              <TableCell>Servicios</TableCell>
               <TableCell>Eliminar</TableCell>
             </TableRow>
           </TableHead>
@@ -89,8 +98,18 @@ export function CustomersTable({
                     </button>
                   </TableCell>
                   <TableCell>
-                    {/* Podés agregar lógica de eliminación después */}
-                    <Typography variant="body2" color="text.secondary">—</Typography>
+                    <Tooltip title="Servicios de la agencia">
+                      <IconButton onClick={() => onServicios?.(row)}>
+                        <AssignmentIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
+                  <TableCell>
+                    <Tooltip title="Eliminar agencia">
+                      <IconButton color="error" onClick={() => onEliminar?.(row)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               );

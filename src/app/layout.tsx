@@ -1,3 +1,7 @@
+'use client';
+
+import { useMockServer } from '@/lib/init-mock'; // 👈 Importás el hook
+
 import * as React from 'react';
 import type { Viewport } from 'next';
 
@@ -16,6 +20,8 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps): React.JSX.Element {
+  useMockServer(); // 👈 Llamás al hook dentro del componente
+
   return (
     <html lang="en">
       <body>
@@ -23,10 +29,8 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           <UserProvider>
             <AgenciasProvider>
               <ModalAgenciaProvider>
-
-            <ThemeProvider>{children}</ThemeProvider>
-
-            </ModalAgenciaProvider>
+                <ThemeProvider>{children}</ThemeProvider>
+              </ModalAgenciaProvider>
             </AgenciasProvider>
           </UserProvider>
         </LocalizationProvider>

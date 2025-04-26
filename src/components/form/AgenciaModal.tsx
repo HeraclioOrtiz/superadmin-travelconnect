@@ -46,17 +46,18 @@ const AgenciaModal = () => {
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: '95vw',
-          height: '90vh',
+          width: '90vw',
+          maxWidth: 720,
+          maxHeight: '90vh',
           bgcolor: 'background.paper',
           borderRadius: 3,
           boxShadow: 24,
-          p: 4,
+          p: 3,
           outline: 'none',
           display: 'flex',
           flexDirection: 'column',
-          gap: 2,
-          overflow: 'hidden',
+          gap: 1.5,
+          overflow: 'visible', // ✅ permite que el contenido interno scrollee
         }}
       >
         <IconButton
@@ -114,7 +115,15 @@ const AgenciaContenidoInterno = ({
         <Divider sx={{ mt: 1 }} />
       </Box>
 
-      <Box sx={{ flex: 1, overflowY: 'auto', pr: 1, mb: 2 }}>
+      <Box
+        sx={{
+          flex: 1,
+          overflowY: 'auto',
+          pr: 1,
+          mb: 2,
+          minHeight: 0, // ✅ importante para scroll con flex
+        }}
+      >
         {StepComponent && <StepComponent />}
       </Box>
 
@@ -131,7 +140,7 @@ const AgenciaContenidoInterno = ({
         isEditMode={!!datosEdicion}
         onBack={handleBack}
         onNext={handleNext}
-        onSubmit={handleSubmitClick} 
+        onSubmit={handleSubmitClick}
       />
     </div>
   );
