@@ -2,10 +2,10 @@ import { createServer } from "miragejs";
 import { handler } from "./handler";
 
 export function makeServer() {
-  createServer({
+  return createServer({
     routes() {
       this.namespace = "api";
-      handler(this); // Modularizamos los endpoints
+      handler(this);
     },
   });
 }

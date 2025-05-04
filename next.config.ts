@@ -1,4 +1,8 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
+
+// 🧪 Agregamos logs para verificar que la variable se esté cargando correctamente
+console.log('🧪 NEXT_PUBLIC_VITE_MOCK en build time:', process.env.NEXT_PUBLIC_VITE_MOCK);
+console.log('🧪 NODE_ENV:', process.env.NODE_ENV);
 
 const nextConfig: NextConfig = {
   reactStrictMode: false, // Desactivado para evitar doble renderizado de MUI

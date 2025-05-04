@@ -1,43 +1,58 @@
-import { Server, Response } from "miragejs";
+import { Server, Response } from 'miragejs';
 
 export function handler(server: Server) {
+  console.log('🛠️ [Mirage Handler] Registrando endpoints simulados...');
+
   // 🔐 Simulación de login
-  server.post("/login", (schema, request) => {
+  server.post('/api/login', (schema, request) => {
     const { email, password } = JSON.parse(request.requestBody);
 
-    console.log('📥 Mirage recibió login:', { email, password });
+    console.log('📥 [Mirage] POST /api/login:', { email, password });
 
-    if (email === "admin@test.com" && password === "123456") {
-      return { token: "fake-jwt-token-123" }; // 👈 solo token
+    if (email === 'admin@test.com' && password === '123456') {
+      return { token: 'fake-jwt-token-123' };
     }
 
-    return new Response(401, {}, { error: "Credenciales inválidas" });
+    return new Response(401, {}, { error: 'Credenciales inválidas' });
   });
 
-  // 👤 Simulación de obtener datos del usuario (check sesión)
-  server.get("/me", (schema, request) => {
+  // 👤 Simulación de sesión
+  server.get('/api/me', (schema, request) => {
+    console.log('📥 [Mirage] GET /api/me recibido');
     const authHeader = request.requestHeaders.Authorization;
 
-    console.log('📥 Mirage recibió petición /me');
-
-    if (authHeader !== "Bearer fake-jwt-token-123") {
-      return new Response(401, {}, { error: "Token inválido" });
+    if (authHeader !== 'Bearer fake-jwt-token-123') {
+      return new Response(401, {}, { error: 'Token inválido' });
     }
 
     return {
       id: 1,
-      nombre: "Administrador",
-      email: "admin@test.com",
-      role: "superadmin",
+      nombre: 'Administrador',
+      email: 'admin@test.com',
+      role: 'superadmin',
     };
   });
 
   // 🚪 Simulación de logout
-  server.post("/logout", (schema, request) => {
-    console.log('👋 Mirage recibió logout');
+  server.post('/api/logout', () => {
+    console.log('👋 [Mirage] POST /api/logout');
     return new Response(200, {}, { success: true });
   });
 
-  // 🚦 Permitir que el resto de los endpoints pasen directo al servidor real
-  server.passthrough('/api/**');
+  // ✅ Permitir otros endpoints reales
+  server.passthrough((request) => {
+    try {
+      const url = new URL(request.url, window.location.origin); // fix para URLs relativas
+      const isIntercepted = ['/api/login', '/api/me', '/api/logout'].includes(url.pathname);
+      if (!isIntercepted) {
+        console.log('➡️ [Mirage] Passthrough:', url.pathname);
+      }
+      return !isIntercepted;
+    } catch (err) {
+      console.warn('❌ [Mirage] URL inválida en passthrough:', request.url);
+      return true; // permitir la request si hay error
+    }
+  });
+
+  console.log('✅ [Mirage Handler] Endpoints listos.');
 }

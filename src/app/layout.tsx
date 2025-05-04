@@ -4,12 +4,16 @@ import * as React from 'react';
 import type { Viewport } from 'next';
 
 import '@/styles/global.css';
-
 import { UserProvider } from '@/contexts/user-context';
 import { LocalizationProvider } from '@/components/core/localization-provider';
 import { ThemeProvider } from '@/components/core/theme-provider/theme-provider';
 import { AgenciasProvider } from '@/contexts/features/Agencias/AgenciaProvider';
 import { ModalAgenciaProvider } from '@/contexts/ModalAgenciaProvider';
+
+// ✅ Import dinámico de Mirage (solo en cliente, sin hook)
+if (typeof window !== 'undefined') {
+  import('@/lib/init-mock'); // No await, no hook
+}
 
 export const viewport = { width: 'device-width', initialScale: 1 } satisfies Viewport;
 
