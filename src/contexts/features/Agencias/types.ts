@@ -83,7 +83,7 @@ export interface Agencia {
   footer_color_terciario: string | null;
 
   // === APIs
-  apis_consumidas: string[];
+  
 }
 
 export interface AgenciasContextState {

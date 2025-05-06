@@ -3,11 +3,11 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Alert from '@mui/material/Alert';
-import CircularProgress from '@mui/material/CircularProgress'; // 👈 Spinner visual
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { paths } from '@/paths';
 import { logger } from '@/lib/default-logger';
-import { useUserContext } from '@/contexts/user-context'; // 👈 corregido
+import { useUserContext } from '@/contexts/user-context';
 
 export interface AuthGuardProps {
   children: React.ReactNode;
@@ -15,21 +15,20 @@ export interface AuthGuardProps {
 
 export function AuthGuard({ children }: AuthGuardProps): React.JSX.Element | null {
   const router = useRouter();
-  const { user, error, isLoading } = useUserContext(); // 👈 corregido
+  const { user, error, isLoading } = useUserContext();
   const [isChecking, setIsChecking] = React.useState<boolean>(true);
 
   const checkPermissions = async (): Promise<void> => {
-    if (isLoading) {
-      return;
-    }
+    if (isLoading) return;
 
-    if (error && error !== 'No token found') { // 👈 Solo tratamos error grave real
+    if (error && !error.toLowerCase().includes('token')) {
+      logger.error('[AuthGuard] Error crítico:', error);
       setIsChecking(false);
       return;
     }
 
     if (!user) {
-      logger.debug('[AuthGuard]: User is not logged in, redirecting to sign in');
+      logger.debug('[AuthGuard]: Usuario no logueado → redireccionando a login');
       router.replace(paths.auth.signIn);
       return;
     }
@@ -38,14 +37,10 @@ export function AuthGuard({ children }: AuthGuardProps): React.JSX.Element | nul
   };
 
   React.useEffect(() => {
-    checkPermissions().catch(() => {
-      // noop
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    checkPermissions().catch((e) => logger.error(e));
   }, [user, error, isLoading]);
 
   if (isChecking || isLoading) {
-    // 🧠 Mientras carga sesión o chequea permisos, mostramos spinner
     return (
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: '100px' }}>
         <CircularProgress />
@@ -53,9 +48,9 @@ export function AuthGuard({ children }: AuthGuardProps): React.JSX.Element | nul
     );
   }
 
-  if (error && error !== 'No token found') {
-    return <Alert color="error">Something went wrong</Alert>;
+  if (error && !error.toLowerCase().includes('token')) {
+    return <Alert color="error">Ocurrió un error inesperado</Alert>;
   }
 
-  return <React.Fragment>{children}</React.Fragment>;
+  return <>{children}</>;
 }

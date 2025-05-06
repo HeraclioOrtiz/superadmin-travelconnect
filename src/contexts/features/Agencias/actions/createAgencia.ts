@@ -1,5 +1,6 @@
 import type { AgenciaFormValues, CreateAgenciaResponse } from '../forms';
 import type { AgenciasContextState } from '../types';
+import { transformarAgenciaParaEnvio } from '../transformarAgenciaParaEnvio'; // ajustá la ruta si está en otro lugar
 
 export const createAgencia = async (
   formData: AgenciaFormValues,
@@ -9,29 +10,43 @@ export const createAgencia = async (
   try {
     console.group('[createAgencia] Inicio');
 
-    // 1. Armado de FormData (sin validaciones previas)
-    const formDataToSend = new FormData();
-    formDataToSend.append('fecha_creacion', new Date().toISOString());
-
+    // 🔍 Log: Datos crudos desde RHF
+    console.log('[createAgencia] Datos crudos desde RHF (AgenciaFormValues):');
     for (const [clave, valor] of Object.entries(formData)) {
-      if (
-        valor === null ||
-        valor === undefined ||
-        (typeof valor === 'string' && valor.trim() === '')
-      ) continue;
+      const tipo =
+        valor instanceof File ? 'File' :
+        Array.isArray(valor) ? 'Array' :
+        valor instanceof Date ? 'Date' :
+        typeof valor;
+      console.log(`→ ${clave}:`, valor, `(tipo: ${tipo})`);
+    }
 
-      if (valor instanceof File) {
+    // 1. Transformar datos
+    const datosTransformados = transformarAgenciaParaEnvio(formData);
+    datosTransformados.fecha_creacion = new Date().toISOString();
+
+    // 2. Armado de FormData
+    const formDataToSend = new FormData();
+    for (const [clave, valor] of Object.entries(datosTransformados)) {
+      if (valor !== null) {
         formDataToSend.append(clave, valor);
-      } else {
-        formDataToSend.append(clave, String(valor));
       }
     }
 
-    // 2. Configuración del timeout
+    // 🔍 Log: FormData a enviar
+    console.log('[createAgencia] FormData a enviar (después de transformación):');
+    Array.from(formDataToSend.entries()).forEach(([clave, valor]) => {
+      const tipo =
+        valor instanceof File ? 'File' :
+        typeof valor;
+      console.log(`→ ${clave}:`, valor, `(tipo: ${tipo})`);
+    });
+
+    // 3. Configuración del timeout
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-    // 3. Envío al backend
+    // 4. Envío al backend
     const response = await fetch('https://triptest.com.ar/store_agencia', {
       method: 'POST',
       body: formDataToSend,

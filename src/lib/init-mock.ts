@@ -1,19 +1,22 @@
-// src/lib/init-mock.ts
-import { makeServer } from '@/mirage';
+// src/mirage/init-mock.ts
+import { makeServer } from '../mirage/handler';
 
-if (
-  typeof window !== 'undefined' &&
-  process.env.NODE_ENV === 'development' &&
-  process.env.NEXT_PUBLIC_VITE_MOCK === 'true'
-) {
-  console.log('🔥 Mirage arrancando desde módulo...');
+let server: any;
 
-  const mirage = makeServer();
-
-  if ((import.meta as any).hot) {
-    (import.meta as any).hot.dispose(() => {
-      console.log('🧹 Mirage apagado por HMR');
-      mirage?.shutdown?.();
-    });
+export function initMock() {
+  if (server) {
+    console.log('⚠️ Mirage ya fue inicializado. Se evita doble creación.');
+    return server;
   }
+
+  const useMock = process.env.NEXT_PUBLIC_MOCK === 'true';
+
+  if (useMock) {
+    console.log('🚀 Iniciando Mirage JS...');
+    server = makeServer({ environment: 'development' });
+  } else {
+    console.log('⛔ Mirage está desactivado por configuración.');
+  }
+
+  return server;
 }

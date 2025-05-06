@@ -1,6 +1,30 @@
 import type { AgenciaFormValues } from '../forms';
 import type { AgenciasContextState } from '../types';
 
+function formatearCampoParaFormData(clave: string, valor: any): [string, string | Blob] | null {
+  if (valor === null || valor === undefined || (typeof valor === 'string' && valor.trim() === '')) {
+    return null;
+  }
+
+  if (valor instanceof File || valor instanceof Blob) {
+    return [clave, valor];
+  }
+
+  if (Array.isArray(valor)) {
+    return [clave, JSON.stringify(valor)];
+  }
+
+  if (typeof valor === 'boolean') {
+    return [clave, valor ? '1' : '0'];
+  }
+
+  if (valor instanceof Date) {
+    return [clave, valor.toISOString()];
+  }
+
+  return [clave, valor];
+}
+
 export const editAgencia = async (
   formData: AgenciaFormValues & { id: number },
   contextState: AgenciasContextState,
@@ -17,26 +41,40 @@ export const editAgencia = async (
       throw new Error('ID de agencia no especificado para edición');
     }
 
+    // 🔍 Log: Datos crudos desde RHF (formulario)
+    console.log('[editAgencia] Datos crudos desde RHF (AgenciaFormValues):');
+    for (const [clave, valor] of Object.entries(formData)) {
+      const tipo =
+        valor instanceof File ? 'File' :
+        Array.isArray(valor) ? 'Array' :
+        valor instanceof Date ? 'Date' :
+        typeof valor;
+      console.log(`→ ${clave}:`, valor, `(tipo: ${tipo})`);
+    }
+
+    // 1. Armado de FormData
     const formDataToSend = new FormData();
     formDataToSend.append('id', String(formData.id));
 
     for (const [clave, valor] of Object.entries(formData)) {
-      if (
-        valor === null ||
-        valor === undefined ||
-        (typeof valor === 'string' && valor.trim() === '')
-      ) continue;
-
-      if (valor instanceof File) {
-        formDataToSend.append(clave, valor);
-      } else {
-        formDataToSend.append(clave, String(valor));
+      const campoFormateado = formatearCampoParaFormData(clave, valor);
+      if (campoFormateado) {
+        formDataToSend.append(campoFormateado[0], campoFormateado[1]);
       }
     }
 
+    // 🔍 Log: FormData a enviar
+    console.log('[editAgencia] FormData a enviar (después de sanitizado):');
+    Array.from(formDataToSend.entries()).forEach(([clave, valor]) => {
+      const tipo = valor instanceof File ? 'File' : typeof valor;
+      console.log(`→ ${clave}:`, valor, `(tipo: ${tipo})`);
+    });
+
+    // 2. Configuración del timeout
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
 
+    // 3. Envío al backend
     const response = await fetch('https://triptest.com.ar/update_agencia', {
       method: 'POST',
       body: formDataToSend,

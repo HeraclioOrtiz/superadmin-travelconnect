@@ -9,12 +9,7 @@ import { LocalizationProvider } from '@/components/core/localization-provider';
 import { ThemeProvider } from '@/components/core/theme-provider/theme-provider';
 import { AgenciasProvider } from '@/contexts/features/Agencias/AgenciaProvider';
 import { ModalAgenciaProvider } from '@/contexts/ModalAgenciaProvider';
-
-// ✅ Import dinámico de Mirage (solo en cliente, sin hook)
-if (typeof window !== 'undefined') {
-  import('@/lib/init-mock'); // No await, no hook
-}
-
+import { initMock } from '../lib/init-mock'
 export const viewport = { width: 'device-width', initialScale: 1 } satisfies Viewport;
 
 interface LayoutProps {
@@ -22,6 +17,11 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps): React.JSX.Element {
+  React.useEffect(() => {
+    console.log('🌐 initMock(): ejecutando');
+    initMock();
+  }, []);
+
   return (
     <html lang="en">
       <body>

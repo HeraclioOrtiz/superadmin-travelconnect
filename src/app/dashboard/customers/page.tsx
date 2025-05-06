@@ -56,6 +56,19 @@ export default function Page(): React.JSX.Element {
     }
   };
 
+  const handleEliminarAgencia = async (customer: Customer) => {
+    const confirmado = window.confirm(`¿Estás seguro de que querés eliminar la agencia "${customer.nombre}"?`);
+    if (!confirmado) return;
+
+    const result = await actions.deleteAgencia(customer.id);
+
+    if (result.success) {
+      console.log(`✅ Agencia eliminada: ${customer.nombre}`);
+    } else {
+      console.error(`❌ Error eliminando agencia: ${result.error}`);
+    }
+  };
+
   return (
     <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
@@ -81,7 +94,8 @@ export default function Page(): React.JSX.Element {
         rows={paginatedCustomers}
         rowsPerPage={rowsPerPage}
         onEdit={handleEditarAgencia}
-        onServicios={abrirModalServicios} // ✅ Nuevo callback
+        onServicios={abrirModalServicios}
+        onEliminar={handleEliminarAgencia} // ✅ conexión hecha
       />
 
       {isOpen && <AgenciaModal />}

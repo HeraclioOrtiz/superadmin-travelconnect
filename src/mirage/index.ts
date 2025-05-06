@@ -1,11 +1,9 @@
-import { createServer } from "miragejs";
-import { handler } from "./handler";
+// src/mirage/index.ts
 
-export function makeServer() {
-  return createServer({
-    routes() {
-      this.namespace = "api";
-      handler(this);
-    },
-  });
+import { initMock } from '../lib/init-mock';
+
+// ⚙️ Ejecutamos Mirage si corresponde por configuración
+if (typeof window !== 'undefined') {
+  console.log('[Mirage] Evaluando si iniciar Mirage...');
+  initMock();
 }

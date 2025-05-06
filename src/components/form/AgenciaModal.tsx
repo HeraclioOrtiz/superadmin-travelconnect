@@ -40,45 +40,46 @@ const AgenciaModal = () => {
       aria-labelledby="modal-title"
       aria-describedby="modal-description"
     >
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '90vw',
-          maxWidth: 720,
-          maxHeight: '90vh',
-          bgcolor: 'background.paper',
-          borderRadius: 3,
-          boxShadow: 24,
-          p: 3,
-          outline: 'none',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 1.5,
-          overflow: 'visible', // ✅ permite que el contenido interno scrollee
-        }}
-      >
-        <IconButton
-          onClick={closeModal}
-          sx={{ position: 'absolute', top: 8, right: 8 }}
-          aria-label="Cerrar"
+      <FormProvider {...methods}>
+        <Box
+          component="form"
+          onSubmit={(e) => e.preventDefault()}
+          autoComplete="off"
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '90vw',
+            maxWidth: 720,
+            maxHeight: '90vh',
+            bgcolor: 'background.paper',
+            borderRadius: 3,
+            boxShadow: 24,
+            p: 3,
+            outline: 'none',
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%',
+            overflow: 'hidden',
+          }}
         >
-          <CloseIcon />
-        </IconButton>
+          <IconButton
+            onClick={closeModal}
+            sx={{ position: 'absolute', top: 8, right: 8 }}
+            aria-label="Cerrar"
+          >
+            <CloseIcon />
+          </IconButton>
 
-        <FormProvider {...methods}>
-          <form onSubmit={(e) => e.preventDefault()} autoComplete="off" style={{ height: '100%' }}>
-            <AgenciaContenidoInterno
-              currentStep={currentStep}
-              setCurrentStep={setCurrentStep}
-              StepComponent={StepComponent}
-              datosEdicion={datosEdicion}
-            />
-          </form>
-        </FormProvider>
-      </Box>
+          <AgenciaContenidoInterno
+            currentStep={currentStep}
+            setCurrentStep={setCurrentStep}
+            StepComponent={StepComponent}
+            datosEdicion={datosEdicion}
+          />
+        </Box>
+      </FormProvider>
     </Modal>
   );
 };
@@ -107,7 +108,7 @@ const AgenciaContenidoInterno = ({
   const handleBack = () => setCurrentStep((prev) => prev - 1);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
       <Box sx={{ mb: 2 }}>
         <Typography variant="h6" fontWeight={600} id="modal-title">
           {stepsConfig[currentStep]?.title}
@@ -121,7 +122,7 @@ const AgenciaContenidoInterno = ({
           overflowY: 'auto',
           pr: 1,
           mb: 2,
-          minHeight: 0, // ✅ importante para scroll con flex
+          minHeight: 0,
         }}
       >
         {StepComponent && <StepComponent />}
@@ -142,6 +143,6 @@ const AgenciaContenidoInterno = ({
         onNext={handleNext}
         onSubmit={handleSubmitClick}
       />
-    </div>
+    </Box>
   );
 };

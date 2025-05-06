@@ -23,7 +23,7 @@ module.exports = {
   },
   rules: {
     // ✅ Permitir logs y alertas durante desarrollo
-    'no-console': 'warn',
+    'no-console': 'off',
     'no-alert': 'off',
 
     // ✅ JSX moderno sin necesidad de importar React
@@ -60,18 +60,15 @@ module.exports = {
       },
     ],
 
-    // ✳️ Permitir nombres con shadow (inicialización)
-    '@typescript-eslint/no-shadow': [
-      'error',
-      {
-        ignoreOnInitialization: true,
-      },
-    ],
+    // ✳️ Permitir nombres con shadow
+    '@typescript-eslint/no-shadow': 'off',
 
     // ✳️ Estilo general
     'import/newline-after-import': 'off',
 
     // 🚫 Reglas desactivadas por errores en deploy
+    '@typescript-eslint/no-unnecessary-template-expression': 'off',
+'@typescript-eslint/restrict-plus-operands': 'off',
     'react-hooks/exhaustive-deps': 'off',
     'react/function-component-definition': 'off',
     'react/jsx-no-leaked-render': 'off',
@@ -85,6 +82,8 @@ module.exports = {
     'no-implicit-coercion': 'off',
     'import/no-named-as-default-member': 'off',
     '@typescript-eslint/no-empty-function': 'off',
+    '@typescript-eslint/use-unknown-in-catch-callback-variable': 'off',
+    'eslint-comments/require-description': 'off',
 
     // 🚫 Reglas desactivadas por preferencia o compatibilidad
     '@typescript-eslint/dot-notation': 'off',

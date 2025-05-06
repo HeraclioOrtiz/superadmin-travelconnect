@@ -20,7 +20,7 @@ import { z as zod } from 'zod';
 
 import { paths } from '@/paths';
 import { authClient } from '@/lib/auth/client';
-import { useUser } from '@/hooks/use-user';
+import { useUserContext } from '@/contexts/user-context';
 
 const schema = zod.object({
   firstName: zod.string().min(1, { message: 'First name is required' }),
@@ -32,13 +32,17 @@ const schema = zod.object({
 
 type Values = zod.infer<typeof schema>;
 
-const defaultValues = { firstName: '', lastName: '', email: '', password: '', terms: false } satisfies Values;
+const defaultValues = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  password: '',
+  terms: false,
+} satisfies Values;
 
 export function SignUpForm(): React.JSX.Element {
   const router = useRouter();
-
-  const { checkSession } = useUser();
-
+  const { checkSession } = useUserContext();
   const [isPending, setIsPending] = React.useState<boolean>(false);
 
   const {
@@ -52,19 +56,15 @@ export function SignUpForm(): React.JSX.Element {
     async (values: Values): Promise<void> => {
       setIsPending(true);
 
-      const { error } = await authClient.signUp(values);
+      const result = authClient.signUp ? await authClient.signUp(values) : undefined;
 
-      if (error) {
-        setError('root', { type: 'server', message: error });
+      if (result?.error) {
+        setError('root', { type: 'server', message: result.error });
         setIsPending(false);
         return;
       }
 
-      // Refresh the auth state
       await checkSession?.();
-
-      // UserProvider, for this case, will not refresh the router
-      // After refresh, GuestGuard will handle the redirect
       router.refresh();
     },
     [checkSession, router, setError]
@@ -98,10 +98,10 @@ export function SignUpForm(): React.JSX.Element {
             control={control}
             name="lastName"
             render={({ field }) => (
-              <FormControl error={Boolean(errors.firstName)}>
+              <FormControl error={Boolean(errors.lastName)}>
                 <InputLabel>Last name</InputLabel>
                 <OutlinedInput {...field} label="Last name" />
-                {errors.firstName ? <FormHelperText>{errors.firstName.message}</FormHelperText> : null}
+                {errors.lastName ? <FormHelperText>{errors.lastName.message}</FormHelperText> : null}
               </FormControl>
             )}
           />
@@ -135,9 +135,9 @@ export function SignUpForm(): React.JSX.Element {
                 <FormControlLabel
                   control={<Checkbox {...field} />}
                   label={
-                    <React.Fragment>
-                      I have read the <Link>terms and conditions</Link>
-                    </React.Fragment>
+                    <>
+                      I have read the <Link href="#">terms and conditions</Link>
+                    </>
                   }
                 />
                 {errors.terms ? <FormHelperText error>{errors.terms.message}</FormHelperText> : null}
@@ -150,7 +150,9 @@ export function SignUpForm(): React.JSX.Element {
           </Button>
         </Stack>
       </form>
-      <Alert color="warning">Created users are not persisted</Alert>
+      {process.env.NODE_ENV !== 'production' && (
+        <Alert color="warning">Created users are not persisted</Alert>
+      )}
     </Stack>
   );
 }

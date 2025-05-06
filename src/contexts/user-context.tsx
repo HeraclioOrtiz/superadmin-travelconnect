@@ -19,7 +19,11 @@ export interface UserProviderProps {
 }
 
 export function UserProvider({ children }: UserProviderProps): React.JSX.Element {
-  const [state, setState] = React.useState<{ user: User | null; error: string | null; isLoading: boolean }>({
+  const [state, setState] = React.useState<{
+    user: User | null;
+    error: string | null;
+    isLoading: boolean;
+  }>({
     user: null,
     error: null,
     isLoading: true,
@@ -29,20 +33,19 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
     try {
       const { data, error } = await authClient.getUser();
 
-      if (error && error !== 'No token found') {
-        // Solo tratamos como error grave si el error no es "No token found"
-        logger.error(error);
+      if (error === 'Token no encontrado' || error === 'No token found') {
+        logger.warn('[UserContext] No hay token, usuario no logueado');
+        setState({ user: null, error: null, isLoading: false });
+        return;
+      }
+
+      if (error) {
+        logger.error('[UserContext] Error grave en sesión:', error);
         setState({ user: null, error: 'Something went wrong', isLoading: false });
         return;
       }
 
-      const cleanUserData = data ? {
-        ...data,
-        password: undefined,
-        token: undefined,
-      } : null;
-
-      setState({ user: cleanUserData, error: null, isLoading: false });
+      setState({ user: data || null, error: null, isLoading: false });
     } catch (err) {
       logger.error(err);
       setState({ user: null, error: 'Something went wrong', isLoading: false });
@@ -53,13 +56,15 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
     checkSession().catch((err: unknown) => {
       logger.error(err);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <UserContext.Provider value={{ ...state, checkSession }}>{children}</UserContext.Provider>;
+  return (
+    <UserContext.Provider value={{ ...state, checkSession }}>
+      {children}
+    </UserContext.Provider>
+  );
 }
 
-// Hook de consumo seguro
 export function useUserContext(): UserContextValue {
   const context = React.useContext(UserContext);
   if (context === undefined) {

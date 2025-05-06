@@ -17,7 +17,9 @@ export interface NextAppDirEmotionCacheProviderProps {
   children: React.ReactNode;
 }
 
-export default function NextAppDirEmotionCacheProvider(props: NextAppDirEmotionCacheProviderProps): React.JSX.Element {
+export default function NextAppDirEmotionCacheProvider(
+  props: NextAppDirEmotionCacheProviderProps
+): React.JSX.Element {
   const { options, CacheProvider = DefaultCacheProvider, children } = props;
 
   const [registry] = React.useState<Registry>(() => {
@@ -50,7 +52,7 @@ export default function NextAppDirEmotionCacheProvider(props: NextAppDirEmotionC
     }
 
     let styles = '';
-    let dataEmotionAttribute = registry.cache.key;
+    let dataEmotionAttribute = `${registry.cache.key ?? ''}`; // ✅ Inicialización segura
 
     const globals: { name: string; style: string }[] = [];
 
@@ -59,12 +61,12 @@ export default function NextAppDirEmotionCacheProvider(props: NextAppDirEmotionC
 
       if (typeof style !== 'boolean') {
         if (isGlobal) {
-          if (typeof style === 'string') {  // Validación explícita añadida
+          if (typeof style === 'string') {
             globals.push({ name, style });
           }
         } else {
           styles += style;
-          dataEmotionAttribute += ` ${name}`;
+          dataEmotionAttribute = `${dataEmotionAttribute} ${name}`; // ✅ Concatenación segura
         }
       }
     });
@@ -75,12 +77,17 @@ export default function NextAppDirEmotionCacheProvider(props: NextAppDirEmotionC
           ({ name, style }): React.JSX.Element => (
             <style
               dangerouslySetInnerHTML={{ __html: style }}
-              data-emotion={`${registry.cache.key}-global ${name}`}
+              data-emotion={`${String(registry.cache.key)}-global ${name}`}
               key={name}
             />
           )
         )}
-        {styles ? <style dangerouslySetInnerHTML={{ __html: styles }} data-emotion={dataEmotionAttribute} /> : null}
+        {styles ? (
+          <style
+            dangerouslySetInnerHTML={{ __html: styles }}
+            data-emotion={dataEmotionAttribute}
+          />
+        ) : null}
       </React.Fragment>
     );
   });

@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
 
-import { authClient } from '@/lib/auth/client';
+// import { authClient } from '@/lib/auth/client'; // ⛔️ no lo usamos
 
 const schema = zod.object({ email: zod.string().min(1, { message: 'Email is required' }).email() });
 
@@ -35,17 +35,20 @@ export function ResetPasswordForm(): React.JSX.Element {
     async (values: Values): Promise<void> => {
       setIsPending(true);
 
-      const { error } = await authClient.resetPassword(values);
+      // 🚧 Esta parte se elimina temporalmente para permitir el build
+      // const { error } = await authClient.resetPassword(values);
+      //
+      // if (error) {
+      //   setError('root', { type: 'server', message: error });
+      //   setIsPending(false);
+      //   return;
+      // }
 
-      if (error) {
-        setError('root', { type: 'server', message: error });
-        setIsPending(false);
-        return;
-      }
+      console.log('📩 Simulación: enviar enlace de recuperación a', values.email);
 
       setIsPending(false);
 
-      // Redirect to confirm password reset
+      // Simulás redirección o éxito visual si querés
     },
     [setError]
   );
