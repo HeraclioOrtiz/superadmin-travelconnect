@@ -1,35 +1,27 @@
 'use client';
-import { useState } from 'react';
-import {
-  Box,
-  Modal,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material';
+
+import { Box, Modal, useMediaQuery, useTheme } from '@mui/material';
+
 import { ServiciosNavbar } from './ServiciosNavbar';
 import { VistaServicioSeleccionado } from './VistaServicioSeleccionado';
+import { useModalServiciosAgencia } from './useModalServiciosAgencia';
 
 interface ModalServiciosAgenciaProps {
   open: boolean;
   onClose: () => void;
 }
 
-// ✅ Secciones oficiales del modal de servicios
-const SECCIONES = [
-  'APIs de terceros',
-  'Paquetes propios',
-  'CRM Atlas',
-  'Hotelería',
-  'Circuitos',
-  'Vuelos',
-  'MercadoPago',
-];
-
 export const ModalServiciosAgencia = ({
   open,
   onClose,
 }: ModalServiciosAgenciaProps) => {
-  const [seccionSeleccionada, setSeccionSeleccionada] = useState(SECCIONES[0]);
+  const {
+    secciones,
+    seccionActiva,
+    setSeccionActiva,
+    seccionHabilitada,
+  } = useModalServiciosAgencia();
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -58,14 +50,15 @@ export const ModalServiciosAgencia = ({
       >
         {/* 🧭 Navbar */}
         <ServiciosNavbar
-          secciones={SECCIONES}
-          seccionSeleccionada={seccionSeleccionada}
-          onSeleccionarSeccion={setSeccionSeleccionada}
+          secciones={secciones}
+          seccionSeleccionada={seccionActiva}
+          onSeleccionarSeccion={setSeccionActiva}
+          seccionHabilitada={seccionHabilitada}
           onImplementarCambios={handleImplementarCambios}
         />
 
         {/* 📄 Contenido dinámico */}
-        <VistaServicioSeleccionado seccion={seccionSeleccionada} />
+        <VistaServicioSeleccionado seccion={seccionActiva} />
       </Box>
     </Modal>
   );

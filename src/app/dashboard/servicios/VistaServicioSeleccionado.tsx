@@ -1,6 +1,6 @@
 'use client';
 import { Box, Typography } from '@mui/material';
-import { VistasServicios } from './index';
+import { VistasServicios } from './index'; // ✅ import centralizado
 
 interface VistaServicioSeleccionadoProps {
   seccion: string;
@@ -10,13 +10,7 @@ export const VistaServicioSeleccionado = ({ seccion }: VistaServicioSeleccionado
   const Componente = VistasServicios[seccion];
 
   return (
-    <Box
-      sx={{
-        flexGrow: 1,
-        p: 3,
-        overflowY: 'auto',
-      }}
-    >
+    <Box sx={{ flexGrow: 1, p: 3, overflowY: 'auto' }}>
       <Typography variant="h5" gutterBottom>
         {seccion}
       </Typography>

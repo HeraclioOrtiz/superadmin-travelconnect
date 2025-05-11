@@ -1,27 +1,24 @@
 'use client';
 
 import * as React from 'react';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardHeader from '@mui/material/CardHeader';
-import Divider from '@mui/material/Divider';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import Select from '@mui/material/Select';
-import Grid from '@mui/material/Unstable_Grid2';
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Divider,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  Grid,
+} from '@mui/material';
 
-const states = [
-  { value: 'alabama', label: 'Alabama' },
-  { value: 'new-york', label: 'New York' },
-  { value: 'san-francisco', label: 'San Francisco' },
-  { value: 'los-angeles', label: 'Los Angeles' },
-] as const;
+import { useAgenciaActiva } from '@/contexts/features/Agencias/AgenciaActivaProvider';
 
 export function AccountDetailsForm(): React.JSX.Element {
+  const { agencia } = useAgenciaActiva();
+
   return (
     <form
       onSubmit={(event) => {
@@ -29,56 +26,86 @@ export function AccountDetailsForm(): React.JSX.Element {
       }}
     >
       <Card>
-        <CardHeader subheader="The information can be edited" title="Profile" />
+        <CardHeader
+          subheader="Los siguientes datos son los actuales de tu agencia"
+          title="Detalles de la Agencia"
+        />
         <Divider />
         <CardContent>
           <Grid container spacing={3}>
-            <Grid md={6} xs={12}>
+            <Grid item md={6} xs={12}>
               <FormControl fullWidth required>
-                <InputLabel>First name</InputLabel>
-                <OutlinedInput defaultValue="Tomas" label="First name" name="firstName" />
+                <InputLabel shrink sx={{ mt: -1 }}>Nombre de la agencia</InputLabel>
+                <OutlinedInput
+                  defaultValue={agencia?.nombre ?? ''}
+                  label="Nombre de la agencia"
+                  name="nombre"
+                />
               </FormControl>
             </Grid>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel>Last name</InputLabel>
-                <OutlinedInput defaultValue="Novick" label="Last name" name="lastName" />
-              </FormControl>
-            </Grid>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel>Email address</InputLabel>
-                <OutlinedInput defaultValue="tomas@travel.connect" label="Email address" name="email" />
-              </FormControl>
-            </Grid>
-            <Grid md={6} xs={12}>
+
+            <Grid item md={6} xs={12}>
               <FormControl fullWidth>
-                <InputLabel>Phone number</InputLabel>
-                <OutlinedInput label="Phone number" name="phone" type="tel" />
+                <InputLabel shrink sx={{ mt: -1 }}>Email de contacto</InputLabel>
+                <OutlinedInput
+                  defaultValue={agencia?.footer_email ?? ''}
+                  label="Email de contacto"
+                  name="email"
+                />
               </FormControl>
             </Grid>
-            <Grid md={6} xs={12}>
+
+            <Grid item md={6} xs={12}>
               <FormControl fullWidth>
-                <InputLabel>State</InputLabel>
-                <Select defaultValue="BuenosAires" label="State" name="state" variant="outlined">
-                  {states.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
+                <InputLabel shrink sx={{ mt: -1 }}>Teléfono</InputLabel>
+                <OutlinedInput
+                  defaultValue={agencia?.footer_telefono ?? ''}
+                  label="Teléfono"
+                  name="telefono"
+                />
               </FormControl>
             </Grid>
-            <Grid md={6} xs={12}>
+
+            <Grid item md={6} xs={12}>
               <FormControl fullWidth>
-                <InputLabel>City</InputLabel>
-                <OutlinedInput label="City" />
+                <InputLabel shrink sx={{ mt: -1 }}>Dirección</InputLabel>
+                <OutlinedInput
+                  defaultValue={agencia?.footer_direccion ?? ''}
+                  label="Dirección"
+                  name="direccion"
+                />
+              </FormControl>
+            </Grid>
+
+            <Grid item md={6} xs={12}>
+              <FormControl fullWidth>
+                <InputLabel shrink sx={{ mt: -1 }}>Ciudad</InputLabel>
+                <OutlinedInput
+                  defaultValue={agencia?.footer_ciudad ?? ''}
+                  label="Ciudad"
+                  name="ciudad"
+                />
+              </FormControl>
+            </Grid>
+
+            <Grid item md={6} xs={12}>
+              <FormControl fullWidth>
+                <InputLabel shrink sx={{ mt: -1 }}>País</InputLabel>
+                <OutlinedInput
+                  defaultValue={agencia?.footer_pais ?? ''}
+                  label="País"
+                  name="pais"
+                />
               </FormControl>
             </Grid>
           </Grid>
         </CardContent>
         <Divider />
-        
+        <CardActions>
+          <Button type="submit" variant="contained" disabled fullWidth>
+            Guardar cambios (próximamente)
+          </Button>
+        </CardActions>
       </Card>
     </form>
   );

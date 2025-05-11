@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import RouterLink from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -16,6 +18,7 @@ import { paths } from '@/paths';
 import { authClient } from '@/lib/auth/client';
 import { logger } from '@/lib/default-logger';
 import { useUser } from '@/hooks/use-user';
+import { useAgenciaActiva } from '@/contexts/features/Agencias/AgenciaActivaProvider';
 
 export interface UserPopoverProps {
   anchorEl: Element | null;
@@ -25,7 +28,7 @@ export interface UserPopoverProps {
 
 export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): React.JSX.Element {
   const { checkSession } = useUser();
-
+  const { agencia } = useAgenciaActiva();
   const router = useRouter();
 
   const handleSignOut = React.useCallback(async (): Promise<void> => {
@@ -33,18 +36,14 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
       const { error } = await authClient.signOut();
 
       if (error) {
-        logger.error('Sign out error', error);
+        logger.error('Error al cerrar sesión', error);
         return;
       }
 
-      // Refresh the auth state
       await checkSession?.();
-
-      // UserProvider, for this case, will not refresh the router and we need to do it manually
       router.refresh();
-      // After refresh, AuthGuard will handle the redirect
     } catch (err) {
-      logger.error('Sign out error', err);
+      logger.error('Error al cerrar sesión', err);
     }
   }, [checkSession, router]);
 
@@ -56,31 +55,37 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
       open={open}
       slotProps={{ paper: { sx: { width: '240px' } } }}
     >
-      <Box sx={{ p: '16px 20px ' }}>
-        <Typography variant="subtitle1">Sofia Rivers</Typography>
-        <Typography color="text.secondary" variant="body2">
-          sofia.rivers@devias.io
+      <Box sx={{ p: '16px 20px' }}>
+        <Typography variant="subtitle1">
+          {agencia?.nombre ?? 'Agencia desconocida'}
         </Typography>
+        {agencia?.footer_email && (
+          <Typography color="text.secondary" variant="body2">
+            {agencia.footer_email}
+          </Typography>
+        )}
       </Box>
+
       <Divider />
+
       <MenuList disablePadding sx={{ p: '8px', '& .MuiMenuItem-root': { borderRadius: 1 } }}>
         <MenuItem component={RouterLink} href={paths.dashboard.settings} onClick={onClose}>
           <ListItemIcon>
             <GearSixIcon fontSize="var(--icon-fontSize-md)" />
           </ListItemIcon>
-          Settings
+          Configuración
         </MenuItem>
         <MenuItem component={RouterLink} href={paths.dashboard.account} onClick={onClose}>
           <ListItemIcon>
             <UserIcon fontSize="var(--icon-fontSize-md)" />
           </ListItemIcon>
-          Profile
+          Perfil
         </MenuItem>
         <MenuItem onClick={handleSignOut}>
           <ListItemIcon>
             <SignOutIcon fontSize="var(--icon-fontSize-md)" />
           </ListItemIcon>
-          Sign out
+          Cerrar sesión
         </MenuItem>
       </MenuList>
     </Popover>

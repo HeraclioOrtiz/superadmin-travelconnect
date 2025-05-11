@@ -15,6 +15,7 @@ export interface SignUpParams {
 }
 
 const TOKEN_KEY = 'custom-auth-token';
+const USER_KEY = 'usuario';
 
 class AuthClient {
   async signInWithPassword(params: SignInWithPasswordParams): Promise<{ error?: string }> {
@@ -37,6 +38,7 @@ class AuthClient {
 
       const { token, user } = await response.json();
       localStorage.setItem(TOKEN_KEY, token);
+      localStorage.setItem(USER_KEY, JSON.stringify(user)); // ✅ Guardar user con rol
 
       console.log('🟢 Login exitoso:', user);
       return {};
@@ -60,21 +62,22 @@ class AuthClient {
 
   async getUser(): Promise<{ data?: User | null; error?: string }> {
     const token = localStorage.getItem(TOKEN_KEY);
-    if (!token) {
-      return { data: null, error: 'Token no encontrado' };
+    const userRaw = localStorage.getItem(USER_KEY);
+
+    if (!token) return { data: null, error: 'Token no encontrado' };
+    if (!userRaw) return { data: null, error: 'Usuario no encontrado' };
+
+    try {
+      const user: User = JSON.parse(userRaw);
+      return { data: user };
+    } catch {
+      return { data: null, error: 'Error al leer usuario' };
     }
-
-    const user: User = {
-      id: '1',
-      name: 'Admin',
-      email: 'admin@example.com',
-    };
-
-    return { data: user };
   }
 
   async signOut(): Promise<{ error?: string }> {
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
     return {};
   }
 }

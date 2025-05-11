@@ -13,17 +13,22 @@ import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/di
 import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
 
 import { usePopover } from '@/hooks/use-popover';
+import { useAgenciaActiva } from '@/contexts/features/Agencias/AgenciaActivaProvider';
 
 import { MobileNav } from './mobile-nav';
 import { UserPopover } from './user-popover';
 
 export function MainNav(): React.JSX.Element {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
-
   const userPopover = usePopover<HTMLDivElement>();
+  const { agencia } = useAgenciaActiva();
+
+  const logoUrl = agencia?.logo
+    ? `https://travelconnect.com.ar/storage/${agencia.logo}`
+    : '/assets/avatar.png';
 
   return (
-    <React.Fragment>
+    <>
       <Box
         component="header"
         sx={{
@@ -39,23 +44,19 @@ export function MainNav(): React.JSX.Element {
           spacing={2}
           sx={{ alignItems: 'center', justifyContent: 'space-between', minHeight: '64px', px: 2 }}
         >
-          <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-            <IconButton
-              onClick={(): void => {
-                setOpenNav(true);
-              }}
-              sx={{ display: { lg: 'none' } }}
-            >
+          <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
+            <IconButton onClick={() => setOpenNav(true)} sx={{ display: { lg: 'none' } }}>
               <ListIcon />
             </IconButton>
-            <Tooltip title="Busqueda">
+            <Tooltip title="Búsqueda">
               <IconButton>
                 <MagnifyingGlassIcon />
               </IconButton>
             </Tooltip>
           </Stack>
-          <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-            <Tooltip title="Contectos">
+
+          <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
+            <Tooltip title="Contactos">
               <IconButton>
                 <UsersIcon />
               </IconButton>
@@ -70,19 +71,19 @@ export function MainNav(): React.JSX.Element {
             <Avatar
               onClick={userPopover.handleOpen}
               ref={userPopover.anchorRef}
-              src="/assets/avatar.png"
+              src={logoUrl}
               sx={{ cursor: 'pointer' }}
             />
           </Stack>
         </Stack>
       </Box>
-      <UserPopover anchorEl={userPopover.anchorRef.current} onClose={userPopover.handleClose} open={userPopover.open} />
-      <MobileNav
-        onClose={() => {
-          setOpenNav(false);
-        }}
-        open={openNav}
+
+      <UserPopover
+        anchorEl={userPopover.anchorRef.current}
+        onClose={userPopover.handleClose}
+        open={userPopover.open}
       />
-    </React.Fragment>
+      <MobileNav onClose={() => setOpenNav(false)} open={openNav} />
+    </>
   );
 }

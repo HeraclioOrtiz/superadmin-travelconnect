@@ -1,8 +1,8 @@
 'use client';
 import { Typography } from '@mui/material';
 
-// Vistas individuales
-import { VistaPaquetesPropios } from './PaquetesPropios'; // ✅ Importamos componente real
+// ✅ Importación por default corregida del componente real
+import PaquetesPropios from './PaquetesPropios';
 
 export const VistaApisTerceros = () => (
   <Typography variant="body2">
@@ -40,10 +40,10 @@ export const VistaMercadoPago = () => (
   </Typography>
 );
 
-// Diccionario de vistas para el switch dinámico
+// ✅ Diccionario para renderizar vistas dinámicamente
 export const VistasServicios: Record<string, React.FC> = {
   'APIs de terceros': VistaApisTerceros,
-  'Paquetes propios': VistaPaquetesPropios, // ✅ Vinculado correctamente
+  'Paquetes propios': PaquetesPropios,
   'CRM Atlas': VistaCrmAtlas,
   'Hotelería': VistaHoteleria,
   'Circuitos': VistaCircuitos,

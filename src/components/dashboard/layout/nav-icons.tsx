@@ -5,6 +5,7 @@ import { PlugsConnected as PlugsConnectedIcon } from '@phosphor-icons/react/dist
 import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User';
 import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
 import { XSquare } from '@phosphor-icons/react/dist/ssr/XSquare';
+import { Wrench as WrenchIcon } from '@phosphor-icons/react/dist/ssr/Wrench'; // ✅ nuevo
 
 export const navIcons = {
   'chart-pie': ChartPieIcon,
@@ -13,4 +14,5 @@ export const navIcons = {
   'x-square': XSquare,
   user: UserIcon,
   users: UsersIcon,
+  servicios: WrenchIcon, // ✅ agregado
 } as Record<string, Icon>;

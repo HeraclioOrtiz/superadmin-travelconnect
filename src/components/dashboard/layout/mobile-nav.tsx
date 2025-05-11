@@ -4,30 +4,32 @@ import * as React from 'react';
 import RouterLink from 'next/link';
 import { usePathname } from 'next/navigation';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { ArrowSquareUpRight as ArrowSquareUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowSquareUpRight';
 import { CaretUpDown as CaretUpDownIcon } from '@phosphor-icons/react/dist/ssr/CaretUpDown';
 
-import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
 import { isNavItemActive } from '@/lib/is-nav-item-active';
 import { Logo } from '@/components/core/logo';
-
-import { navItems } from './config';
+import { navItems } from '@/config/role-navigation';
 import { navIcons } from './nav-icons';
+import { useUserContext } from '@/contexts/user-context';
+import type { NavItem as NavItemConfig } from '@/config/role-navigation';
 
 export interface MobileNavProps {
   onClose?: () => void;
   open?: boolean;
-  items?: NavItemConfig[];
 }
 
 export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element {
   const pathname = usePathname();
+  const { user, isLoading } = useUserContext();
+
+  if (isLoading || !user) return <></>;
+
+  const visibleNavItems = navItems.filter((item) => item.roles.includes(user.rol));
 
   return (
     <Drawer
@@ -74,33 +76,46 @@ export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element 
         >
           <Box sx={{ flex: '1 1 auto' }}>
             <Typography color="var(--mui-palette-neutral-400)" variant="body2">
-              Workspace
+              Área de Trabajo
             </Typography>
             <Typography color="inherit" variant="subtitle1">
-              Devias
+              Nombre de la Agencia
             </Typography>
           </Box>
           <CaretUpDownIcon />
         </Box>
       </Stack>
+
       <Divider sx={{ borderColor: 'var(--mui-palette-neutral-700)' }} />
+
       <Box component="nav" sx={{ flex: '1 1 auto', p: '12px' }}>
-        {renderNavItems({ pathname, items: navItems })}
+        {renderNavItems({ pathname, items: visibleNavItems })}
       </Box>
+
       <Divider sx={{ borderColor: 'var(--mui-palette-neutral-700)' }} />
-      
     </Drawer>
   );
 }
 
-function renderNavItems({ items = [], pathname }: { items?: NavItemConfig[]; pathname: string }): React.JSX.Element {
-  const children = items.reduce((acc: React.ReactNode[], curr: NavItemConfig): React.ReactNode[] => {
-    const { key, ...item } = curr;
-
-    acc.push(<NavItem key={key} pathname={pathname} {...item} />);
-
-    return acc;
-  }, []);
+function renderNavItems({
+  items = [],
+  pathname,
+}: {
+  items?: NavItemConfig[];
+  pathname: string;
+}): React.JSX.Element {
+  const children = items.map((item) => (
+    <NavItem
+      key={item.href}
+      pathname={pathname}
+      href={item.href}
+      icon={typeof item.icon === 'string' ? item.icon : undefined}
+      matcher={item.matcher}
+      disabled={false}
+      external={false}
+      title={item.label || ''}
+    />
+  ));
 
   return (
     <Stack component="ul" spacing={1} sx={{ listStyle: 'none', m: 0, p: 0 }}>
@@ -109,8 +124,17 @@ function renderNavItems({ items = [], pathname }: { items?: NavItemConfig[]; pat
   );
 }
 
-interface NavItemProps extends Omit<NavItemConfig, 'items'> {
+interface NavItemProps {
+  disabled?: boolean;
+  external?: boolean;
+  href: string;
+  icon?: string;
+  matcher?: {
+    type: 'startsWith' | 'equals';
+    href: string;
+  };
   pathname: string;
+  title: string;
 }
 
 function NavItem({ disabled, external, href, icon, matcher, pathname, title }: NavItemProps): React.JSX.Element {
@@ -145,7 +169,10 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
             color: 'var(--NavItem-disabled-color)',
             cursor: 'not-allowed',
           }),
-          ...(active && { bgcolor: 'var(--NavItem-active-background)', color: 'var(--NavItem-active-color)' }),
+          ...(active && {
+            bgcolor: 'var(--NavItem-active-background)',
+            color: 'var(--NavItem-active-color)',
+          }),
         }}
       >
         <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center', flex: '0 0 auto' }}>

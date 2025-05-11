@@ -9,7 +9,10 @@ import { LocalizationProvider } from '@/components/core/localization-provider';
 import { ThemeProvider } from '@/components/core/theme-provider/theme-provider';
 import { AgenciasProvider } from '@/contexts/features/Agencias/AgenciaProvider';
 import { ModalAgenciaProvider } from '@/contexts/ModalAgenciaProvider';
-import { initMock } from '../lib/init-mock'
+import { AgenciaActivaProvider } from '@/contexts/features/Agencias/AgenciaActivaProvider'; // ✅ Importación agregada
+
+import { initMock } from '../lib/init-mock';
+
 export const viewport = { width: 'device-width', initialScale: 1 } satisfies Viewport;
 
 interface LayoutProps {
@@ -29,7 +32,9 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           <UserProvider>
             <AgenciasProvider>
               <ModalAgenciaProvider>
-                <ThemeProvider>{children}</ThemeProvider>
+                <AgenciaActivaProvider> {/* ✅ Envoltura global */}
+                  <ThemeProvider>{children}</ThemeProvider>
+                </AgenciaActivaProvider>
               </ModalAgenciaProvider>
             </AgenciasProvider>
           </UserProvider>

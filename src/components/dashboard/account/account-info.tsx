@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -8,38 +10,41 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-const user = {
-  name: 'Sofia Rivers',
-  avatar: '/assets/avatar.png',
-  jobTitle: 'Senior Developer',
-  country: 'USA',
-  city: 'Los Angeles',
-  timezone: 'GTM-7',
-} as const;
+import { useAgenciaActiva } from '@/contexts/features/Agencias/AgenciaActivaProvider';
 
 export function AccountInfo(): React.JSX.Element {
+  const { agencia } = useAgenciaActiva();
+
+  const logoUrl = agencia?.logo
+    ? `https://travelconnect.com.ar/storage/${agencia.logo}`
+    : '/assets/avatar.png';
+
   return (
     <Card>
       <CardContent>
         <Stack spacing={2} sx={{ alignItems: 'center' }}>
-          <div>
-            <Avatar src={user.avatar} sx={{ height: '80px', width: '80px' }} />
-          </div>
+          <Avatar src={logoUrl} sx={{ height: '80px', width: '80px' }} />
           <Stack spacing={1} sx={{ textAlign: 'center' }}>
-            <Typography variant="h5">{user.name}</Typography>
-            <Typography color="text.secondary" variant="body2">
-              {user.city} {user.country}
+            <Typography variant="h5">
+              {agencia?.nombre ?? 'Agencia desconocida'}
             </Typography>
-            <Typography color="text.secondary" variant="body2">
-              {user.timezone}
-            </Typography>
+            {(agencia?.footer_ciudad || agencia?.footer_pais) && (
+              <Typography color="text.secondary" variant="body2">
+                {agencia.footer_ciudad ?? ''} {agencia.footer_pais ?? ''}
+              </Typography>
+            )}
+            {agencia?.footer_email && (
+              <Typography color="text.secondary" variant="body2">
+                {agencia.footer_email}
+              </Typography>
+            )}
           </Stack>
         </Stack>
       </CardContent>
       <Divider />
       <CardActions>
-        <Button fullWidth variant="text">
-          Upload picture
+        <Button fullWidth variant="text" disabled>
+          Subir logo (próximamente)
         </Button>
       </CardActions>
     </Card>
