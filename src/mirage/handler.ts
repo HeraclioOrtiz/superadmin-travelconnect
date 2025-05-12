@@ -25,12 +25,12 @@ export function makeServer({ environment = 'development' } = {}) {
         }
 
         // Admin simulado
-        if (email === 'admin@example.com' && password === '123456') {
+        if (email === 'consultas@vaguviajes.com.ar' && password === '123456') {
           return {
             user: {
               id: '1',
               name: 'Admin',
-              email: 'admin@example.com',
+              email: 'consultas@vaguviajes.com.ar',
               rol: 'admin',
               id_agencia: 7,
             },

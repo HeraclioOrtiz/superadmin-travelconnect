@@ -1,9 +1,9 @@
 'use client';
 
-import { Box, Button, Stack, Typography } from '@mui/material';
-import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
+import { Box, Stack, Typography } from '@mui/material';
 
 import { BotonImportarCSV } from '@/components/ConfigAgencia/BotonImportarCSV';
+import { BotonExportarCSV } from '@/components/ConfigAgencia/BotonExportarCSV';
 import { useAgenciaActiva } from '@/contexts/features/Agencias/AgenciaActivaProvider';
 
 const PaquetesPropios = (): React.JSX.Element => {
@@ -38,16 +38,12 @@ const PaquetesPropios = (): React.JSX.Element => {
       </Box>
 
       <Stack direction="row" spacing={4} sx={{ mt: 4 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<CloudDownloadIcon />}
-          sx={{ px: 4, py: 1.5, borderRadius: 2, textTransform: 'none' }}
-        >
-          Exportar archivo
-        </Button>
-
-        {agencia?.id && <BotonImportarCSV agenciaId={agencia.id} />}
+        {agencia?.id && (
+          <>
+            <BotonExportarCSV agenciaId={agencia.id} />
+            <BotonImportarCSV agenciaId={agencia.id} />
+          </>
+        )}
       </Stack>
     </Box>
   );

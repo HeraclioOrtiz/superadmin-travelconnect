@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
-import { Button, Box } from '@mui/material';
+import React, { useRef, useEffect, useState } from 'react';
+import { Button, Box, Snackbar, Alert } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 import { subirArchivoPaquetes } from './paquetespropiosService';
@@ -24,6 +24,10 @@ export const BotonImportarCSV: React.FC<BotonImportarCSVProps> = ({
   onError,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [open, setOpen] = useState(false);
+  const [tipo, setTipo] = useState<'success' | 'error'>('success');
+  const [mensaje, setMensaje] = useState('');
 
   useEffect(() => {
     console.log('🟢 BotonImportarCSV montado');
@@ -57,16 +61,21 @@ export const BotonImportarCSV: React.FC<BotonImportarCSVProps> = ({
       console.log('📨 Respuesta del backend:', response);
 
       if (response.status === 'success') {
-        alert('✅ Importación exitosa');
+        setTipo('success');
+        setMensaje(response.message ?? 'CSV procesado correctamente.');
         onSuccess?.(response.stats);
       } else {
-        alert(`❌ Error: ${response.message}`);
+        setTipo('error');
+        setMensaje(`Error: ${response.message}`);
         onError?.(response.message);
       }
     } catch (error) {
       console.error('💥 Error inesperado en subida:', error);
+      setTipo('error');
+      setMensaje('Error inesperado en la importación.');
     }
 
+    setOpen(true);
     event.target.value = '';
   };
 
@@ -89,6 +98,17 @@ export const BotonImportarCSV: React.FC<BotonImportarCSVProps> = ({
         onChange={handleArchivoSeleccionado}
         style={{ display: 'none' }}
       />
+
+      <Snackbar open={open} autoHideDuration={6000} onClose={() => setOpen(false)}>
+        <Alert
+          onClose={() => setOpen(false)}
+          severity={tipo}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {mensaje}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
