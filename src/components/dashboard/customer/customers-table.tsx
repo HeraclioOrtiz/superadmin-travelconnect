@@ -12,45 +12,63 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import dayjs from 'dayjs';
-import { Customer } from './Customer';
-import { useSelection } from '@/hooks/use-selection';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-
-function noop(): void {
-  // do nothing
-}
+import { useSelection } from '@/hooks/use-selection';
+import { AgenciaBackData } from '@/types/AgenciaBackData';
 
 interface CustomersTableProps {
-  count?: number;
-  page?: number;
-  rows?: Customer[];
-  rowsPerPage?: number;
-  onEdit?: (customer: Customer) => void;
-  onServicios?: (customer: Customer) => void;
-  onEliminar?: (customer: Customer) => void;
+  rows: AgenciaBackData[];
+  count: number;
+  page: number;
+  rowsPerPage: number;
+  onEdit?: (agencia: AgenciaBackData) => void;
+  onServicios?: (agencia: AgenciaBackData) => void;
+  onEliminar?: (agencia: AgenciaBackData) => void;
+  onPageChange: (page: number) => void;
+  onRowsPerPageChange: (rowsPerPage: number) => void;
 }
 
 export function CustomersTable({
-  count = 0,
-  rows = [],
-  page = 0,
-  rowsPerPage = 0,
+  rows,
+  count,
+  page,
+  rowsPerPage,
   onEdit,
   onServicios,
   onEliminar,
+  onPageChange,
+  onRowsPerPageChange,
 }: CustomersTableProps): React.JSX.Element {
-  const rowIds = React.useMemo(() => {
-    return rows.map((customer) => customer.id);
+  const rowIds = React.useMemo(() => rows.map((agencia) => agencia.idAgencia), [rows]);
+  const { selected } = useSelection(rowIds);
+
+  React.useEffect(() => {
+    const ids = rows.map(r => r.idAgencia);
+    const uniqueIds = new Set(ids);
+    if (ids.length !== uniqueIds.size) {
+      console.warn('⚠️ IDs duplicados detectados en CustomersTable:', ids);
+    }
+    if (ids.some(id => !id)) {
+      console.warn('⚠️ IDs nulos o indefinidos en CustomersTable:', ids);
+    }
   }, [rows]);
 
-  const { selectAll, deselectAll, selectOne, deselectOne, selected } = useSelection(rowIds);
+  const handleChangePage = (_event: unknown, newPage: number) => {
+    onPageChange(newPage);
+  };
 
-  const selectedSome = (selected?.size ?? 0) > 0 && (selected?.size ?? 0) < rows.length;
-  const selectedAll = rows.length > 0 && selected?.size === rows.length;
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onRowsPerPageChange(parseInt(event.target.value, 10));
+    onPageChange(0);
+  };
+
+  const paginatedRows = React.useMemo(() => {
+    const start = page * rowsPerPage;
+    return rows.slice(start, start + rowsPerPage);
+  }, [page, rowsPerPage, rows]);
 
   return (
     <Card>
@@ -60,28 +78,27 @@ export function CustomersTable({
             <TableRow>
               <TableCell>Nombre</TableCell>
               <TableCell>Email</TableCell>
-              <TableCell>Fecha de Alta</TableCell>
-              <TableCell>Estado</TableCell>
+              {/* <TableCell>Estado</TableCell> */}
               <TableCell>Modificar</TableCell>
               <TableCell>Servicios</TableCell>
               <TableCell>Eliminar</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => {
-              const isSelected = selected?.has(row.id);
+            {paginatedRows.map((row, index) => {
+              const isSelected = selected?.has(row.idAgencia);
+              const key = row.idAgencia || `row-fallback-${index}`;
 
               return (
-                <TableRow hover key={row.id} selected={isSelected}>
+                <TableRow hover key={key} selected={isSelected}>
                   <TableCell>
                     <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
                       <Avatar src={row.logo} />
                       <Typography variant="subtitle2">{row.nombre}</Typography>
                     </Stack>
                   </TableCell>
-                  <TableCell>{row.email}</TableCell>
-                  <TableCell>{dayjs(row.fechaAlta).format('MMM D, YYYY')}</TableCell>
-                  <TableCell>{row.estado ? 'Activa' : 'Inactiva'}</TableCell>
+                  <TableCell>{row.contacto?.email || '—'}</TableCell>
+                  {/* <TableCell>{row.estado ? 'Activa' : 'Inactiva'}</TableCell> */}
                   <TableCell>
                     <button
                       onClick={() => onEdit?.(row)}
@@ -121,10 +138,10 @@ export function CustomersTable({
       <TablePagination
         component="div"
         count={count}
-        onPageChange={noop}
-        onRowsPerPageChange={noop}
         page={page}
         rowsPerPage={rowsPerPage}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
         rowsPerPageOptions={[5, 10, 25]}
       />
     </Card>

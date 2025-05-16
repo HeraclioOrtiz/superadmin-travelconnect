@@ -38,10 +38,10 @@ const PaquetesPropios = (): React.JSX.Element => {
       </Box>
 
       <Stack direction="row" spacing={4} sx={{ mt: 4 }}>
-        {agencia?.id && (
+        {agencia?.idAgencia && (
           <>
-            <BotonExportarCSV agenciaId={agencia.id} />
-            <BotonImportarCSV agenciaId={agencia.id} />
+            <BotonExportarCSV agenciaId={parseInt(agencia.idAgencia)} />
+            <BotonImportarCSV agenciaId={parseInt(agencia.idAgencia)} />
           </>
         )}
       </Stack>

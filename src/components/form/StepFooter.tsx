@@ -73,50 +73,50 @@ const StepFooter = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <InputFormulario
           label="Facebook"
-          {...register('footer_facebook')}
+          {...register('redes_facebook')}
         />
 
         <InputFormulario
           label="Twitter"
-          {...register('footer_twitter')}
+          {...register('redes_twitter')}
         />
 
         <InputFormulario
           label="Instagram"
-          {...register('footer_instagram')}
+          {...register('redes_instagram')}
         />
 
         <InputFormulario
           label="WhatsApp"
-          {...register('footer_whatsapp')}
+          {...register('redes_whatsapp')}
         />
       </div>
 
-      {/* ----- Contacto ----- */}
+      {/* ----- Contacto y Ubicación ----- */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <InputFormulario
           label="Teléfono"
-          {...register('footer_telefono')}
+          {...register('contacto_telefono')}
         />
 
         <InputFormulario
           label="Email"
-          {...register('footer_email')}
+          {...register('contacto_email')}
         />
 
         <InputFormulario
           label="Dirección"
-          {...register('footer_direccion')}
+          {...register('ubicacion_direccion')}
         />
 
         <InputFormulario
           label="Ciudad"
-          {...register('footer_ciudad')}
+          {...register('ubicacion_ciudad')}
         />
 
         <InputFormulario
           label="País"
-          {...register('footer_pais')}
+          {...register('ubicacion_pais')}
         />
       </div>
     </div>

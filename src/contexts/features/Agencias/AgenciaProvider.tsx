@@ -3,22 +3,22 @@ import React, { createContext, useContext, useMemo } from 'react';
 import useAgenciasState from './state/useAgenciasState';
 import useAgenciasActions from './actions/useAgenciasActions';
 import useAgenciasQueries from './queries/useAgenciasQueries';
-import { Agencia, AgenciasContextState } from './types';
-import { AgenciaFormValues } from './forms';
+import { AgenciasContextState } from '../../../types/types';
+import { AgenciaBackData } from '@/types/AgenciaBackData';
 
 interface AgenciasContextType {
   state: AgenciasContextState;
   actions: {
     fetchAgencias: () => Promise<boolean>;
-    createAgencia: (formData: AgenciaFormValues) => Promise<{ success: boolean; error?: string }>;
-    editAgencia: (formData: AgenciaFormValues & { id: number }) => Promise<{ success: boolean; error?: string }>;
+    createAgencia: (formData: FormData) => Promise<{ success: boolean; error?: string }>;
+    editAgencia: (formData: FormData) => Promise<{ success: boolean; error?: string }>; // ✅ corregido
     deleteAgencia: (id: number) => Promise<{ success: boolean; error?: string }>;
     startAutoRefresh: () => void;
     stopAutoRefresh: () => void;
   };
   queries: {
-    getAgenciaById: (id: string) => Agencia | undefined;
-    filterAgencias: (criterios: Partial<Agencia>) => Agencia[];
+    getAgenciaById: (id: string) => AgenciaBackData | undefined;
+    filterAgencias: (criterios: Partial<AgenciaBackData>) => AgenciaBackData[];
   };
 }
 
@@ -52,8 +52,7 @@ export const AgenciasProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const deleteAgencia = async (id: number): Promise<{ success: boolean; error?: string }> => {
     const result = await actions.deleteAgencia(id);
     if (result.success) {
-      // 🔄 Eliminar del estado local
-      const agenciasActualizadas = state.agencias.filter(a => a.id !== id);
+      const agenciasActualizadas = state.agencias.filter(a => Number(a.idAgencia) !== id);
       setAgencias(agenciasActualizadas);
     }
     return result;
@@ -64,8 +63,8 @@ export const AgenciasProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     actions: {
       fetchAgencias: actions.fetchAgencias,
       createAgencia: actions.createAgencia,
-      editAgencia: actions.editAgencia,
-      deleteAgencia, // ✅ función personalizada que actualiza el estado local
+      editAgencia: actions.editAgencia, // ✅ ya no requiere id explícitamente
+      deleteAgencia,
       startAutoRefresh: () => {},
       stopAutoRefresh: () => {}
     },

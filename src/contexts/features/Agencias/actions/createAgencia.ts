@@ -1,57 +1,35 @@
-import type { AgenciaFormValues, CreateAgenciaResponse } from '../forms';
-import type { AgenciasContextState } from '../types';
-import { transformarAgenciaParaEnvio } from '../transformarAgenciaParaEnvio'; // ajustá la ruta si está en otro lugar
+import type { AgenciasContextState } from '../../../../types/types';
 
 export const createAgencia = async (
-  formData: AgenciaFormValues,
+  formData: FormData,
   contextState: AgenciasContextState,
   stateMethods: { setError: (error: string | null) => void }
-): Promise<CreateAgenciaResponse> => {
+): Promise<{
+  success: boolean;
+  token?: string;
+  user?: unknown;
+  agencia?: unknown;
+  error?: string;
+  statusCode?: number;
+}> => {
   try {
     console.group('[createAgencia] Inicio');
 
-    // 🔍 Log: Datos crudos desde RHF
-    console.log('[createAgencia] Datos crudos desde RHF (AgenciaFormValues):');
-    for (const [clave, valor] of Object.entries(formData)) {
-      const tipo =
-        valor instanceof File ? 'File' :
-        Array.isArray(valor) ? 'Array' :
-        valor instanceof Date ? 'Date' :
-        typeof valor;
-      console.log(`→ ${clave}:`, valor, `(tipo: ${tipo})`);
-    }
-
-    // 1. Transformar datos
-    const datosTransformados = transformarAgenciaParaEnvio(formData);
-    datosTransformados.fecha_creacion = new Date().toISOString();
-
-    // 2. Armado de FormData
-    const formDataToSend = new FormData();
-    for (const [clave, valor] of Object.entries(datosTransformados)) {
-      if (valor !== null) {
-        formDataToSend.append(clave, valor);
-      }
-    }
-
-    // 🔍 Log: FormData a enviar
-    console.log('[createAgencia] FormData a enviar (después de transformación):');
-    Array.from(formDataToSend.entries()).forEach(([clave, valor]) => {
-      const tipo =
-        valor instanceof File ? 'File' :
-        typeof valor;
+    // 🔍 Log: FormData recibido
+    console.log('[createAgencia] FormData recibido:');
+    Array.from(formData.entries()).forEach(([clave, valor]) => {
+      const tipo = valor instanceof File ? 'File' : typeof valor;
       console.log(`→ ${clave}:`, valor, `(tipo: ${tipo})`);
     });
 
-    // 3. Configuración del timeout
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-    // 4. Envío al backend
-    const response = await fetch('https://triptest.com.ar/store_agencia', {
+    const response = await fetch('https://travelconnect.com.ar/store_agencia', {
       method: 'POST',
-      body: formDataToSend,
+      body: formData,
       signal: controller.signal,
-      credentials: 'include'
+      credentials: 'include',
     });
 
     clearTimeout(timeoutId);
@@ -67,19 +45,18 @@ export const createAgencia = async (
       throw new Error(msg);
     }
 
-    if (!data.agencia) {
-      throw new Error('El servidor no devolvió datos de agencia');
+    if (!data.user || !data.token) {
+      throw new Error('Faltan datos esperados del usuario o token');
     }
 
-    console.log('[createAgencia] Éxito', data.agencia);
+    console.log('[createAgencia] Éxito', data);
 
     return {
       success: true,
-      agencia: {
-        ...data.agencia,
-        fecha_creacion: data.agencia.fecha_creacion || new Date().toISOString()
-      },
-      statusCode: response.status
+      user: data.user,
+      token: data.token,
+      agencia: data.agencia, // opcional, si también viene
+      statusCode: response.status,
     };
 
   } catch (error) {
@@ -90,7 +67,7 @@ export const createAgencia = async (
     return {
       success: false,
       error: errorMessage,
-      statusCode: (error as any)?.status || 500
+      statusCode: (error as any)?.status || 500,
     };
   } finally {
     console.groupEnd();

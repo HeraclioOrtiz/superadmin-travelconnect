@@ -2,11 +2,11 @@
 
 import React, { createContext, useContext } from 'react';
 import { useUserContext } from '@/contexts/user-context';
-import { AgenciaBackCorregido } from './AgenciaBackCorregido';
 import { useFetchAgencia } from '@/hooks/useFetchAgencia';
+import { AgenciaBackData } from '../../../types/AgenciaBackData'; // Asegurate de que este archivo exporte la interfaz
 
 interface AgenciaActivaContextValue {
-  agencia: AgenciaBackCorregido | null;
+  agencia: AgenciaBackData | null;
   cargando: boolean;
   error: string | null;
 }
@@ -15,7 +15,7 @@ const AgenciaActivaContext = createContext<AgenciaActivaContextValue | undefined
 
 export const AgenciaActivaProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useUserContext();
-  const idAgencia = user?.id_agencia; // ✅ compatible con admin y superadmin
+  const idAgencia = user?.id_agencia;
 
   const { agencia, cargando, error } = useFetchAgencia(idAgencia);
 

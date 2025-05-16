@@ -1,22 +1,22 @@
 'use client';
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import type { Agencia } from './features/Agencias/types';
+import type { AgenciaBackData } from '@/types/AgenciaBackData';
 
 interface ModalAgenciaContextType {
   isOpen: boolean;
-  datosEdicion: Agencia | null;
-  openModal: (agencia?: Agencia) => void;
+  datosEdicion: AgenciaBackData | null;
+  openModal: (agencia?: AgenciaBackData) => void;
   closeModal: () => void;
-  setDatosEdicion: (agencia: Agencia | null) => void; // ✅ agregado
+  setDatosEdicion: (agencia: AgenciaBackData | null) => void;
 }
 
 const ModalAgenciaContext = createContext<ModalAgenciaContextType | undefined>(undefined);
 
 export const ModalAgenciaProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [datosEdicion, setDatosEdicion] = useState<Agencia | null>(null);
+  const [datosEdicion, setDatosEdicion] = useState<AgenciaBackData | null>(null);
 
-  const openModal = useCallback((agencia?: Agencia) => {
+  const openModal = useCallback((agencia?: AgenciaBackData) => {
     setDatosEdicion(agencia ?? null);
     setIsOpen(true);
   }, []);
@@ -33,7 +33,7 @@ export const ModalAgenciaProvider: React.FC<{ children: React.ReactNode }> = ({ 
         datosEdicion,
         openModal,
         closeModal,
-        setDatosEdicion, // ✅ agregado al value
+        setDatosEdicion,
       }}
     >
       {children}

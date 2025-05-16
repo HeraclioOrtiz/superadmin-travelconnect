@@ -1,16 +1,14 @@
 import { useEffect, useState } from 'react';
-import { AgenciaBackCorregido } from '@/contexts/features/Agencias/AgenciaBackCorregido';
-import { normalizarAgenciaBackData } from '@/contexts/features/Agencias/normalizarAgenciaBackData';
-import { AgenciaBackData } from '@/contexts/features/Agencias/AgenciaBackData';
+import { AgenciaBackData } from '@/types/AgenciaBackData';
 
 export const useFetchAgencia = (
   idAgencia: number | string | undefined
 ): {
-  agencia: AgenciaBackCorregido | null;
+  agencia: AgenciaBackData | null;
   cargando: boolean;
   error: string | null;
 } => {
-  const [agencia, setAgencia] = useState<AgenciaBackCorregido | null>(null);
+  const [agencia, setAgencia] = useState<AgenciaBackData | null>(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,9 +24,8 @@ export const useFetchAgencia = (
         if (!response.ok) throw new Error(`Error ${response.status}`);
 
         const data: AgenciaBackData = await response.json();
-        const normalizado = normalizarAgenciaBackData(data);
-        setAgencia(normalizado);
-        console.log('✅ Agencia normalizada cargada:', normalizado);
+        setAgencia(data);
+        console.log('✅ Agencia cargada sin transformación:', data);
       } catch (err) {
         console.error('❌ Error al cargar agencia:', err);
         setError('Error al cargar la agencia');

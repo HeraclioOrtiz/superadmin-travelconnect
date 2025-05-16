@@ -16,10 +16,12 @@ export const useAgenciaModalHandler = () => {
   const { closeModal, datosEdicion } = useModalAgenciaGlobal();
   const methods = useFormContext<AgenciaFormValues>();
   const { reset, getValues } = methods;
-  const submitAgencia = useSubmitAgencia(datosEdicion ? { id: datosEdicion.id } : undefined);
+  const submitAgencia = useSubmitAgencia(datosEdicion ? { id: Number(datosEdicion.idAgencia) } : undefined);
+
 
   const handleSubmitClick = useCallback(async () => {
     console.groupCollapsed('[Modal] Inicio del proceso de envío');
+
     try {
       const formData = getValues();
 
@@ -33,7 +35,7 @@ export const useAgenciaModalHandler = () => {
       const result = await submitAgencia(formData);
 
       if (!result.success) {
-        throw new Error(result.message ?? 'Error al guardar');
+        throw new Error(result.message ?? 'Error al guardar los datos de la agencia');
       }
 
       setSubmissionState({ status: 'success', message: '¡Datos guardados correctamente!' });
@@ -44,6 +46,7 @@ export const useAgenciaModalHandler = () => {
         setSubmissionState({ status: 'idle' });
       }, 1500);
     } catch (error) {
+      console.error('[Modal] ❌ Error al enviar la agencia:', error);
       setSubmissionState({
         status: 'error',
         message: error instanceof Error ? error.message : 'Error desconocido al guardar',

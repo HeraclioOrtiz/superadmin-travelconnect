@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-import { Agencia, AgenciasContextState } from '../types';
+import { AgenciasContextState } from '../../../../types/types';
+import { AgenciaBackData } from '@/types/AgenciaBackData';
 
 const useAgenciasState = (initialState?: Partial<AgenciasContextState>) => {
   const [state, setState] = useState<AgenciasContextState>({
@@ -11,48 +12,50 @@ const useAgenciasState = (initialState?: Partial<AgenciasContextState>) => {
   });
 
   // --- Optimistic Update Functions --- //
-  const addTempAgencia = useCallback((tempAgencia: Omit<Agencia, 'id'>) => {
-    const tempId = Date.now(); // Usamos timestamp numérico directamente
+  const addTempAgencia = useCallback((tempAgencia: Omit<AgenciaBackData, 'idAgencia'>) => {
+    const tempId = `temp-${Date.now()}`; // ID temporal tipo string
+
+    const agenciaConId: AgenciaBackData = {
+      ...tempAgencia,
+      idAgencia: tempId,
+      estado: tempAgencia.estado ?? true // Valor por defecto si no está definido
+    };
+
     setState(prev => ({
       ...prev,
-      agencias: [...prev.agencias, { 
-        ...tempAgencia,
-        id: tempId, // Ahora es number
-        // Campos requeridos con valores por defecto
-        fecha_creacion: tempAgencia.fecha_alta || new Date().toISOString(),
-        estado: tempAgencia.estado || true
-      }],
+      agencias: [...prev.agencias, agenciaConId],
       loading: true
     }));
+
     return tempId;
   }, []);
 
-  const confirmAgencia = useCallback((tempId: number, realAgencia: Agencia) => {
+  const confirmAgencia = useCallback((tempId: string, realAgencia: AgenciaBackData) => {
     setState(prev => ({
       ...prev,
-      agencias: prev.agencias.map(a => 
-        a.id === tempId ? realAgencia : a
+      agencias: prev.agencias.map(a =>
+        a.idAgencia === tempId ? realAgencia : a
       ),
       loading: false,
       lastUpdated: new Date()
     }));
   }, []);
 
-  const revertTempAgencia = useCallback((tempId: number, error?: string) => {
+  const revertTempAgencia = useCallback((tempId: string, error?: string) => {
     setState(prev => ({
       ...prev,
-      agencias: prev.agencias.filter(a => a.id !== tempId),
+      agencias: prev.agencias.filter(a => a.idAgencia !== tempId),
       loading: false,
       error: error || prev.error
     }));
   }, []);
 
-  // --- Basic State Management --- //
-  const setAgencias = useCallback((agencias: Agencia[]) => {
-    setState(prev => ({ 
-      ...prev, 
+  // --- Basic Setters --- //
+  const setAgencias = useCallback((agencias: AgenciaBackData[]) => {
+    setState(prev => ({
+      ...prev,
       agencias,
-      lastUpdated: new Date() 
+      lastUpdated: new Date()
     }));
   }, []);
 

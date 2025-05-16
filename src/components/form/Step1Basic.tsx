@@ -25,6 +25,13 @@ const Step1Basic = () => {
     setValue,
   });
 
+  const faviconPreview = usePrevisualizacionArchivo({
+    campo: 'favicon',
+    archivo: watch('favicon'),
+    urlOriginal: '', // <- si tenés url de favicon en el futuro
+    setValue,
+  });
+
   return (
     <Box
       sx={{
@@ -35,7 +42,7 @@ const Step1Basic = () => {
         },
       }}
     >
-      {/* ======= Sección: Información básica ======= */}
+      {/* ======= Información Básica ======= */}
       <Box component="section">
         <Typography variant="h6" component="h2" sx={{ mb: 3, fontWeight: 600 }}>
           Información Básica
@@ -65,7 +72,7 @@ const Step1Basic = () => {
 
       <Divider sx={{ my: 4 }} />
 
-      {/* ======= Sección: Quiénes Somos ======= */}
+      {/* ======= Quiénes Somos ======= */}
       <Box component="section">
         <Typography variant="h6" component="h2" sx={{ mb: 3, fontWeight: 600 }}>
           Quiénes Somos
@@ -85,7 +92,7 @@ const Step1Basic = () => {
 
       <Divider sx={{ my: 4 }} />
 
-      {/* ======= Sección: Archivos ======= */}
+      {/* ======= Archivos ======= */}
       <Box component="section">
         <Typography variant="h6" component="h2" sx={{ mb: 3, fontWeight: 600 }}>
           Archivos
@@ -114,6 +121,50 @@ const Step1Basic = () => {
                 }}
               />
             )}
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <BotonImportarArchivo
+              label="Importar Favicon"
+              accept="image/*"
+              multiple={false}
+              onChange={faviconPreview.manejarCambio}
+              register={register('favicon')}
+            />
+            {faviconPreview.urlPreview && (
+              <Box
+                component="img"
+                src={faviconPreview.urlPreview}
+                alt="Favicon"
+                sx={{
+                  width: 64,
+                  height: 64,
+                  objectFit: 'contain',
+                  border: '1px solid #ccc',
+                  borderRadius: 2,
+                  mb: 2,
+                }}
+              />
+            )}
+          </Grid>
+        </Grid>
+      </Box>
+
+      <Divider sx={{ my: 4 }} />
+
+      {/* ======= Documentos Legales ======= */}
+      <Box component="section">
+        <Typography variant="h6" component="h2" sx={{ mb: 3, fontWeight: 600 }}>
+          Documentos Legales
+        </Typography>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <BotonImportarArchivo
+              label="Términos y Condiciones"
+              accept=".pdf,.doc,.docx"
+              multiple={false}
+              register={register('terminos_y_condiciones')}
+            />
           </Grid>
         </Grid>
       </Box>

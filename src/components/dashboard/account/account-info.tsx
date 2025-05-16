@@ -15,9 +15,7 @@ import { useAgenciaActiva } from '@/contexts/features/Agencias/AgenciaActivaProv
 export function AccountInfo(): React.JSX.Element {
   const { agencia } = useAgenciaActiva();
 
-  const logoUrl = agencia?.logo
-    ? `https://travelconnect.com.ar/storage/${agencia.logo}`
-    : '/assets/avatar.png';
+  const logoUrl = agencia?.logo ?? '/assets/avatar.png';
 
   return (
     <Card>
@@ -28,14 +26,14 @@ export function AccountInfo(): React.JSX.Element {
             <Typography variant="h5">
               {agencia?.nombre ?? 'Agencia desconocida'}
             </Typography>
-            {(agencia?.footer_ciudad || agencia?.footer_pais) && (
+            {(agencia?.ubicacion?.ciudad || agencia?.ubicacion?.pais) && (
               <Typography color="text.secondary" variant="body2">
-                {agencia.footer_ciudad ?? ''} {agencia.footer_pais ?? ''}
+                {agencia.ubicacion?.ciudad ?? ''} {agencia.ubicacion?.pais ?? ''}
               </Typography>
             )}
-            {agencia?.footer_email && (
+            {agencia?.contacto?.email && (
               <Typography color="text.secondary" variant="body2">
-                {agencia.footer_email}
+                {agencia.contacto.email}
               </Typography>
             )}
           </Stack>

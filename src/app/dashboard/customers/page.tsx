@@ -10,10 +10,9 @@ import AgenciaModal from '@/components/form/AgenciaModal';
 import { useAgenciasContext } from '@/contexts/features/Agencias/AgenciaProvider';
 import { useModalAgenciaGlobal } from '@/contexts/ModalAgenciaProvider';
 
-import { agenciasToCustomers } from './agenciasToCustomers';
 import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
 import { CustomersTable } from '@/components/dashboard/customer/customers-table';
-import type { Customer } from '@/components/dashboard/customer/Customer';
+import { AgenciaBackData } from '@/types/AgenciaBackData';
 
 import { ModalServiciosAgencia } from '../../../components/ConfigAgencia/ModalServiciosAgencia';
 import { useModalServiciosAgencia } from './useModalServiciosAgencia';
@@ -32,38 +31,33 @@ export default function Page(): React.JSX.Element {
 
   React.useEffect(() => {
     actions.fetchAgencias();
-  }, []);
+  }, [actions]);
 
-  const customers = agenciasToCustomers(agencias);
-  const page = 0;
-  const rowsPerPage = 5;
-  const paginatedCustomers = applyPagination(customers, page, rowsPerPage);
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const handleAbrirCreacion = () => {
     setDatosEdicion(null);
     openModal();
   };
 
-  const handleEditarAgencia = (customer: Customer) => {
-    const agenciaOriginal = agencias.find((a) => a.id === customer.id);
+  const handleEditarAgencia = (agencia: AgenciaBackData) => {
+    const agenciaOriginal = agencias.find((a) => a.idAgencia === agencia.idAgencia);
     if (agenciaOriginal) {
-      console.log("Datos de Customer:", customer);
-      console.log("Agencia encontrada:", agenciaOriginal);
-      setDatosEdicion(agenciaOriginal);
-      openModal();
+      openModal(agenciaOriginal);
     } else {
-      console.log("No se encontró una agencia con el ID proporcionado:", customer.id);
+      console.warn("No se encontró la agencia para editar:", agencia.idAgencia);
     }
   };
 
-  const handleEliminarAgencia = async (customer: Customer) => {
-    const confirmado = window.confirm(`¿Estás seguro de que querés eliminar la agencia "${customer.nombre}"?`);
+  const handleEliminarAgencia = async (agencia: AgenciaBackData) => {
+    const confirmado = window.confirm(`¿Estás seguro de que querés eliminar la agencia "${agencia.nombre}"?`);
     if (!confirmado) return;
 
-    const result = await actions.deleteAgencia(customer.id);
+    const result = await actions.deleteAgencia(Number(agencia.idAgencia));
 
     if (result.success) {
-      console.log(`✅ Agencia eliminada: ${customer.nombre}`);
+      console.log(`✅ Agencia eliminada: ${agencia.nombre}`);
     } else {
       console.error(`❌ Error eliminando agencia: ${result.error}`);
     }
@@ -89,13 +83,15 @@ export default function Page(): React.JSX.Element {
       <CustomersFilters />
 
       <CustomersTable
-        count={paginatedCustomers.length}
+        rows={agencias}
+        count={agencias.length}
         page={page}
-        rows={paginatedCustomers}
         rowsPerPage={rowsPerPage}
         onEdit={handleEditarAgencia}
         onServicios={abrirModalServicios}
-        onEliminar={handleEliminarAgencia} // ✅ conexión hecha
+        onEliminar={handleEliminarAgencia}
+        onPageChange={setPage}
+        onRowsPerPageChange={setRowsPerPage}
       />
 
       {isOpen && <AgenciaModal />}
@@ -108,8 +104,4 @@ export default function Page(): React.JSX.Element {
       )}
     </Stack>
   );
-}
-
-function applyPagination(rows: Customer[], page: number, rowsPerPage: number): Customer[] {
-  return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 }

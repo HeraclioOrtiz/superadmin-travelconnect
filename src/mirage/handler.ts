@@ -134,6 +134,9 @@ export function makeServer({ environment = 'development' } = {}) {
 
       this.passthrough('https://travelconnect.com.ar/**');
       this.passthrough();
+      this.passthrough('https://triptest.com.ar/store_agencia');
+this.passthrough('https://triptest.com.ar/update_agencia');
+
     },
   });
 }

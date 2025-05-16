@@ -3,13 +3,13 @@ import { createAgencia } from './createAgencia';
 import { editAgencia } from './editAgencia';
 import { deleteAgencia as deleteAgenciaAction } from './deleteAgencia';
 import { fetchAgencias } from './fetchAgencias';
-import type { Agencia, AgenciasContextState } from '../types';
-import type { AgenciaFormValues } from '../forms';
+import type { AgenciasContextState } from '../../../../types/types';
+import type { AgenciaBackData } from '@/types/AgenciaBackData';
 
 const useAgenciasActions = (
   state: AgenciasContextState,
   stateMethods: {
-    setAgencias: (agencias: Agencia[]) => void;
+    setAgencias: (agencias: AgenciaBackData[]) => void;
     setError: (error: string | null) => void;
   }
 ) => {
@@ -25,7 +25,7 @@ const useAgenciasActions = (
   }, [stateMethods]);
 
   const handleCreateAgencia = useCallback(async (
-    formData: AgenciaFormValues
+    formData: FormData
   ): Promise<{ success: boolean; error?: string }> => {
     try {
       const creationResult = await createAgencia(formData, state, {
@@ -55,7 +55,7 @@ const useAgenciasActions = (
   }, [state, stateMethods, cargarAgencias]);
 
   const handleEditAgencia = useCallback(async (
-    formData: AgenciaFormValues & { id: number }
+    formData: FormData
   ): Promise<{ success: boolean; error?: string }> => {
     try {
       const updateResult = await editAgencia(formData, state, {
@@ -77,10 +77,7 @@ const useAgenciasActions = (
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Error desconocido';
       stateMethods.setError(message);
-      return {
-        success: false,
-        error: message
-      };
+      return { success: false, error: message };
     }
   }, [state, stateMethods, cargarAgencias]);
 
@@ -88,7 +85,7 @@ const useAgenciasActions = (
     id: number
   ): Promise<{ success: boolean; error?: string }> => {
     try {
-      const result = await deleteAgenciaAction(id, state, {
+      const result = await deleteAgenciaAction(id, {
         setError: stateMethods.setError
       });
 
@@ -96,8 +93,9 @@ const useAgenciasActions = (
         return { success: false, error: result.error };
       }
 
-      // 🧹 Actualizar lista local sin refetch
-      const agenciasActualizadas = state.agencias.filter(a => a.id !== id);
+      const agenciasActualizadas = state.agencias.filter(
+        a => a.idAgencia !== id.toString()
+      );
       stateMethods.setAgencias(agenciasActualizadas);
 
       return { success: true };

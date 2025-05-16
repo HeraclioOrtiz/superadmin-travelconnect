@@ -1,6 +1,6 @@
-import Step1Basic from './Step1Basic'; 
+import Step1Basic from './Step1Basic';
 import StepDatosGenerales from './StepDatosGenerales';
-import StepHeader from './StepHeader'
+import StepHeader from './StepHeader';
 import StepBuscador from './StepBuscador';
 import StepPublicidadCliente from './StepPublicidadCliente';
 import StepTarjetas from './StepTarjetas';
@@ -9,24 +9,25 @@ import StepFooter from './StepFooter';
 
 export const stepsConfig = [
   {
-    title: "Datos Principales",
-    description: "Información básica y apariencia inicial",
+    title: 'Datos Principales',
+    description: 'Información básica de la agencia',
     component: Step1Basic,
     fields: [
       'estado',
       'nombre',
-      'password',
       'dominio',
+      'password',
+      'logo',
+      'favicon',
       'quienes_somos_es',
       'quienes_somos_en',
       'quienes_somos_pt',
-      'logo',
-      
-    ]
+      'terminos_y_condiciones',
+    ],
   },
   {
-    title: "Datos Generales",
-    description: "Estilos tipográficos y paleta de colores base",
+    title: 'Datos Generales',
+    description: 'Estilos tipográficos y colores base',
     component: StepDatosGenerales,
     fields: [
       'tipografia_agencia',
@@ -34,23 +35,23 @@ export const stepsConfig = [
       'color_fondo_app',
       'color_principal',
       'color_secundario',
-      'color_terciario'
-    ]
+      'color_terciario',
+    ],
   },
   {
-    title: "Header",
-    description: "Personalización del encabezado",
+    title: 'Header',
+    description: 'Personalización del encabezado',
     component: StepHeader,
     fields: [
       'header_imagen_background',
       'header_imagen_background_opacidad',
       'header_video_background',
-      'header_video_background_opacidad'
-    ]
+      'header_video_background_opacidad',
+    ],
   },
   {
-    title: "Buscador",
-    description: "Estilo y comportamiento del buscador",
+    title: 'Buscador',
+    description: 'Estilo del buscador de paquetes',
     component: StepBuscador,
     fields: [
       'buscador_tipografia',
@@ -59,13 +60,13 @@ export const stepsConfig = [
       'buscador_color_primario',
       'buscador_color_secundario',
       'buscador_color_terciario',
-      'buscador_inputColor',         // 🆕 Agregado
-      'buscador_inputFondoColor'     // 🆕 Agregado
-    ]
+      'buscador_inputColor',
+      'buscador_inputFondoColor',
+    ],
   },
   {
-    title: "Publicidad Cliente",
-    description: "Configuración de espacios publicitarios",
+    title: 'Publicidad Cliente',
+    description: 'Configuración visual del área publicitaria',
     component: StepPublicidadCliente,
     fields: [
       'publicidad_existe',
@@ -76,12 +77,12 @@ export const stepsConfig = [
       'publicidad_color_terciario',
       'publicidad_imagen_1',
       'publicidad_imagen_2',
-      'publicidad_imagen_3'
-    ]
+      'publicidad_imagen_3',
+    ],
   },
   {
-    title: "Tarjetas",
-    description: "Diseño de tarjetas de contenido",
+    title: 'Tarjetas',
+    description: 'Diseño visual de las tarjetas de contenido',
     component: StepTarjetas,
     fields: [
       'tarjetas_titulo',
@@ -91,24 +92,24 @@ export const stepsConfig = [
       'tarjetas_tipografia_color_contenido',
       'tarjetas_color_primario',
       'tarjetas_color_secundario',
-      'tarjetas_color_terciario'
-    ]
+      'tarjetas_color_terciario',
+    ],
   },
   {
-    title: "Banner de Registro",
-    description: "Personalización del banner de CTA",
+    title: 'Banner de Registro',
+    description: 'Personalización del banner de registro',
     component: StepBannerRegistro,
     fields: [
       'banner_registro_titulo',
       'banner_registro_tipografia_color',
       'banner_registro_color_primario',
       'banner_registro_color_secundario',
-      'banner_registro_color_terciario'
-    ]
+      'banner_registro_color_terciario',
+    ],
   },
   {
-    title: "Footer",
-    description: "Configuración del pie de página",
+    title: 'Footer',
+    description: 'Pie de página, redes y contacto',
     component: StepFooter,
     fields: [
       'footer_texto',
@@ -125,9 +126,14 @@ export const stepsConfig = [
       'footer_email',
       'footer_direccion',
       'footer_ciudad',
-      'footer_pais'
-    ]
-  }
+      'footer_pais',
+      'contacto_email',
+      'contacto_telefono',
+      'ubicacion_direccion',
+      'ubicacion_ciudad',
+      'ubicacion_pais',
+    ],
+  },
 ] as const;
 
 export type AgenciaFormFields = typeof stepsConfig[number]['fields'][number];

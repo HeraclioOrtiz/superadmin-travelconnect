@@ -21,21 +21,22 @@ export const useAgenciaForm = () => {
   const { reset } = methods;
 
   useEffect(() => {
-    // 🔄 Cuando se abre el modal, reiniciamos el estado de reset
     if (isOpen) setIsResetDone(false);
   }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen || isResetDone) return;
 
+    console.log('[useAgenciaForm] 🧪 datosEdicion recibido:', datosEdicion);
+
     if (datosEdicion) {
       const { valores, urlsAgencia } = adaptarAgenciaParaEdicion(datosEdicion);
-      console.log('[useAgenciaForm] ✅ Modo edición, cargando datos:', valores);
+      console.log('[useAgenciaForm] ✅ Modo edición, cargando valores:', valores);
       reset(valores);
       urlsRef.current = urlsAgencia;
       setIsResetDone(true);
     } else {
-      console.log('[useAgenciaForm] 🧼 Modo creación, reseteando a default');
+      console.log('[useAgenciaForm] 🧼 Modo creación, usando default');
       reset(defaultAgenciaFormValues);
       urlsRef.current = null;
       setIsResetDone(true);

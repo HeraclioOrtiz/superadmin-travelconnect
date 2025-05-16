@@ -1,25 +1,29 @@
 import type { AgenciaFormValues } from './forms';
 
+/**
+ * Transforma los valores del formulario en un objeto FormData
+ * para ser compatible con endpoints Laravel que esperan archivos y texto.
+ */
 export function transformarAgenciaParaEnvio(
   datos: AgenciaFormValues
-): Record<string, string | File | null> {
-  const resultado: Record<string, string | File | null> = {};
+): FormData {
+  const formData = new FormData();
 
   for (const [clave, valor] of Object.entries(datos)) {
     if (valor instanceof File) {
-      resultado[clave] = valor;
+      formData.append(clave, valor);
     } else if (typeof valor === 'boolean') {
-      resultado[clave] = valor ? '1' : '0';
+      formData.append(clave, valor ? '1' : '0');
     } else if (valor instanceof Date) {
-      resultado[clave] = valor.toISOString();
+      formData.append(clave, valor.toISOString());
     } else if (Array.isArray(valor)) {
-      resultado[clave] = JSON.stringify(valor);
-    } else if (valor === undefined) {
-      resultado[clave] = null;
+      formData.append(clave, JSON.stringify(valor));
+    } else if (valor === undefined || valor === null) {
+      formData.append(clave, '');
     } else {
-      resultado[clave] = valor ?? null;
+      formData.append(clave, valor.toString());
     }
   }
 
-  return resultado;
+  return formData;
 }

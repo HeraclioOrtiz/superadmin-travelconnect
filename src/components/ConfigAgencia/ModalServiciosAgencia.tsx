@@ -3,7 +3,8 @@
 import { Box, Modal, useMediaQuery, useTheme } from '@mui/material';
 
 import { ServiciosNavbar } from './ServiciosNavbar';
-import { VistaServicioSeleccionado } from './VistaServicioSeleccionado';
+// Import corregido a ruta absoluta con alias
+import { VistaServicioSeleccionado } from '@/app/dashboard/servicios/VistaServicioSeleccionado';
 import { useModalServiciosAgencia } from './useModalServiciosAgencia';
 
 interface ModalServiciosAgenciaProps {

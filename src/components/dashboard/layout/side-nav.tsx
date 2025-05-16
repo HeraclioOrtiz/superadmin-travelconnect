@@ -26,7 +26,7 @@ export function SideNav(): React.JSX.Element {
   if (isLoading || !user) return <></>;
 
   const visibleNavItems = navItems.filter((item) => item.roles.includes(user.rol));
-  const logoUrl = agencia?.logo ? `https://travelconnect.com.ar/storage/${agencia.logo}` : '/assets/avatar.png';
+  const logoUrl = agencia?.logo ?? '/assets/avatar.png';
 
   return (
     <Box

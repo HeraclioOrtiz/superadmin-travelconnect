@@ -1,4 +1,4 @@
-import { Agencia } from '../types';
+import { Agencia } from '../../../../types/types';
 
 const useAgenciasQueries = (agencias: Agencia[]) => {
   /**

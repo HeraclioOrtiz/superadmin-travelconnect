@@ -4,32 +4,32 @@ import { useFormContext, Controller } from 'react-hook-form';
 import InputFormulario from './InputFormulario';
 import SelectorColorCampo from './SelectorCampoColor';
 import BotonImportarArchivo from './ImportButton';
-import { useModalAgenciaGlobal } from '@/contexts/ModalAgenciaProvider';
+import { useAgenciaForm } from './hooks/useAgenciaForm';
 import { usePrevisualizacionArchivo } from './hooks/usePrevisualizacionArchivo';
 import { Box } from '@mui/material';
 
 const StepPublicidadCliente = () => {
   const { register, watch, setValue, control } = useFormContext();
-  const { datosEdicion } = useModalAgenciaGlobal();
+  const { urlsAgencia } = useAgenciaForm();
 
   const preview1 = usePrevisualizacionArchivo({
     campo: 'publicidad_imagen_1',
     archivo: watch('publicidad_imagen_1'),
-    urlOriginal: datosEdicion?.publicidad_imagen_1 ?? null,
+    urlOriginal: urlsAgencia?.publicidadUrls?.[0] ?? null,
     setValue,
   });
 
   const preview2 = usePrevisualizacionArchivo({
     campo: 'publicidad_imagen_2',
     archivo: watch('publicidad_imagen_2'),
-    urlOriginal: datosEdicion?.publicidad_imagen_2 ?? null,
+    urlOriginal: urlsAgencia?.publicidadUrls?.[1] ?? null,
     setValue,
   });
 
   const preview3 = usePrevisualizacionArchivo({
     campo: 'publicidad_imagen_3',
     archivo: watch('publicidad_imagen_3'),
-    urlOriginal: datosEdicion?.publicidad_imagen_3 ?? null,
+    urlOriginal: urlsAgencia?.publicidadUrls?.[2] ?? null,
     setValue,
   });
 

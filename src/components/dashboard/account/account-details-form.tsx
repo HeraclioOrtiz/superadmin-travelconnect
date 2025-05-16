@@ -48,7 +48,7 @@ export function AccountDetailsForm(): React.JSX.Element {
               <FormControl fullWidth>
                 <InputLabel shrink sx={{ mt: -1 }}>Email de contacto</InputLabel>
                 <OutlinedInput
-                  defaultValue={agencia?.footer_email ?? ''}
+                  defaultValue={agencia?.contacto.email ?? ''}
                   label="Email de contacto"
                   name="email"
                 />
@@ -59,7 +59,7 @@ export function AccountDetailsForm(): React.JSX.Element {
               <FormControl fullWidth>
                 <InputLabel shrink sx={{ mt: -1 }}>Teléfono</InputLabel>
                 <OutlinedInput
-                  defaultValue={agencia?.footer_telefono ?? ''}
+                  defaultValue={agencia?.contacto.telefono ?? ''}
                   label="Teléfono"
                   name="telefono"
                 />
@@ -70,7 +70,7 @@ export function AccountDetailsForm(): React.JSX.Element {
               <FormControl fullWidth>
                 <InputLabel shrink sx={{ mt: -1 }}>Dirección</InputLabel>
                 <OutlinedInput
-                  defaultValue={agencia?.footer_direccion ?? ''}
+                  defaultValue={agencia?.ubicacion.direccion ?? ''}
                   label="Dirección"
                   name="direccion"
                 />
@@ -81,7 +81,7 @@ export function AccountDetailsForm(): React.JSX.Element {
               <FormControl fullWidth>
                 <InputLabel shrink sx={{ mt: -1 }}>Ciudad</InputLabel>
                 <OutlinedInput
-                  defaultValue={agencia?.footer_ciudad ?? ''}
+                  defaultValue={agencia?.ubicacion.ciudad ?? ''}
                   label="Ciudad"
                   name="ciudad"
                 />
@@ -92,7 +92,7 @@ export function AccountDetailsForm(): React.JSX.Element {
               <FormControl fullWidth>
                 <InputLabel shrink sx={{ mt: -1 }}>País</InputLabel>
                 <OutlinedInput
-                  defaultValue={agencia?.footer_pais ?? ''}
+                  defaultValue={agencia?.ubicacion.pais ?? ''}
                   label="País"
                   name="pais"
                 />

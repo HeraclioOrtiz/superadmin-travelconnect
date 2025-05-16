@@ -1,8 +1,10 @@
 import { useAgenciasContext } from '@/contexts/features/Agencias/AgenciaProvider';
 import type { AgenciaFormValues } from '@/contexts/features/Agencias/forms';
-import type { Agencia } from '@/contexts/features/Agencias/types'; // ✅ Usamos Agencia en lugar de AgenciaBackData
+import { transformarAgenciaParaEnvio } from '@/contexts/features/Agencias/transformarAgenciaParaEnvio';
 
-export const useSubmitAgencia = (datosEdicion?: Pick<Agencia, 'id'>) => {
+type AgenciaId = { id: number };
+
+export const useSubmitAgencia = (datosEdicion?: AgenciaId) => {
   const context = useAgenciasContext();
   if (!context) {
     throw new Error('useAgenciasContext debe usarse dentro de AgenciasProvider');
@@ -13,12 +15,6 @@ export const useSubmitAgencia = (datosEdicion?: Pick<Agencia, 'id'>) => {
 
     try {
       console.log('🔹 Paso 1/5: Datos recibidos del formulario', JSON.parse(JSON.stringify(formData)));
-      console.log('🔹 Paso 2/5: Contexto disponible?', !!context);
-      console.log('🔹 Paso 3/5: Acciones disponibles?', {
-        createAgencia: typeof context.actions?.createAgencia,
-        editAgencia: typeof context.actions?.editAgencia,
-        fetchAgencias: typeof context.actions?.fetchAgencias,
-      });
 
       if (!formData || Object.keys(formData).length === 0) {
         throw new Error('Datos del formulario vacíos');
@@ -30,13 +26,18 @@ export const useSubmitAgencia = (datosEdicion?: Pick<Agencia, 'id'>) => {
         throw new Error('Timeout: La acción tardó demasiado');
       }, 10000);
 
+      const datosTransformados = transformarAgenciaParaEnvio(formData);
+
       let result;
       if (datosEdicion?.id) {
         console.log('🛠 Modo edición activado');
-        result = await context.actions.editAgencia({ ...formData, id: datosEdicion.id });
+        const datosConId = new FormData();
+        datosTransformados.forEach((valor, clave) => datosConId.append(clave, valor));
+        datosConId.append('id', datosEdicion.id.toString());
+        result = await context.actions.editAgencia(datosConId);
       } else {
         console.log('🆕 Modo creación activado');
-        result = await context.actions.createAgencia(formData);
+        result = await context.actions.createAgencia(datosTransformados);
       }
 
       clearTimeout(timeout);

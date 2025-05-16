@@ -59,9 +59,9 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
         <Typography variant="subtitle1">
           {agencia?.nombre ?? 'Agencia desconocida'}
         </Typography>
-        {agencia?.footer_email && (
+        {agencia?.contacto.email && (
           <Typography color="text.secondary" variant="body2">
-            {agencia.footer_email}
+            {agencia.contacto.email}
           </Typography>
         )}
       </Box>

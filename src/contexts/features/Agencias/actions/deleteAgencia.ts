@@ -1,8 +1,6 @@
-import type { AgenciasContextState } from '../types';
-
+// contexts/features/Agencias/actions/deleteAgencia.ts
 export const deleteAgencia = async (
   id: number,
-  contextState: AgenciasContextState,
   stateMethods: { setError: (error: string | null) => void }
 ): Promise<{
   success: boolean;
@@ -19,7 +17,7 @@ export const deleteAgencia = async (
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-    const response = await fetch(`https://triptest.com.ar/agencias/${id}`, {
+    const response = await fetch(`https://travelconnect.com.ar/agencias/${id}`, {
       method: 'DELETE',
       signal: controller.signal,
       credentials: 'include'
@@ -29,12 +27,12 @@ export const deleteAgencia = async (
 
     const data = await response.json().catch(() => ({}));
 
-    if (!response.ok || data.error || data.message) {
-      const msg = data.error || data.message || `Error HTTP ${response.status}`;
+    if (!response.ok || data.error) {
+      const msg = data.error || `Error HTTP ${response.status}`;
       throw new Error(msg);
     }
 
-    console.log('[deleteAgencia] Éxito', data);
+    console.log('[deleteAgencia] Éxito:', data.message || 'Agencia eliminada');
 
     return {
       success: true,

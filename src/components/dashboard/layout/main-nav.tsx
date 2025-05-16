@@ -23,9 +23,7 @@ export function MainNav(): React.JSX.Element {
   const userPopover = usePopover<HTMLDivElement>();
   const { agencia } = useAgenciaActiva();
 
-  const logoUrl = agencia?.logo
-    ? `https://travelconnect.com.ar/storage/${agencia.logo}`
-    : '/assets/avatar.png';
+  const logoUrl = agencia?.logo ?? '/assets/avatar.png';
 
   return (
     <>
