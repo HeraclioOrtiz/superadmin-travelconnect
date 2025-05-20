@@ -10,12 +10,12 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-import { useAgenciaActiva } from '@/contexts/features/Agencias/AgenciaActivaProvider';
+import { useAgenciaEdicion } from '@/contexts/features/Agencias/useAgenciaEdicion';
 
 export function AccountInfo(): React.JSX.Element {
-  const { agencia } = useAgenciaActiva();
+  const { values } = useAgenciaEdicion();
 
-  const logoUrl = agencia?.logo ?? '/assets/avatar.png';
+  const logoUrl = '/assets/avatar.png'; // ⚠️ Placeholder (aún no editable dinámicamente)
 
   return (
     <Card>
@@ -24,16 +24,16 @@ export function AccountInfo(): React.JSX.Element {
           <Avatar src={logoUrl} sx={{ height: '80px', width: '80px' }} />
           <Stack spacing={1} sx={{ textAlign: 'center' }}>
             <Typography variant="h5">
-              {agencia?.nombre ?? 'Agencia desconocida'}
+              {values.nombre || 'Agencia desconocida'}
             </Typography>
-            {(agencia?.ubicacion?.ciudad || agencia?.ubicacion?.pais) && (
+            {(values.ubicacion_ciudad || values.ubicacion_pais) && (
               <Typography color="text.secondary" variant="body2">
-                {agencia.ubicacion?.ciudad ?? ''} {agencia.ubicacion?.pais ?? ''}
+                {values.ubicacion_ciudad || ''} {values.ubicacion_pais || ''}
               </Typography>
             )}
-            {agencia?.contacto?.email && (
+            {values.contacto_email && (
               <Typography color="text.secondary" variant="body2">
-                {agencia.contacto.email}
+                {values.contacto_email}
               </Typography>
             )}
           </Stack>

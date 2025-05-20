@@ -18,17 +18,20 @@ const Step1Basic = () => {
   const { register, watch, setValue } = useFormContext();
   const { datosEdicion } = useModalAgenciaGlobal();
 
+  const logoFile = watch('logo');
+  const faviconFile = watch('favicon');
+
   const logoPreview = usePrevisualizacionArchivo({
     campo: 'logo',
-    archivo: watch('logo'),
-    urlOriginal: datosEdicion?.logo ?? null,
+    archivo: logoFile instanceof File ? logoFile : null,
+    urlOriginal: typeof datosEdicion?.logo === 'string' ? datosEdicion.logo : null,
     setValue,
   });
 
   const faviconPreview = usePrevisualizacionArchivo({
     campo: 'favicon',
-    archivo: watch('favicon'),
-    urlOriginal: '', // <- si tenés url de favicon en el futuro
+    archivo: faviconFile instanceof File ? faviconFile : null,
+    urlOriginal: null,
     setValue,
   });
 

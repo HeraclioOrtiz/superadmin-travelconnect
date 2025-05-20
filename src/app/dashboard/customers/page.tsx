@@ -15,7 +15,7 @@ import { CustomersTable } from '@/components/dashboard/customer/customers-table'
 import { AgenciaBackData } from '@/types/AgenciaBackData';
 
 import { ModalServiciosAgencia } from '../../../components/ConfigAgencia/ModalServiciosAgencia';
-import { useModalServiciosAgencia } from './useModalServiciosAgencia';
+import { useModalServiciosAgenciaSuper } from './useModalServiciosAgenciaSuper';
 
 export default function Page(): React.JSX.Element {
   const { state, actions } = useAgenciasContext();
@@ -27,7 +27,7 @@ export default function Page(): React.JSX.Element {
     agenciaSeleccionada,
     abrirModalServicios,
     cerrarModalServicios,
-  } = useModalServiciosAgencia();
+  } = useModalServiciosAgenciaSuper();
 
   React.useEffect(() => {
     actions.fetchAgencias();

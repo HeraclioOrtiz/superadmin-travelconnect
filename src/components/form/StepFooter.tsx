@@ -73,22 +73,22 @@ const StepFooter = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <InputFormulario
           label="Facebook"
-          {...register('redes_facebook')}
+          {...register('footer_facebook')}
         />
 
         <InputFormulario
           label="Twitter"
-          {...register('redes_twitter')}
+          {...register('footer_twitter')}
         />
 
         <InputFormulario
           label="Instagram"
-          {...register('redes_instagram')}
+          {...register('footer_instagram')}
         />
 
         <InputFormulario
           label="WhatsApp"
-          {...register('redes_whatsapp')}
+          {...register('footer_whatsapp')}
         />
       </div>
 

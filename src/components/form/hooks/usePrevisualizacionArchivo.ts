@@ -6,7 +6,7 @@ import { UseFormSetValue } from 'react-hook-form';
 
 interface UsePrevisualizacionArchivoParams {
   campo: string;
-  archivo: File | null;
+  archivo: File | string | null | undefined;
   urlOriginal: string | null;
   setValue: UseFormSetValue<any>;
 }
@@ -19,31 +19,32 @@ export const usePrevisualizacionArchivo = ({
 }: UsePrevisualizacionArchivoParams) => {
   const [urlPreview, setUrlPreview] = useState<string | null>(urlOriginal ?? null);
 
-  // Genera una URL local para el archivo subido
+  // 🧠 Si archivo es File, crear URL temporal
   useEffect(() => {
-    if (!archivo) return;
+    if (archivo instanceof File) {
+      const objectUrl = URL.createObjectURL(archivo);
+      setUrlPreview(objectUrl);
+      setValue(campo, archivo); // ✅ sincroniza con RHF
 
-    const objectUrl = URL.createObjectURL(archivo);
-    setUrlPreview(objectUrl);
-    setValue(campo, archivo); // ✅ sincroniza con RHF
+      return () => URL.revokeObjectURL(objectUrl); // Limpieza
+    }
 
-    return () => URL.revokeObjectURL(objectUrl); // Limpia al desmontar o cambiar archivo
-  }, [archivo, campo, setValue]);
-
-  // Actualiza la previsualización si cambia la URL original (modo edición)
-  useEffect(() => {
+    // Si no hay archivo pero sí url original, usarla
     if (!archivo && urlOriginal) {
       setUrlPreview(urlOriginal);
     }
-  }, [urlOriginal, archivo]);
 
-  // Manejador de cambio de archivo
+    // Si archivo es string (ya cargado), usarlo como preview
+    if (typeof archivo === 'string') {
+      setUrlPreview(archivo);
+    }
+  }, [archivo, urlOriginal, campo, setValue]);
+
   const manejarCambio = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const nuevoArchivo = e.target.files?.[0] ?? null;
     setValue(campo, nuevoArchivo); // ✅ actualiza RHF
   }, [campo, setValue]);
 
-  // Limpia archivo (previsualización y RHF)
   const limpiarArchivo = useCallback(() => {
     setValue(campo, null);
     setUrlPreview(urlOriginal ?? null);
