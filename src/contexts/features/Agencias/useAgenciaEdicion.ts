@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { AgenciaFormValues } from './forms';
 import { useAgenciaActiva } from './AgenciaActivaProvider';
 import { transformarAgenciaParaEnvio } from './transformarAgenciaParaEnvio';
@@ -11,9 +11,15 @@ import type { AgenciasContextState } from '@/types/types';
 export function useAgenciaEdicion(state?: AgenciasContextState, stateMethods?: any) {
   const { agencia } = useAgenciaActiva();
 
-  const [values, setValues] = useState<AgenciaFormValues>(() =>
-    agencia ? adaptarAgenciaParaEdicion(agencia).valores : {} as AgenciaFormValues
-  );
+  const [values, setValues] = useState<AgenciaFormValues>({} as AgenciaFormValues);
+
+  useEffect(() => {
+    if (agencia) {
+      const adaptada = adaptarAgenciaParaEdicion(agencia).valores;
+      setValues(adaptada);
+      console.log('✅ Valores precargados en edición:', adaptada);
+    }
+  }, [agencia]);
 
   const setValue = useCallback(
     <K extends keyof AgenciaFormValues>(campo: K, valor: AgenciaFormValues[K]) => {
@@ -32,7 +38,7 @@ export function useAgenciaEdicion(state?: AgenciasContextState, stateMethods?: a
 
     try {
       const formData = transformarAgenciaParaEnvio(values);
-      formData.append('id', agencia.idAgencia); // ✅ Agregamos ID para edición
+      formData.append('id', agencia.idAgencia);
 
       const resultado = await editAgencia(formData, state, stateMethods);
 
@@ -55,4 +61,3 @@ export function useAgenciaEdicion(state?: AgenciasContextState, stateMethods?: a
     guardarCambios,
   };
 }
-
