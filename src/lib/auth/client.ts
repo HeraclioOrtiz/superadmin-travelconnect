@@ -20,11 +20,16 @@ const USER_KEY = 'usuario';
 class AuthClient {
   async signInWithPassword(params: SignInWithPasswordParams): Promise<{ error?: string }> {
     const { email, password } = params;
+    const isSuperadmin = email === 'superadmin@example.com';
 
-    console.log('🟡 Enviando login a /api/login con:', params);
+    const endpoint = isSuperadmin
+      ? '/api/login'
+      : 'https://travelconnect.com.ar/agencia/login';
+
+    console.log(`🟡 Enviando login a ${endpoint} con:`, params);
 
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -36,9 +41,20 @@ class AuthClient {
         return { error: data.error || 'Error desconocido' };
       }
 
-      const { token, user } = await response.json();
+      const data = await response.json();
+
+      const token = isSuperadmin ? data.token : data.access_token;
+      const rawUser = isSuperadmin ? data.user : data.agencia;
+
+      const user: User = {
+        id: rawUser.id,
+        nombre: rawUser.nombre,
+        dominio: rawUser.dominio ?? null,
+        rol: isSuperadmin ? 'superadmin' : 'admin',
+      };
+
       localStorage.setItem(TOKEN_KEY, token);
-      localStorage.setItem(USER_KEY, JSON.stringify(user)); // ✅ Guardar user con rol
+      localStorage.setItem(USER_KEY, JSON.stringify(user));
 
       console.log('🟢 Login exitoso:', user);
       return {};
@@ -51,7 +67,6 @@ class AuthClient {
   async signUp(params: SignUpParams): Promise<{ error?: string }> {
     const { email } = params;
 
-    // Simula un registro exitoso
     if (email !== 'admin@example.com') {
       localStorage.setItem(TOKEN_KEY, 'fake-token');
       return {};

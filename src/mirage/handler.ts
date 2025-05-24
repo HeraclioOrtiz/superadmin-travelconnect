@@ -10,31 +10,16 @@ export function makeServer({ environment = 'development' } = {}) {
       this.post('/login', (schema, request) => {
         const { email, password } = JSON.parse(request.requestBody);
 
-        // Superadmin simulado con agencia ficticia
+        // ✅ Superadmin simulado
         if (email === 'superadmin@example.com' && password === 'super123') {
           return {
-            user: {
-              id: '0',
-              name: 'Superadmin',
-              email: 'superadmin@example.com',
-              rol: 'superadmin',
-              id_agencia: 999, // ✅ Agencia simulada
-            },
             token: 'fake-token-superadmin',
-          };
-        }
-
-        // Admin simulado
-        if (email === 'consultas@vaguviajes.com.ar' && password === '123456') {
-          return {
             user: {
-              id: '1',
-              name: 'Admin',
-              email: 'consultas@vaguviajes.com.ar',
-              rol: 'admin',
-              id_agencia: 7,
+              id: 0,
+              nombre: 'Superadmin',
+              dominio: null,
+              rol: 'superadmin',
             },
-            token: 'fake-token-admin',
           };
         }
 
@@ -45,7 +30,7 @@ export function makeServer({ environment = 'development' } = {}) {
         );
       });
 
-      // ✅ Endpoint simulado para agencia 999 (superadmin)
+      // ✅ Agencia simulada para ID 999
       this.get('/agencias/999', () => {
         return {
           id: 999,
@@ -132,11 +117,11 @@ export function makeServer({ environment = 'development' } = {}) {
         };
       });
 
+      // 🔁 Reenviar todas las demás requests reales
       this.passthrough('https://travelconnect.com.ar/**');
-      this.passthrough();
       this.passthrough('https://triptest.com.ar/store_agencia');
-this.passthrough('https://triptest.com.ar/update_agencia');
-
+      this.passthrough('https://triptest.com.ar/update_agencia');
+      this.passthrough();
     },
   });
 }

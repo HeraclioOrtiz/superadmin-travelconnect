@@ -20,7 +20,7 @@ import { z as zod } from 'zod';
 
 import { paths } from '@/paths';
 import { authClient } from '@/lib/auth/client';
-import { useUserContext } from '@/contexts/user-context'; // 👈 corregido
+import { useUserContext } from '@/contexts/user-context';
 
 const schema = zod.object({
   email: zod.string().min(1, { message: 'Email is required' }).email(),
@@ -33,7 +33,7 @@ const defaultValues = { email: 'sofia@devias.io', password: 'Secret1' } satisfie
 
 export function SignInForm(): React.JSX.Element {
   const router = useRouter();
-  const { checkSession, isLoading, error } = useUserContext(); // 👈 corregido
+  const { checkSession, isLoading, error } = useUserContext();
 
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
   const [isPending, setIsPending] = React.useState<boolean>(false);
@@ -49,7 +49,10 @@ export function SignInForm(): React.JSX.Element {
     async (values: Values): Promise<void> => {
       setIsPending(true);
 
-      const { error } = await authClient.signInWithPassword(values);
+      const { error } = await authClient.signInWithPassword({
+        email: values.email ?? '',
+        password: values.password ?? '',
+      });
 
       if (error) {
         setError('root', { type: 'server', message: error });
@@ -63,14 +66,8 @@ export function SignInForm(): React.JSX.Element {
     [checkSession, router, setError]
   );
 
-  // 🧠 NUEVO: Manejamos estados de carga y error antes de mostrar el formulario
-  if (isLoading) {
-    return <div>Cargando...</div>; // Podés poner un Spinner acá si querés
-  }
-
-  if (error) {
-    return <Alert color="error">Something went wrong</Alert>;
-  }
+  if (isLoading) return <div>Cargando...</div>;
+  if (error) return <Alert color="error">Something went wrong</Alert>;
 
   return (
     <Stack spacing={4}>

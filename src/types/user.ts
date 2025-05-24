@@ -1,10 +1,6 @@
 export interface User {
   id: string;
-  name?: string;
-  avatar?: string;
-  email?: string;
+  nombre: string;
+  dominio: string | null;
   rol: 'superadmin' | 'admin';
-  id_agencia?: number; // ✅ Agregado para soporte de agencias
-
-  [key: string]: unknown;
 }

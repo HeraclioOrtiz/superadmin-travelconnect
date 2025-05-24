@@ -4,11 +4,13 @@ import { Box, Stack, Typography } from '@mui/material';
 
 import { BotonImportarCSV } from '@/components/ConfigAgencia/BotonImportarCSV';
 import { BotonExportarCSV } from '@/components/ConfigAgencia/BotonExportarCSV';
-import { useAgenciaActiva } from '@/contexts/features/Agencias/AgenciaActivaProvider';
+import type { AgenciaBackData } from '@/types/AgenciaBackData';
 
-const PaquetesPropios = (): React.JSX.Element => {
-  const { agencia } = useAgenciaActiva();
+interface PaquetesPropiosProps {
+  agencia: AgenciaBackData;
+}
 
+const PaquetesPropios = ({ agencia }: PaquetesPropiosProps): React.JSX.Element => {
   return (
     <Box
       sx={{

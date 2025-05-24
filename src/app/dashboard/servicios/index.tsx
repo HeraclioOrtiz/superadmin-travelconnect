@@ -1,47 +1,51 @@
 'use client';
 import { Typography } from '@mui/material';
+import type { AgenciaBackData } from '@/types/AgenciaBackData';
 
-// ✅ Importación por default corregida del componente real
+// ✅ Importación del componente real
 import PaquetesPropios from './PaquetesPropios';
 
-export const VistaApisTerceros = () => (
+interface VistaServicioProps {
+  agencia: AgenciaBackData;
+}
+
+export const VistaApisTerceros: React.FC<VistaServicioProps> = () => (
   <Typography variant="body2">
     Aquí irá la configuración de <strong>APIs de terceros</strong>.
   </Typography>
 );
 
-export const VistaCrmAtlas = () => (
+export const VistaCrmAtlas: React.FC<VistaServicioProps> = () => (
   <Typography variant="body2">
     Aquí irá la configuración de <strong>CRM Atlas</strong>.
   </Typography>
 );
 
-export const VistaHoteleria = () => (
+export const VistaHoteleria: React.FC<VistaServicioProps> = () => (
   <Typography variant="body2">
     Aquí irá la configuración de <strong>Hotelería</strong>.
   </Typography>
 );
 
-export const VistaCircuitos = () => (
+export const VistaCircuitos: React.FC<VistaServicioProps> = () => (
   <Typography variant="body2">
     Aquí irá la configuración de <strong>Circuitos</strong>.
   </Typography>
 );
 
-export const VistaVuelos = () => (
+export const VistaVuelos: React.FC<VistaServicioProps> = () => (
   <Typography variant="body2">
     Aquí irá la configuración de <strong>Vuelos</strong>.
   </Typography>
 );
 
-export const VistaMercadoPago = () => (
+export const VistaMercadoPago: React.FC<VistaServicioProps> = () => (
   <Typography variant="body2">
     Aquí irá la configuración de <strong>MercadoPago</strong>.
   </Typography>
 );
 
-// ✅ Diccionario para renderizar vistas dinámicamente
-export const VistasServicios: Record<string, React.FC> = {
+export const VistasServicios: Record<string, React.FC<VistaServicioProps>> = {
   'APIs de terceros': VistaApisTerceros,
   'Paquetes propios': PaquetesPropios,
   'CRM Atlas': VistaCrmAtlas,

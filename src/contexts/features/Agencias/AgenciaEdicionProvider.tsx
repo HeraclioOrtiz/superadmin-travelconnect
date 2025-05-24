@@ -11,19 +11,17 @@ const AgenciaEdicionContext = createContext<ReturnType<typeof useAgenciaEdicion>
 export const AgenciaEdicionProvider = ({ children }: { children: React.ReactNode }) => {
   const { agencia } = useAgenciaActiva();
 
-  // ⚠️ Esta línea evita ejecutar NINGÚN hook más si agencia es null
-  if (!agencia) return null;
-
-  // ✅ Ya sabemos que agencia existe
   const stateHooks = useAgenciasState();
   const actions = useAgenciasActions(stateHooks.state, {
     setAgencias: stateHooks.setAgencias,
-    setError: stateHooks.setError
+    setError: stateHooks.setError,
   });
 
   const edicion = useAgenciaEdicion(stateHooks.state, {
-    setError: stateHooks.setError
+    setError: stateHooks.setError,
   });
+
+  if (!agencia) return null;
 
   return (
     <AgenciaEdicionContext.Provider value={edicion}>

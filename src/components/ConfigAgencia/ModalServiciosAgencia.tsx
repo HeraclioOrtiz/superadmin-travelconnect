@@ -1,20 +1,23 @@
+// components/ConfigAgencia/ModalServiciosAgencia.tsx
 'use client';
 
 import { Box, Modal, useMediaQuery, useTheme } from '@mui/material';
 
 import { ServiciosNavbar } from './ServiciosNavbar';
-// Import corregido a ruta absoluta con alias
-import { VistaServicioSeleccionado } from '@/app/dashboard/servicios/VistaServicioSeleccionado';
+import { VistasServicios } from '@/app/dashboard/servicios'; // ✅ Importación corregida desde index.ts
 import { useModalServiciosAgencia } from './useModalServiciosAgencia';
+import type { AgenciaBackData } from '@/types/AgenciaBackData';
 
 interface ModalServiciosAgenciaProps {
   open: boolean;
   onClose: () => void;
+  agencia: AgenciaBackData;
 }
 
 export const ModalServiciosAgencia = ({
   open,
   onClose,
+  agencia,
 }: ModalServiciosAgenciaProps) => {
   const {
     secciones,
@@ -30,6 +33,8 @@ export const ModalServiciosAgencia = ({
     console.log('[🔧 Implementar cambios] → datos aún no implementados');
     onClose();
   };
+
+  const Componente = VistasServicios[seccionActiva];
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -49,7 +54,6 @@ export const ModalServiciosAgencia = ({
           overflow: 'hidden',
         }}
       >
-        {/* 🧭 Navbar */}
         <ServiciosNavbar
           secciones={secciones}
           seccionSeleccionada={seccionActiva}
@@ -59,7 +63,11 @@ export const ModalServiciosAgencia = ({
         />
 
         {/* 📄 Contenido dinámico */}
-        <VistaServicioSeleccionado seccion={seccionActiva} />
+        {Componente ? (
+          <Componente agencia={agencia} />
+        ) : (
+          <Box sx={{ p: 3 }}>Sección no implementada.</Box>
+        )}
       </Box>
     </Modal>
   );

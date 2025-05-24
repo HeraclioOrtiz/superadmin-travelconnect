@@ -1,12 +1,19 @@
+// src/app/dashboard/servicios/VistaServicioSeleccionado.tsx
 'use client';
+
 import { Box, Typography } from '@mui/material';
-import { VistasServicios } from './index'; // ✅ import centralizado
+import { VistasServicios } from '@/app/dashboard/servicios/index'; // ✅ Importación corregida
+import type { AgenciaBackData } from '@/types/AgenciaBackData';
 
 interface VistaServicioSeleccionadoProps {
   seccion: string;
+  agencia: AgenciaBackData;
 }
 
-export const VistaServicioSeleccionado = ({ seccion }: VistaServicioSeleccionadoProps) => {
+export const VistaServicioSeleccionado = ({
+  seccion,
+  agencia,
+}: VistaServicioSeleccionadoProps) => {
   const Componente = VistasServicios[seccion];
 
   return (
@@ -16,7 +23,7 @@ export const VistaServicioSeleccionado = ({ seccion }: VistaServicioSeleccionado
       </Typography>
 
       {Componente ? (
-        <Componente />
+        <Componente agencia={agencia} />
       ) : (
         <Typography variant="body2" color="text.secondary">
           Sección no implementada.

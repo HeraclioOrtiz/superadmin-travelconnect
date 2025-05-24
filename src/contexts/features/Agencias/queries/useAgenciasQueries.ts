@@ -1,12 +1,12 @@
-import { Agencia } from '../../../../types/types';
+import type { AgenciaBackData } from '../../../../types/AgenciaBackData';
 
-const useAgenciasQueries = (agencias: Agencia[]) => {
+const useAgenciasQueries = (agencias: AgenciaBackData[]) => {
   /**
    * Obtiene una agencia por su dominio (ID)
    */
-  const getAgenciaById = (id: string): Agencia | undefined => {
+  const getAgenciaById = (id: string): AgenciaBackData | undefined => {
     if (!id || typeof id !== 'string') return undefined;
-    return agencias.find(agencia => 
+    return agencias.find(agencia =>
       agencia.dominio.toLowerCase() === id.toLowerCase()
     );
   };
@@ -14,10 +14,10 @@ const useAgenciasQueries = (agencias: Agencia[]) => {
   /**
    * Filtra agencias por criterios dinámicos
    */
-  const filterAgencias = (criterios: Partial<Agencia>): Agencia[] => {
+  const filterAgencias = (criterios: Partial<AgenciaBackData>): AgenciaBackData[] => {
     return agencias.filter(agencia => {
       return Object.entries(criterios).every(([key, value]) => {
-        const agenciaValue = agencia[key as keyof Agencia];
+        const agenciaValue = agencia[key as keyof AgenciaBackData];
         // Búsqueda case-insensitive para strings
         if (typeof value === 'string' && typeof agenciaValue === 'string') {
           return agenciaValue.toLowerCase().includes(value.toLowerCase());
@@ -29,7 +29,7 @@ const useAgenciasQueries = (agencias: Agencia[]) => {
 
   return {
     getAgenciaById,
-    filterAgencias
+    filterAgencias,
   };
 };
 

@@ -4,7 +4,7 @@ import * as React from 'react';
 import type { User } from '@/types/user';
 import { authClient } from '@/lib/auth/client';
 import { logger } from '@/lib/default-logger';
-import { useFetchAgencia } from '@/hooks/useFetchAgencia'; // ✅ Importación del hook
+import { useFetchAgencia } from '@/hooks/useFetchAgencia';
 
 export interface UserContextValue {
   user: User | null;
@@ -60,7 +60,7 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
   }, []);
 
   // ✅ Disparo automático del fetch si es admin con agencia
-  useFetchAgencia(state.user?.rol === 'admin' ? state.user?.id_agencia : undefined);
+  useFetchAgencia(state.user?.rol === 'admin' ? Number(state.user?.id) : undefined);
 
   return (
     <UserContext.Provider value={{ ...state, checkSession }}>

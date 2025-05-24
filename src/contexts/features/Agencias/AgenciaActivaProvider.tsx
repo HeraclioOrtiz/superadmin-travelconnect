@@ -3,7 +3,7 @@
 import React, { createContext, useContext } from 'react';
 import { useUserContext } from '@/contexts/user-context';
 import { useFetchAgencia } from '@/hooks/useFetchAgencia';
-import { AgenciaBackData } from '../../../types/AgenciaBackData'; // Asegurate de que este archivo exporte la interfaz
+import { AgenciaBackData } from '../../../types/AgenciaBackData';
 
 interface AgenciaActivaContextValue {
   agencia: AgenciaBackData | null;
@@ -15,7 +15,7 @@ const AgenciaActivaContext = createContext<AgenciaActivaContextValue | undefined
 
 export const AgenciaActivaProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useUserContext();
-  const idAgencia = user?.id_agencia;
+  const idAgencia = user?.rol === 'admin' ? Number(user.id) : undefined;
 
   const { agencia, cargando, error } = useFetchAgencia(idAgencia);
 

@@ -14,7 +14,7 @@ import { CustomersFilters } from '@/components/dashboard/customer/customers-filt
 import { CustomersTable } from '@/components/dashboard/customer/customers-table';
 import { AgenciaBackData } from '@/types/AgenciaBackData';
 
-import { ModalServiciosAgencia } from '../../../components/ConfigAgencia/ModalServiciosAgencia';
+import { ModalServiciosAgencia } from '@/components/ConfigAgencia/ModalServiciosAgencia';
 import { useModalServiciosAgenciaSuper } from './useModalServiciosAgenciaSuper';
 
 export default function Page(): React.JSX.Element {
@@ -100,6 +100,7 @@ export default function Page(): React.JSX.Element {
         <ModalServiciosAgencia
           open={modalServiciosOpen}
           onClose={cerrarModalServicios}
+          agencia={agenciaSeleccionada}
         />
       )}
     </Stack>

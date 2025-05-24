@@ -7,9 +7,10 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 
 import { ServiciosNavbar } from './ServiciosNavbar';
-import {VistaServicioSeleccionado  } from './VistaServicioSeleccionado';
-
+import { VistaServicioSeleccionado } from './VistaServicioSeleccionado';
 import { useServiciosUI } from './useServiciosUI';
+
+import { useAgenciaActiva } from '@/contexts/features/Agencias/AgenciaActivaProvider';
 
 export default function ServiciosPage() {
   const {
@@ -18,6 +19,12 @@ export default function ServiciosPage() {
     setSeccionActiva,
     seccionHabilitada,
   } = useServiciosUI();
+
+  const { agencia, cargando, error } = useAgenciaActiva(); // ✅ Desestructuración correcta
+
+  if (cargando || !agencia) {
+    return null; // o un loading spinner si querés
+  }
 
   return (
     <Box sx={{ py: 4 }}>
@@ -28,7 +35,6 @@ export default function ServiciosPage() {
 
         <Divider sx={{ my: 3 }} />
 
-        {/* Barra lateral de servicios */}
         <ServiciosNavbar
           secciones={secciones}
           seccionSeleccionada={seccionActiva}
@@ -39,9 +45,11 @@ export default function ServiciosPage() {
           }}
         />
 
-        {/* Contenido de la sección seleccionada */}
         <Box sx={{ mt: 4 }}>
-          <VistaServicioSeleccionado seccion={seccionActiva} />
+          <VistaServicioSeleccionado
+            seccion={seccionActiva}
+            agencia={agencia}
+          />
         </Box>
       </Container>
     </Box>

@@ -56,7 +56,12 @@ export function SignUpForm(): React.JSX.Element {
     async (values: Values): Promise<void> => {
       setIsPending(true);
 
-      const result = authClient.signUp ? await authClient.signUp(values) : undefined;
+      const result = await authClient.signUp({
+        email: values.email,
+        password: values.password,
+        firstName: values.firstName,
+        lastName: values.lastName,
+      });
 
       if (result?.error) {
         setError('root', { type: 'server', message: result.error });
