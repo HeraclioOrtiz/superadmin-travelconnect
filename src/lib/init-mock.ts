@@ -9,7 +9,7 @@ export function initMock() {
     return server;
   }
 
-  const useMock = process.env.NEXT_PUBLIC_MOCK === 'true';
+  const useMock = process.env.NEXT_PUBLIC_VITE_MOCK === 'true';
 
   if (useMock) {
     console.log('🚀 Iniciando Mirage JS...');
@@ -20,4 +20,3 @@ export function initMock() {
 
   return server;
 }
-
