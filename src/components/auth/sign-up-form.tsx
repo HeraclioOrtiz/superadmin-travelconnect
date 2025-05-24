@@ -161,3 +161,4 @@ export function SignUpForm(): React.JSX.Element {
     </Stack>
   );
 }
+

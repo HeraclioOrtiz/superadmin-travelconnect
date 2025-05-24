@@ -23,3 +23,4 @@ export const typography = {
   h5: { fontSize: '1.5rem', fontWeight: 500, lineHeight: 1.2 },
   h6: { fontSize: '1.125rem', fontWeight: 500, lineHeight: 1.2 },
 } satisfies TypographyOptions;
+

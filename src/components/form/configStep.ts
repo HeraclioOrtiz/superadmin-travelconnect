@@ -137,3 +137,4 @@ export const stepsConfig = [
 ] as const;
 
 export type AgenciaFormFields = typeof stepsConfig[number]['fields'][number];
+

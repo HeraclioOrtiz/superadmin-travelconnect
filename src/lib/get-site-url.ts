@@ -9,3 +9,4 @@ export function getSiteURL(): string {
   url = url.endsWith('/') ? url : `${url}/`;
   return url;
 }
+

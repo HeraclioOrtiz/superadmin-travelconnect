@@ -54,3 +54,4 @@ export function AuthGuard({ children }: AuthGuardProps): React.JSX.Element | nul
 
   return <>{children}</>;
 }
+

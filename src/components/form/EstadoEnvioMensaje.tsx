@@ -46,3 +46,4 @@ const EstadoEnvioMensaje: React.FC<EstadoEnvioMensajeProps> = ({ status, message
 };
 
 export default EstadoEnvioMensaje;
+

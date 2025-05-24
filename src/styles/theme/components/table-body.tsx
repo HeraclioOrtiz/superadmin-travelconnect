@@ -11,3 +11,4 @@ export const MuiTableBody = {
     },
   },
 } satisfies Components<Theme>['MuiTableBody'];
+

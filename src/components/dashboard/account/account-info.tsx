@@ -48,3 +48,4 @@ export function AccountInfo(): React.JSX.Element {
     </Card>
   );
 }
+

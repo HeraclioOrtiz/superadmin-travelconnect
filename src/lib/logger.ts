@@ -67,3 +67,4 @@ export class Logger {
 export function createLogger({ prefix, level }: LoggerOptions = {}): Logger {
   return new Logger({ prefix, level });
 }
+

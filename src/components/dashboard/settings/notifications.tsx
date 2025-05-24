@@ -54,3 +54,4 @@ export function Notifications(): React.JSX.Element {
     </form>
   );
 }
+

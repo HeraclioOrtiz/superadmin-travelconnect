@@ -312,3 +312,4 @@ export function AccountDetailsForm(): React.JSX.Element {
     </>
   );
 }
+

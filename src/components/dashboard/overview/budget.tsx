@@ -53,3 +53,4 @@ export function Budget({ diff, trend, sx, value }: BudgetProps): React.JSX.Eleme
     </Card>
   );
 }
+

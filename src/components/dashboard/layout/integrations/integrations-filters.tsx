@@ -21,3 +21,4 @@ export function CompaniesFilters(): React.JSX.Element {
     </Card>
   );
 }
+

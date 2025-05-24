@@ -31,3 +31,4 @@ export function TotalProfit({ value, sx }: TotalProfitProps): React.JSX.Element 
     </Card>
   );
 }
+

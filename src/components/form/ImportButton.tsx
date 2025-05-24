@@ -112,3 +112,4 @@ const BotonImportarArchivo = forwardRef<HTMLInputElement, BotonImportarArchivoPr
 BotonImportarArchivo.displayName = 'BotonImportarArchivo';
 
 export default BotonImportarArchivo;
+

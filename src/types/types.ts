@@ -6,3 +6,4 @@ export interface AgenciasContextState {
   error: string | null;
   lastUpdated: Date | null;
 }
+

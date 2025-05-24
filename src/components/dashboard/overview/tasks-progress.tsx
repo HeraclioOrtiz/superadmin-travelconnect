@@ -37,3 +37,4 @@ export function TasksProgress({ value, sx }: TasksProgressProps): React.JSX.Elem
     </Card>
   );
 }
+

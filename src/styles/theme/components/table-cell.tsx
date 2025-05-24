@@ -8,3 +8,4 @@ export const MuiTableCell = {
     paddingCheckbox: { padding: '0 0 0 24px' },
   },
 } satisfies Components<Theme>['MuiTableCell'];
+

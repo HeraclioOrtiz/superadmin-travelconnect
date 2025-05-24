@@ -93,3 +93,4 @@ export function FooterSection(): JSX.Element {
     </>
   );
 }
+

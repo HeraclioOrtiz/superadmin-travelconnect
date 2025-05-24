@@ -43,3 +43,4 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
     </html>
   );
 }
+

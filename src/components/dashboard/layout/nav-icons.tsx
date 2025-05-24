@@ -16,3 +16,4 @@ export const navIcons = {
   users: UsersIcon,
   servicios: WrenchIcon, // ✅ agregado
 } as Record<string, Icon>;
+

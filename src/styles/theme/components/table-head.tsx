@@ -14,3 +14,4 @@ export const MuiTableHead = {
     },
   },
 } satisfies Components<Theme>['MuiTableHead'];
+

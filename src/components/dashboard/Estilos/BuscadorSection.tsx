@@ -125,3 +125,4 @@ export function BuscadorSection(): JSX.Element {
     </>
   );
 }
+

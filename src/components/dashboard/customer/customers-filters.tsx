@@ -21,3 +21,4 @@ export function CustomersFilters(): React.JSX.Element {
     </Card>
   );
 }
+

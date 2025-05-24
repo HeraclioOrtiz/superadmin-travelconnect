@@ -111,3 +111,4 @@ export interface EditAgenciaResponse {
   error?: string;
   statusCode?: number;
 }
+

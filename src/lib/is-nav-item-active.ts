@@ -25,3 +25,4 @@ export function isNavItemActive({
 
   return pathname === href;
 }
+

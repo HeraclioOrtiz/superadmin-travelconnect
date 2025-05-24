@@ -54,3 +54,4 @@ export function DynamicLogo({
     </NoSsr>
   );
 }
+

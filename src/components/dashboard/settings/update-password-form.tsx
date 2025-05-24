@@ -42,3 +42,4 @@ export function UpdatePasswordForm(): React.JSX.Element {
     </form>
   );
 }
+

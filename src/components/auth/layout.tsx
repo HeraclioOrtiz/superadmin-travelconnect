@@ -66,3 +66,4 @@ export function Layout({ children }: LayoutProps): React.JSX.Element {
     </Box>
   );
 }
+

@@ -12,3 +12,4 @@ export function useUser(): UserContextValue {
 
   return context;
 }
+

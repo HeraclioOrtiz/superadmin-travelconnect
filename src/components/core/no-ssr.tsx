@@ -29,3 +29,4 @@ export function NoSsr(props: NoSsrProps): React.JSX.Element {
 
   return <React.Fragment>{mountedState ? children : fallback}</React.Fragment>;
 }
+

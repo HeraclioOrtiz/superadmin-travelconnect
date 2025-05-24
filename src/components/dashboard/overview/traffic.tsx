@@ -71,3 +71,4 @@ function useChartOptions(labels: string[]): ApexOptions {
     tooltip: { fillSeriesColor: false },
   };
 }
+

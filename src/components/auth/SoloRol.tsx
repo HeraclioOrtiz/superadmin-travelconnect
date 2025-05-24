@@ -24,3 +24,4 @@ export const SoloRol: React.FC<SoloRolProps> = ({ rol, children }) => {
 
   return <>{children}</>;
 };
+

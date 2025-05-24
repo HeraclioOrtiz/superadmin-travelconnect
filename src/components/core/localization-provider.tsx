@@ -11,3 +11,4 @@ export interface LocalizationProviderProps {
 export function LocalizationProvider({ children }: LocalizationProviderProps): React.JSX.Element {
   return <Provider dateAdapter={AdapterDayjs}>{children}</Provider>;
 }
+

@@ -18,3 +18,4 @@ export const fetchAgencias = async (): Promise<AgenciaBackData[]> => {
 
   return data;
 };
+

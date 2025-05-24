@@ -24,3 +24,4 @@ export function ThemeProvider({ children }: ThemeProviderProps): React.JSX.Eleme
     </EmotionCache>
   );
 }
+

@@ -81,3 +81,4 @@ export function LatestOrders({ orders = [], sx }: LatestOrdersProps): React.JSX.
     </Card>
   );
 }
+

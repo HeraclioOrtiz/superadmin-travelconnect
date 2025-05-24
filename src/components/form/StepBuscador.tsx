@@ -107,3 +107,4 @@ const StepBuscador = () => {
 };
 
 export default StepBuscador;
+

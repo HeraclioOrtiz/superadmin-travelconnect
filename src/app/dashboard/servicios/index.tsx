@@ -54,3 +54,4 @@ export const VistasServicios: Record<string, React.FC<VistaServicioProps>> = {
   'Vuelos': VistaVuelos,
   'MercadoPago': VistaMercadoPago,
 };
+

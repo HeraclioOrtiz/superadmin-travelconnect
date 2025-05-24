@@ -16,3 +16,4 @@ export const MuiTab = {
     },
   },
 } satisfies Components<Theme>['MuiTab'];
+

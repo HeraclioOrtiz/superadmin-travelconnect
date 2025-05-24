@@ -45,3 +45,4 @@ export function PaletaColoresSection(): JSX.Element {
     </>
   );
 }
+

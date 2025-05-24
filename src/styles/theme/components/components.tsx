@@ -26,3 +26,4 @@ export const components = {
   MuiTableCell,
   MuiTableHead,
 } satisfies Components<Theme>;
+

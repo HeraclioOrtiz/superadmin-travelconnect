@@ -4,3 +4,4 @@ export interface User {
   dominio: string | null;
   rol: 'superadmin' | 'admin';
 }
+

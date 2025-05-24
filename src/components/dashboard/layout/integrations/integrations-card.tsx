@@ -59,3 +59,4 @@ export function IntegrationCard({ integration }: IntegrationCardProps): React.JS
     </Card>
   );
 }
+

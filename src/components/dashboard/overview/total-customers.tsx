@@ -53,3 +53,4 @@ export function TotalCustomers({ diff, trend, sx, value }: TotalCustomersProps):
     </Card>
   );
 }
+

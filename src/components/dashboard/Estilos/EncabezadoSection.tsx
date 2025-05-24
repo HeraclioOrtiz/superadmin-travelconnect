@@ -53,3 +53,4 @@ export function EncabezadoSection(): JSX.Element {
     </>
   );
 }
+
