@@ -13,6 +13,7 @@ const StepBuscador = () => {
       <div className="space-y-4">
         <InputFormulario
           label="Tipografía del Buscador"
+          esTipografia
           {...register('buscador_tipografia')}
         />
       </div>
@@ -23,21 +24,14 @@ const StepBuscador = () => {
           name="buscador_tipografia_color"
           control={control}
           render={({ field }) => (
-            <SelectorColorCampo
-              label="Color del Texto"
-              {...field}
-            />
+            <SelectorColorCampo label="Color del Texto" {...field} />
           )}
         />
-
         <Controller
           name="buscador_tipografia_color_label"
           control={control}
           render={({ field }) => (
-            <SelectorColorCampo
-              label="Color de las Etiquetas"
-              {...field}
-            />
+            <SelectorColorCampo label="Color de las Etiquetas" {...field} />
           )}
         />
       </div>
@@ -48,32 +42,21 @@ const StepBuscador = () => {
           name="buscador_color_primario"
           control={control}
           render={({ field }) => (
-            <SelectorColorCampo
-              label="Color Primario del Buscador"
-              {...field}
-            />
+            <SelectorColorCampo label="Color Primario del Buscador" {...field} />
           )}
         />
-
         <Controller
           name="buscador_color_secundario"
           control={control}
           render={({ field }) => (
-            <SelectorColorCampo
-              label="Color Secundario del Buscador"
-              {...field}
-            />
+            <SelectorColorCampo label="Color Secundario del Buscador" {...field} />
           )}
         />
-
         <Controller
           name="buscador_color_terciario"
           control={control}
           render={({ field }) => (
-            <SelectorColorCampo
-              label="Color Terciario del Buscador"
-              {...field}
-            />
+            <SelectorColorCampo label="Color Terciario del Buscador" {...field} />
           )}
         />
       </div>
@@ -84,21 +67,14 @@ const StepBuscador = () => {
           name="buscador_inputColor"
           control={control}
           render={({ field }) => (
-            <SelectorColorCampo
-              label="Color del Input"
-              {...field}
-            />
+            <SelectorColorCampo label="Color del Input" {...field} />
           )}
         />
-
         <Controller
           name="buscador_inputFondoColor"
           control={control}
           render={({ field }) => (
-            <SelectorColorCampo
-              label="Fondo del Input"
-              {...field}
-            />
+            <SelectorColorCampo label="Fondo del Input" {...field} />
           )}
         />
       </div>
@@ -107,4 +83,3 @@ const StepBuscador = () => {
 };
 
 export default StepBuscador;
-

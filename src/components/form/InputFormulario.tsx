@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Box,
   FormControl,
@@ -5,8 +7,9 @@ import {
   OutlinedInput,
   FormHelperText,
   OutlinedInputProps,
-} from "@mui/material";
-import { ChangeEvent, forwardRef } from "react";
+} from '@mui/material';
+import { forwardRef } from 'react';
+import { SelectorFuente } from '@/components/ConfigAgencia/SelectorFuente';
 
 interface InputFormularioProps extends OutlinedInputProps {
   label: string;
@@ -14,6 +17,7 @@ interface InputFormularioProps extends OutlinedInputProps {
   helperText?: string;
   fullWidth?: boolean;
   optional?: boolean;
+  esTipografia?: boolean;
 }
 
 const InputFormulario = forwardRef<HTMLInputElement, InputFormularioProps>(
@@ -25,12 +29,13 @@ const InputFormulario = forwardRef<HTMLInputElement, InputFormularioProps>(
       onChange,
       required = false,
       disabled = false,
-      type = "text",
+      type = 'text',
       placeholder,
       helperText,
       fullWidth = true,
       optional = false,
       error = false,
+      esTipografia = false,
       ...props
     },
     ref
@@ -43,21 +48,33 @@ const InputFormulario = forwardRef<HTMLInputElement, InputFormularioProps>(
           disabled={disabled}
           error={error}
         >
-          <InputLabel htmlFor={name}>
+          <InputLabel shrink htmlFor={name}>
             {label}
-            {optional && " (Opcional)"}
+            {optional && ' (Opcional)'}
           </InputLabel>
-          <OutlinedInput
-            id={name}
-            name={name}
-            value={value}
-            onChange={onChange}
-            label={`${label}${optional ? " (Opcional)" : ""}`}
-            type={type}
-            placeholder={placeholder}
-            inputRef={ref}  // Aquí pasamos la ref al input interno
-            {...props}      // Pasamos todas las props adicionales
-          />
+
+          {esTipografia ? (
+            <SelectorFuente
+              value={value as string}
+              onChange={(nueva) =>
+                onChange?.({ target: { name, value: nueva } } as any)
+              }
+              label={label}
+            />
+          ) : (
+            <OutlinedInput
+              id={name}
+              name={name}
+              value={value}
+              onChange={onChange}
+              label={`${label}${optional ? ' (Opcional)' : ''}`}
+              type={type}
+              placeholder={placeholder}
+              inputRef={ref}
+              {...props}
+            />
+          )}
+
           {helperText && <FormHelperText>{helperText}</FormHelperText>}
         </FormControl>
       </Box>
@@ -65,6 +82,6 @@ const InputFormulario = forwardRef<HTMLInputElement, InputFormularioProps>(
   }
 );
 
-InputFormulario.displayName = "InputFormulario"; // Importante para DevTools
+InputFormulario.displayName = 'InputFormulario';
 
 export default InputFormulario;

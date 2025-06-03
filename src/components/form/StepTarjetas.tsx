@@ -18,6 +18,7 @@ const StepTarjetas = () => {
 
         <InputFormulario
           label="Tipografía"
+          esTipografia
           {...register('tarjetas_tipografia')}
         />
       </div>
@@ -28,32 +29,21 @@ const StepTarjetas = () => {
           name="tarjetas_tipografia_color"
           control={control}
           render={({ field }) => (
-            <SelectorColorCampo
-              label="Color del Texto"
-              {...field}
-            />
+            <SelectorColorCampo label="Color del Texto" {...field} />
           )}
         />
-
         <Controller
           name="tarjetas_tipografia_color_titulo"
           control={control}
           render={({ field }) => (
-            <SelectorColorCampo
-              label="Color del Título"
-              {...field}
-            />
+            <SelectorColorCampo label="Color del Título" {...field} />
           )}
         />
-
         <Controller
           name="tarjetas_tipografia_color_contenido"
           control={control}
           render={({ field }) => (
-            <SelectorColorCampo
-              label="Color del Contenido"
-              {...field}
-            />
+            <SelectorColorCampo label="Color del Contenido" {...field} />
           )}
         />
       </div>
@@ -64,32 +54,21 @@ const StepTarjetas = () => {
           name="tarjetas_color_primario"
           control={control}
           render={({ field }) => (
-            <SelectorColorCampo
-              label="Color Primario"
-              {...field}
-            />
+            <SelectorColorCampo label="Color Primario" {...field} />
           )}
         />
-
         <Controller
           name="tarjetas_color_secundario"
           control={control}
           render={({ field }) => (
-            <SelectorColorCampo
-              label="Color Secundario"
-              {...field}
-            />
+            <SelectorColorCampo label="Color Secundario" {...field} />
           )}
         />
-
         <Controller
           name="tarjetas_color_terciario"
           control={control}
           render={({ field }) => (
-            <SelectorColorCampo
-              label="Color Terciario"
-              {...field}
-            />
+            <SelectorColorCampo label="Color Terciario" {...field} />
           )}
         />
       </div>
@@ -98,4 +77,3 @@ const StepTarjetas = () => {
 };
 
 export default StepTarjetas;
-

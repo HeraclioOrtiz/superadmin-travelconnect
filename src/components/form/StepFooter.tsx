@@ -18,6 +18,7 @@ const StepFooter = () => {
 
         <InputFormulario
           label="Tipografía"
+          esTipografia
           {...register('footer_tipografia')}
         />
 
@@ -39,10 +40,7 @@ const StepFooter = () => {
           name="footer_color_primario"
           control={control}
           render={({ field }) => (
-            <SelectorColorCampo
-              label="Color Primario"
-              {...field}
-            />
+            <SelectorColorCampo label="Color Primario" {...field} />
           )}
         />
 
@@ -50,10 +48,7 @@ const StepFooter = () => {
           name="footer_color_secundario"
           control={control}
           render={({ field }) => (
-            <SelectorColorCampo
-              label="Color Secundario"
-              {...field}
-            />
+            <SelectorColorCampo label="Color Secundario" {...field} />
           )}
         />
 
@@ -61,67 +56,29 @@ const StepFooter = () => {
           name="footer_color_terciario"
           control={control}
           render={({ field }) => (
-            <SelectorColorCampo
-              label="Color Terciario"
-              {...field}
-            />
+            <SelectorColorCampo label="Color Terciario" {...field} />
           )}
         />
       </div>
 
       {/* ----- Redes Sociales ----- */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <InputFormulario
-          label="Facebook"
-          {...register('footer_facebook')}
-        />
-
-        <InputFormulario
-          label="Twitter"
-          {...register('footer_twitter')}
-        />
-
-        <InputFormulario
-          label="Instagram"
-          {...register('footer_instagram')}
-        />
-
-        <InputFormulario
-          label="WhatsApp"
-          {...register('footer_whatsapp')}
-        />
+        <InputFormulario label="Facebook" {...register('footer_facebook')} />
+        <InputFormulario label="Twitter" {...register('footer_twitter')} />
+        <InputFormulario label="Instagram" {...register('footer_instagram')} />
+        <InputFormulario label="WhatsApp" {...register('footer_whatsapp')} />
       </div>
 
       {/* ----- Contacto y Ubicación ----- */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <InputFormulario
-          label="Teléfono"
-          {...register('contacto_telefono')}
-        />
-
-        <InputFormulario
-          label="Email"
-          {...register('contacto_email')}
-        />
-
-        <InputFormulario
-          label="Dirección"
-          {...register('ubicacion_direccion')}
-        />
-
-        <InputFormulario
-          label="Ciudad"
-          {...register('ubicacion_ciudad')}
-        />
-
-        <InputFormulario
-          label="País"
-          {...register('ubicacion_pais')}
-        />
+        <InputFormulario label="Teléfono" {...register('contacto_telefono')} />
+        <InputFormulario label="Email" {...register('contacto_email')} />
+        <InputFormulario label="Dirección" {...register('ubicacion_direccion')} />
+        <InputFormulario label="Ciudad" {...register('ubicacion_ciudad')} />
+        <InputFormulario label="País" {...register('ubicacion_pais')} />
       </div>
     </div>
   );
 };
 
 export default StepFooter;
-

@@ -13,6 +13,7 @@ const StepDatosGenerales = () => {
       <div className="space-y-4">
         <InputFormulario
           label="Tipografía de la Agencia"
+          esTipografia
           {...register('tipografia_agencia')}
         />
         <Controller
@@ -83,4 +84,3 @@ const StepDatosGenerales = () => {
 };
 
 export default StepDatosGenerales;
-

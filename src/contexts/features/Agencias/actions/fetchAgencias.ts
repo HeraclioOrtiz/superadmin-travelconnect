@@ -13,8 +13,7 @@ export const fetchAgencias = async (): Promise<AgenciaBackData[]> => {
 
   const data = await response.json();
   
-  // Log para inspeccionar los datos recibidos
-  console.log('Datos recibidos en fetchAgencias:', data);
+
 
   return data;
 };
