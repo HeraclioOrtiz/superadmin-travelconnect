@@ -1,5 +1,5 @@
 'use client';
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { createContext, useContext, useMemo, useEffect } from 'react';
 import useAgenciasState from './state/useAgenciasState';
 import useAgenciasActions from './actions/useAgenciasActions';
 import useAgenciasQueries from './queries/useAgenciasQueries';
@@ -11,7 +11,7 @@ interface AgenciasContextType {
   actions: {
     fetchAgencias: () => Promise<boolean>;
     createAgencia: (formData: FormData) => Promise<{ success: boolean; error?: string }>;
-    editAgencia: (formData: FormData) => Promise<{ success: boolean; error?: string }>; // ✅ corregido
+    editAgencia: (formData: FormData) => Promise<{ success: boolean; error?: string }>;
     deleteAgencia: (id: number) => Promise<{ success: boolean; error?: string }>;
     startAutoRefresh: () => void;
     stopAutoRefresh: () => void;
@@ -58,12 +58,19 @@ export const AgenciasProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return result;
   };
 
+  // ✅ Fetch inicial al montar el provider
+  useEffect(() => {
+    if (state.agencias.length === 0) {
+      actions.fetchAgencias();
+    }
+  }, []); // Solo al montar
+
   const contextValue = useMemo(() => ({
     state,
     actions: {
       fetchAgencias: actions.fetchAgencias,
       createAgencia: actions.createAgencia,
-      editAgencia: actions.editAgencia, // ✅ ya no requiere id explícitamente
+      editAgencia: actions.editAgencia,
       deleteAgencia,
       startAutoRefresh: () => {},
       stopAutoRefresh: () => {}
@@ -85,4 +92,3 @@ export const useAgenciasContext = () => {
   }
   return context;
 };
-

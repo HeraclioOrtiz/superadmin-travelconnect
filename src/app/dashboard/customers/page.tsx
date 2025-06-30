@@ -29,10 +29,6 @@ export default function Page(): React.JSX.Element {
     cerrarModalServicios,
   } = useModalServiciosAgenciaSuper();
 
-  React.useEffect(() => {
-    actions.fetchAgencias();
-  }, [actions]);
-
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -106,4 +102,3 @@ export default function Page(): React.JSX.Element {
     </Stack>
   );
 }
-

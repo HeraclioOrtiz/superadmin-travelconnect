@@ -13,7 +13,7 @@ export const subirArchivoPaquetes = async (
   | {
       status: 'success';
       message: string;
-      stats: {
+      stats?: {
         total_records: number;
         created: number;
         updated: number;
@@ -39,7 +39,28 @@ export const subirArchivoPaquetes = async (
     });
 
     const data = await response.json();
-    return data;
+    console.log('📥 Respuesta subirArchivoPaquetes:', data);
+
+    if (response.ok) {
+      // Maneja casos en los que la API devuelve un campo `error` incluso con status 200
+      if (data.error) {
+        return {
+          status: 'error',
+          message: data.error,
+        };
+      }
+
+      return {
+        status: 'success',
+        message: data.message ?? 'Archivo importado correctamente.',
+        stats: data.stats,
+      };
+    } else {
+      return {
+        status: 'error',
+        message: data.message ?? 'Error al importar los paquetes.',
+      };
+    }
   } catch (error) {
     console.error('❌ Error al subir archivo CSV:', error);
     return {
@@ -67,9 +88,10 @@ export const exportarArchivoPaquetes = async (
     });
 
     const data = await response.json();
+    console.log('📦 Respuesta exportar-paquetes:', data);
 
-    if (response.ok && data.download_url) {
-      return data.download_url;
+    if (response.ok && data?.data?.download_url) {
+      return data.data.download_url;
     } else {
       console.error('❌ Error al exportar paquetes:', data.message);
       return null;
@@ -79,4 +101,3 @@ export const exportarArchivoPaquetes = async (
     return null;
   }
 };
-

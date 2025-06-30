@@ -14,7 +14,7 @@ export const navItems: NavItem[] = [
   {
     label: 'Inicio',
     href: '/dashboard',
-    matcher: { type: 'equals', href: '/dashboard' }, // ✅ corregido
+    matcher: { type: 'equals', href: '/dashboard' },
     icon: 'chart-pie',
     roles: ['admin', 'superadmin'],
   },
@@ -37,7 +37,14 @@ export const navItems: NavItem[] = [
     href: '/dashboard/integrations',
     matcher: { type: 'startsWith', href: '/dashboard/integrations' },
     icon: 'plugs-connected',
-    roles: ['admin', 'superadmin'],
+    roles: ['admin'], // ✅ corregido: solo admin
+  },
+  {
+    label: 'Paquetes Propios',
+    href: '/dashboard/paquetesPropios',
+    matcher: { type: 'startsWith', href: '/dashboard/paquetesPropios' },
+    icon: 'package',
+    roles: ['superadmin'], // ✅ nuevo ítem
   },
   {
     label: 'Configuración',
@@ -47,4 +54,3 @@ export const navItems: NavItem[] = [
     roles: ['admin', 'superadmin'],
   },
 ];
-

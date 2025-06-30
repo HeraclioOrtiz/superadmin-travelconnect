@@ -19,6 +19,10 @@ module.exports = {
       typescript: {
         project,
       },
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        moduleDirectory: ['node_modules', './'],
+      },
     },
   },
   rules: {
@@ -68,7 +72,7 @@ module.exports = {
 
     // 🚫 Reglas desactivadas por errores en deploy
     '@typescript-eslint/no-unnecessary-template-expression': 'off',
-'@typescript-eslint/restrict-plus-operands': 'off',
+    '@typescript-eslint/restrict-plus-operands': 'off',
     'react-hooks/exhaustive-deps': 'off',
     'react/function-component-definition': 'off',
     'react/jsx-no-leaked-render': 'off',
