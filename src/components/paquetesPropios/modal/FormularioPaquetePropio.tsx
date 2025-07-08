@@ -20,7 +20,7 @@ const convertirFecha = (fecha: string | undefined) => {
 }
 
 interface FormularioPaquetePropioProps {
-  paquete?: PaquetePropio | null
+  paquete?: Partial<PaquetePropio> | null // ✅ Soporta duplicación
 }
 
 export default function FormularioPaquetePropio({ paquete }: FormularioPaquetePropioProps) {

@@ -24,16 +24,23 @@ export async function fetchSalidaPorId(id: number): Promise<Salida> {
 
 // POST /salidas
 export async function crearSalida(salida: Partial<Salida>): Promise<Salida> {
+  const salidaLimpia = { ...salida };
+  delete salidaLimpia.id;
+  delete salidaLimpia.created_at;
+  delete salidaLimpia.updated_at;
+
   const res = await fetch(`${API_BASE}/salidas`, {
     method: 'POST',
     headers,
-    body: JSON.stringify(salida),
+    body: JSON.stringify(salidaLimpia),
   });
+
   if (!res.ok) {
     const errorText = await res.text();
     console.error('[SALIDAS SERVICE] ❌ Error al crear la salida:', errorText);
     throw new Error('Error al crear la salida');
   }
+
   const data = await res.json();
   return data.data;
 }
@@ -45,11 +52,13 @@ export async function editarSalida(id: number, salida: Partial<Salida>): Promise
     headers,
     body: JSON.stringify(salida),
   });
+
   if (!res.ok) {
     const errorText = await res.text();
     console.error('[SALIDAS SERVICE] ❌ Error al actualizar salida:', errorText);
     throw new Error('Error al actualizar la salida');
   }
+
   const data = await res.json();
   return data.data;
 }
@@ -60,6 +69,7 @@ export async function eliminarSalida(id: number): Promise<void> {
     method: 'DELETE',
     headers,
   });
+
   if (!res.ok) {
     const errorText = await res.text();
     console.error('[SALIDAS SERVICE] ❌ Error al eliminar salida:', errorText);

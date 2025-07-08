@@ -14,17 +14,33 @@ import {
   crearPaquetePropio,
   editarPaquetePropio
 } from '@/components/paquetesPropios/paquetespropiosService'
+import { PaquetePropio } from '@/types/PaquetePropio'
+
+function limpiarParaDuplicar(paquete: PaquetePropio): Partial<PaquetePropio> {
+  const { id, slug, ...rest } = paquete
+  return {
+    ...rest,
+    titulo: paquete.titulo + ' (copia)',
+    activo: true,
+  }
+}
 
 export default function ModalPaquetePropio() {
   const {
     modalAbierto,
     cerrarModal,
     paqueteSeleccionado,
+    paqueteADuplicar,
     fetchPaquetesDeAgencia,
     idAgenciaEnCreacion
   } = usePaquetesPropios()
 
   const isEditando = Boolean(paqueteSeleccionado)
+  const isDuplicando = Boolean(paqueteADuplicar)
+
+  const paqueteInicial = isDuplicando
+    ? limpiarParaDuplicar(paqueteADuplicar!)
+    : paqueteSeleccionado
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -56,8 +72,7 @@ export default function ModalPaquetePropio() {
     formData.append('tipo_moneda', form.moneda.value)
     formData.append('descuento', '0')
 
-    // ✅ Leer el valor de estrellas (Rating)
-    const estrellas = form.estrellas?.value || '3' // default si no se toca
+    const estrellas = form.estrellas?.value || '3'
     formData.append('estrellas', estrellas)
 
     formData.append('componentes[]', '')
@@ -90,15 +105,23 @@ export default function ModalPaquetePropio() {
     <Dialog open={modalAbierto} onClose={cerrarModal} maxWidth="sm" fullWidth>
       <form onSubmit={handleSubmit}>
         <DialogTitle>
-          {isEditando ? 'Editar paquete propio' : 'Crear nuevo paquete propio'}
+          {isEditando
+            ? 'Editar paquete propio'
+            : isDuplicando
+            ? 'Duplicar paquete'
+            : 'Crear nuevo paquete propio'}
         </DialogTitle>
         <DialogContent>
-          <FormularioPaquetePropio paquete={paqueteSeleccionado} />
+          <FormularioPaquetePropio paquete={paqueteInicial ?? undefined} />
         </DialogContent>
         <DialogActions>
           <Button onClick={cerrarModal}>Cancelar</Button>
           <Button type="submit" variant="contained">
-            {isEditando ? 'Guardar cambios' : 'Crear paquete'}
+            {isEditando
+              ? 'Guardar cambios'
+              : isDuplicando
+              ? 'Crear duplicado'
+              : 'Crear paquete'}
           </Button>
         </DialogActions>
       </form>

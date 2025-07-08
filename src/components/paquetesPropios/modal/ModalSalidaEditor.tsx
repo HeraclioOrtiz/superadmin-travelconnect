@@ -10,6 +10,7 @@ import {
 import { useState, useEffect, FormEvent } from 'react';
 import { Salida } from '@/types/Salidas';
 import FormularioSalida from '../salidas/FomularioSalida';
+import { usePaquetesPropios } from '@/contexts/features/PaquetesPropiosProvider/usePaquetesPropios';
 
 interface ModalSalidaEditorProps {
   open: boolean;
@@ -24,20 +25,36 @@ export default function ModalSalidaEditor({
   onSubmit,
   initialData
 }: ModalSalidaEditorProps) {
+  const {
+    salidaADuplicar,
+    setSalidaADuplicar,
+    paqueteActivoParaSalidas,
+    idAgenciaEnCreacion
+  } = usePaquetesPropios();
+
   const [formData, setFormData] = useState<Salida>(getInitialSalida());
 
   useEffect(() => {
-    if (initialData) {
+    let base: Salida | null = initialData ?? salidaADuplicar ?? null;
+
+    if (base) {
       const fechas = [
         'fecha_desde', 'fecha_hasta', 'fecha_viaje',
         'ida_origen_fecha', 'ida_destino_fecha',
         'vuelta_origen_fecha', 'vuelta_destino_fecha'
       ] as const;
 
-      const dataNormalizada: any = { ...initialData };
+      const dataNormalizada: any = {
+        ...base,
+        id: 0, // ⚠️ limpiar ID siempre
+        created_at: '',
+        updated_at: '',
+        paquete_id: paqueteActivoParaSalidas?.id ?? 0,
+        usuario_id: idAgenciaEnCreacion ?? ''
+      };
 
       fechas.forEach((campo) => {
-        const valor = initialData[campo];
+        const valor = base[campo];
         if (typeof valor === 'string' && valor) {
           if (valor.includes('T')) {
             dataNormalizada[campo] = valor.split('T')[0];
@@ -54,7 +71,7 @@ export default function ModalSalidaEditor({
     } else {
       setFormData(getInitialSalida());
     }
-  }, [initialData, open]);
+  }, [initialData, salidaADuplicar, open, paqueteActivoParaSalidas, idAgenciaEnCreacion]);
 
   const handleChange = (campo: keyof Salida, valor: any) => {
     setFormData((prev) => ({ ...prev, [campo]: valor }));
@@ -63,15 +80,26 @@ export default function ModalSalidaEditor({
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onSubmit(formData);
+    setSalidaADuplicar(null); // 🔄 limpiar duplicado después de usar
     onClose();
+  };
+
+  const getTitulo = () => {
+    if (salidaADuplicar) return 'Duplicar salida';
+    if (initialData) return 'Editar salida';
+    return 'Agregar nueva salida';
+  };
+
+  const getBoton = () => {
+    if (salidaADuplicar) return 'Crear duplicado';
+    if (initialData) return 'Guardar cambios';
+    return 'Crear salida';
   };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth>
       <form onSubmit={handleSubmit}>
-        <DialogTitle>
-          {initialData ? 'Editar salida' : 'Agregar nueva salida'}
-        </DialogTitle>
+        <DialogTitle>{getTitulo()}</DialogTitle>
         <DialogContent dividers>
           <FormularioSalida salida={formData} onChange={handleChange} />
         </DialogContent>
@@ -80,7 +108,7 @@ export default function ModalSalidaEditor({
             Cancelar
           </Button>
           <Button type="submit" variant="contained">
-            Guardar
+            {getBoton()}
           </Button>
         </DialogActions>
       </form>
@@ -88,7 +116,6 @@ export default function ModalSalidaEditor({
   );
 }
 
-// ✅ Valores por defecto con tipo correcto
 function getInitialSalida(): Salida {
   return {
     id: 0,

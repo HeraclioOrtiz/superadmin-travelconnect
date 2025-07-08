@@ -15,7 +15,6 @@ interface FormularioSalidaProps {
   onChange: (campo: keyof Salida, valor: any) => void;
 }
 
-// 🔧 Asegura que la fecha esté en formato YYYY-MM-DD
 const parseFecha = (fecha: string | null | undefined) =>
   typeof fecha === 'string' && fecha.includes('T') ? fecha.split('T')[0] : fecha || '';
 

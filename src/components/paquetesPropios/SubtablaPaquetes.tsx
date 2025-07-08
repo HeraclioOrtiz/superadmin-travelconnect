@@ -14,7 +14,7 @@ import {
   Typography,
   Tooltip,
 } from '@mui/material';
-import { PencilSimple, Trash } from '@phosphor-icons/react';
+import { PencilSimple, Trash, CopySimple } from '@phosphor-icons/react'; // ✅ nuevo ícono
 
 import { usePaquetesPropios } from '@/contexts/features/PaquetesPropiosProvider/usePaquetesPropios';
 import type { PaquetePropio } from '@/types/PaquetePropio';
@@ -32,11 +32,12 @@ export function SubtablaPaquetes({ agenciaId, nombreAgencia }: SubtablaPaquetesP
     abrirModal,
     abrirModalCreacion,
     seleccionarPaqueteParaSalidas,
-    setIdAgenciaEnCreacion, // ✅ Importado correctamente
+    setIdAgenciaEnCreacion,
+    duplicarPaquete,
   } = usePaquetesPropios();
 
   const loading = paquetesPorAgencia[agenciaId] === undefined;
-  const error = false; // Ajustar si tenés lógica de error real
+  const error = false;
   const paquetes = paquetesPorAgencia[agenciaId] || [];
 
   const handleCrearNuevo = () => {
@@ -59,8 +60,15 @@ export function SubtablaPaquetes({ agenciaId, nombreAgencia }: SubtablaPaquetesP
 
   const handleVerSalidas = (paquete: PaquetePropio) => {
     console.log('🔵 Ver salidas del paquete', paquete.id);
-    seleccionarPaqueteParaSalidas(paquete);     // Abre modal
-    setIdAgenciaEnCreacion(agenciaId);          // ✅ Setea la agencia activa para salidas
+    seleccionarPaqueteParaSalidas(paquete);
+    setIdAgenciaEnCreacion(agenciaId);
+  };
+
+  const handleDuplicar = (paquete: PaquetePropio) => {
+    console.log('🟣 Duplicar paquete:', paquete);
+    setIdAgenciaEnCreacion(agenciaId); // ✅ clave para evitar error
+    duplicarPaquete(paquete);
+    abrirModal();
   };
 
   return (
@@ -124,6 +132,11 @@ export function SubtablaPaquetes({ agenciaId, nombreAgencia }: SubtablaPaquetesP
                   <Tooltip title="Editar">
                     <IconButton onClick={() => handleEditar(paquete)}>
                       <PencilSimple size={20} />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Duplicar">
+                    <IconButton onClick={() => handleDuplicar(paquete)}>
+                      <CopySimple size={20} /> {/* ✅ nuevo ícono claro */}
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Eliminar">

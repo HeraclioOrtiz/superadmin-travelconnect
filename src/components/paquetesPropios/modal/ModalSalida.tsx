@@ -20,13 +20,23 @@ import {
   Snackbar,
   Alert,
 } from '@mui/material';
-import { PencilSimple, Trash, CaretDown, CaretRight } from '@phosphor-icons/react';
+import {
+  PencilSimple,
+  Trash,
+  CaretDown,
+  CaretRight,
+  CopySimple, // ✅ icono duplicar
+} from '@phosphor-icons/react';
 import { Fragment, useState } from 'react';
 
 import { usePaquetesPropios } from '@/contexts/features/PaquetesPropiosProvider/usePaquetesPropios';
 import { Salida } from '@/types/Salidas';
 import ModalSalidaEditor from './ModalSalidaEditor';
-import { crearSalida, editarSalida, eliminarSalida } from '@/components/paquetesPropios/salidasService';
+import {
+  crearSalida,
+  editarSalida,
+  eliminarSalida,
+} from '@/components/paquetesPropios/salidasService';
 
 export default function ModalSalidas() {
   const {
@@ -34,6 +44,7 @@ export default function ModalSalidas() {
     limpiarPaqueteParaSalidas,
     fetchPaquetesDeAgencia,
     idAgenciaEnCreacion,
+    setSalidaADuplicar, // ✅ para duplicar
   } = usePaquetesPropios();
 
   const [expandida, setExpandida] = useState<number | null>(null);
@@ -127,7 +138,6 @@ export default function ModalSalidas() {
   const salidas = paqueteActivoParaSalidas.salidas;
   console.log('📦 Salidas recibidas para el paquete:', salidas);
 
-
   return (
     <>
       <Dialog open onClose={handleClose} maxWidth="lg" fullWidth>
@@ -157,8 +167,17 @@ export default function ModalSalidas() {
                     <Fragment key={salida.id}>
                       <TableRow>
                         <TableCell>
-                          <IconButton size="small" onClick={() => setExpandida(abierta ? null : salida.id)}>
-                            {abierta ? <CaretDown size={18} /> : <CaretRight size={18} />}
+                          <IconButton
+                            size="small"
+                            onClick={() =>
+                              setExpandida(abierta ? null : salida.id)
+                            }
+                          >
+                            {abierta ? (
+                              <CaretDown size={18} />
+                            ) : (
+                              <CaretRight size={18} />
+                            )}
                           </IconButton>
                         </TableCell>
                         <TableCell>{salida.fecha_desde}</TableCell>
@@ -167,13 +186,33 @@ export default function ModalSalidas() {
                         <TableCell>{salida.doble_precio}</TableCell>
                         <TableCell align="right">
                           <Tooltip title="Editar salida">
-                            <IconButton onClick={() => handleEditar(salida)} disabled={loadingSubmit}>
+                            <IconButton
+                              onClick={() => handleEditar(salida)}
+                              disabled={loadingSubmit}
+                            >
                               <PencilSimple size={20} />
                             </IconButton>
                           </Tooltip>
+
                           <Tooltip title="Eliminar salida">
-                            <IconButton onClick={() => handleEliminar(salida.id)} disabled={loadingSubmit}>
+                            <IconButton
+                              onClick={() => handleEliminar(salida.id)}
+                              disabled={loadingSubmit}
+                            >
                               <Trash size={20} />
+                            </IconButton>
+                          </Tooltip>
+
+                          <Tooltip title="Duplicar salida">
+                            <IconButton
+                              onClick={() => {
+                                setSalidaSeleccionada(null);
+                                setSalidaADuplicar(salida);
+                                setModalEditorAbierto(true);
+                              }}
+                              disabled={loadingSubmit}
+                            >
+                              <CopySimple size={20} />
                             </IconButton>
                           </Tooltip>
                         </TableCell>

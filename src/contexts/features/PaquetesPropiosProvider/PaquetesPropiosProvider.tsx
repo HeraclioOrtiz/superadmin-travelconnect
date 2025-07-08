@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import { PaquetePropio } from '@/types/PaquetePropio';
+import { Salida } from '@/types/Salidas';
 import {
   fetchPaquetesPorAgencia,
   eliminarPaquetePorId
@@ -12,16 +13,30 @@ interface PaquetesPropiosContextType {
   paquetesPorAgencia: Record<string, PaquetePropio[]>;
   loadingPorAgencia: Record<string, boolean>;
   errorPorAgencia: Record<string, string | null>;
+
   paqueteSeleccionado: PaquetePropio | null;
+  paqueteADuplicar: PaquetePropio | null;
   paqueteActivoParaSalidas: PaquetePropio | null;
+
+  salidaADuplicar: Salida | null;
+  setSalidaADuplicar: (salida: Salida | null) => void;
+  limpiarSalidaADuplicar: () => void;
+
   modalAbierto: boolean;
   idAgenciaEnCreacion: string | null;
+
   setIdAgenciaEnCreacion: (id: string | null) => void;
   fetchPaquetesDeAgencia: (agenciaId: string) => Promise<void>;
   eliminarPaquete: (paqueteId: number) => Promise<void>;
+
   seleccionarPaquete: (paquete: PaquetePropio | null) => void;
+  duplicarPaquete: (paquete: PaquetePropio) => void;
+
   seleccionarPaqueteParaSalidas: (paquete: PaquetePropio) => void;
   limpiarPaqueteParaSalidas: () => void;
+
+  duplicarSalida: (salida: Salida, paqueteId: number, agenciaId: string) => void;
+
   abrirModal: () => void;
   cerrarModal: () => void;
   abrirModalCreacion: (agenciaId: string) => void;
@@ -45,6 +60,8 @@ export const PaquetesPropiosProvider: React.FC<{ children: React.ReactNode }> = 
 
   const [idAgenciaEnCreacion, setIdAgenciaEnCreacion] = useState<string | null>(null);
   const [paqueteActivoParaSalidas, setPaqueteActivoParaSalidas] = useState<PaquetePropio | null>(null);
+  const [paqueteADuplicar, setPaqueteADuplicar] = useState<PaquetePropio | null>(null);
+  const [salidaADuplicar, setSalidaADuplicar] = useState<Salida | null>(null);
 
   const fetchPaquetesDeAgencia = async (agenciaId: string) => {
     setLoadingPorAgencia((prev) => ({ ...prev, [agenciaId]: true }));
@@ -83,7 +100,25 @@ export const PaquetesPropiosProvider: React.FC<{ children: React.ReactNode }> = 
 
   const seleccionarPaquete = (paquete: PaquetePropio | null) => {
     setPaqueteSeleccionado(paquete);
+    setPaqueteADuplicar(null);
     setModalAbierto(true);
+  };
+
+  const duplicarPaquete = (paquete: PaquetePropio) => {
+    setPaqueteADuplicar(paquete);
+    setPaqueteSeleccionado(null);
+    setModalAbierto(true);
+  };
+
+  const duplicarSalida = (salida: Salida, paqueteId: number, agenciaId: string) => {
+    setSalidaADuplicar(salida);
+    setIdAgenciaEnCreacion(agenciaId);
+    const paquete = paquetesPorAgencia[agenciaId]?.find((p) => p.id === paqueteId) ?? null;
+    setPaqueteActivoParaSalidas(paquete);
+  };
+
+  const limpiarSalidaADuplicar = () => {
+    setSalidaADuplicar(null);
   };
 
   const seleccionarPaqueteParaSalidas = (paquete: PaquetePropio) => {
@@ -99,6 +134,8 @@ export const PaquetesPropiosProvider: React.FC<{ children: React.ReactNode }> = 
   const cerrarModal = () => {
     setModalAbierto(false);
     setPaqueteSeleccionado(null);
+    setPaqueteADuplicar(null);
+    setSalidaADuplicar(null);
     setIdAgenciaEnCreacion(null);
   };
 
@@ -113,13 +150,19 @@ export const PaquetesPropiosProvider: React.FC<{ children: React.ReactNode }> = 
       loadingPorAgencia,
       errorPorAgencia,
       paqueteSeleccionado,
+      paqueteADuplicar,
       paqueteActivoParaSalidas,
+      salidaADuplicar,
+      setSalidaADuplicar,
+      limpiarSalidaADuplicar,
       modalAbierto,
       idAgenciaEnCreacion,
       setIdAgenciaEnCreacion,
       fetchPaquetesDeAgencia,
       eliminarPaquete,
       seleccionarPaquete,
+      duplicarPaquete,
+      duplicarSalida,
       seleccionarPaqueteParaSalidas,
       limpiarPaqueteParaSalidas,
       abrirModal,
@@ -131,7 +174,9 @@ export const PaquetesPropiosProvider: React.FC<{ children: React.ReactNode }> = 
       loadingPorAgencia,
       errorPorAgencia,
       paqueteSeleccionado,
+      paqueteADuplicar,
       paqueteActivoParaSalidas,
+      salidaADuplicar,
       modalAbierto,
       idAgenciaEnCreacion
     ]
