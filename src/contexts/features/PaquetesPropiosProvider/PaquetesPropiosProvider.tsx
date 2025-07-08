@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { createContext, useContext, useMemo, useState } from 'react';
 import { PaquetePropio } from '@/types/PaquetePropio';
 import {
   fetchPaquetesPorAgencia,
@@ -13,12 +13,18 @@ interface PaquetesPropiosContextType {
   loadingPorAgencia: Record<string, boolean>;
   errorPorAgencia: Record<string, string | null>;
   paqueteSeleccionado: PaquetePropio | null;
+  paqueteActivoParaSalidas: PaquetePropio | null;
   modalAbierto: boolean;
+  idAgenciaEnCreacion: string | null;
+  setIdAgenciaEnCreacion: (id: string | null) => void;
   fetchPaquetesDeAgencia: (agenciaId: string) => Promise<void>;
   eliminarPaquete: (paqueteId: number) => Promise<void>;
-  seleccionarPaquete: (paquete: PaquetePropio) => void;
+  seleccionarPaquete: (paquete: PaquetePropio | null) => void;
+  seleccionarPaqueteParaSalidas: (paquete: PaquetePropio) => void;
+  limpiarPaqueteParaSalidas: () => void;
   abrirModal: () => void;
   cerrarModal: () => void;
+  abrirModalCreacion: (agenciaId: string) => void;
 }
 
 const PaquetesPropiosContext = createContext<PaquetesPropiosContextType | undefined>(undefined);
@@ -37,19 +43,19 @@ export const PaquetesPropiosProvider: React.FC<{ children: React.ReactNode }> = 
     setModalAbierto
   } = usePaquetesPropiosState();
 
+  const [idAgenciaEnCreacion, setIdAgenciaEnCreacion] = useState<string | null>(null);
+  const [paqueteActivoParaSalidas, setPaqueteActivoParaSalidas] = useState<PaquetePropio | null>(null);
+
   const fetchPaquetesDeAgencia = async (agenciaId: string) => {
     setLoadingPorAgencia((prev) => ({ ...prev, [agenciaId]: true }));
     setErrorPorAgencia((prev) => ({ ...prev, [agenciaId]: null }));
 
     try {
       const paquetes = await fetchPaquetesPorAgencia(agenciaId);
-      console.log(`📦 Paquetes recibidos en provider para agencia ${agenciaId}:`, paquetes);
-
-      setPaquetesPorAgencia((prev) => {
-        const nuevo = { ...prev, [agenciaId]: paquetes };
-        console.log(`🧠 Contexto actualizado para agencia ${agenciaId}:`, nuevo);
-        return nuevo;
-      });
+      setPaquetesPorAgencia((prev) => ({
+        ...prev,
+        [agenciaId]: paquetes
+      }));
     } catch (error: any) {
       setErrorPorAgencia((prev) => ({
         ...prev,
@@ -63,28 +69,42 @@ export const PaquetesPropiosProvider: React.FC<{ children: React.ReactNode }> = 
   const eliminarPaquete = async (paqueteId: number) => {
     try {
       await eliminarPaquetePorId(paqueteId);
-
       setPaquetesPorAgencia((prev) => {
-        const nuevo = { ...prev };
-        for (const key in nuevo) {
-          nuevo[key] = nuevo[key].filter((p) => p.id !== paqueteId);
+        const actualizado = { ...prev };
+        for (const key in actualizado) {
+          actualizado[key] = actualizado[key].filter((p) => p.id !== paqueteId);
         }
-        return nuevo;
+        return actualizado;
       });
     } catch (error) {
       console.error('Error al eliminar paquete:', error);
     }
   };
 
-  const seleccionarPaquete = (paquete: PaquetePropio) => {
+  const seleccionarPaquete = (paquete: PaquetePropio | null) => {
     setPaqueteSeleccionado(paquete);
     setModalAbierto(true);
   };
 
+  const seleccionarPaqueteParaSalidas = (paquete: PaquetePropio) => {
+    setPaqueteActivoParaSalidas(paquete);
+  };
+
+  const limpiarPaqueteParaSalidas = () => {
+    setPaqueteActivoParaSalidas(null);
+  };
+
   const abrirModal = () => setModalAbierto(true);
+
   const cerrarModal = () => {
     setModalAbierto(false);
     setPaqueteSeleccionado(null);
+    setIdAgenciaEnCreacion(null);
+  };
+
+  const abrirModalCreacion = (agenciaId: string) => {
+    setIdAgenciaEnCreacion(agenciaId);
+    seleccionarPaquete(null);
   };
 
   const contextValue: PaquetesPropiosContextType = useMemo(
@@ -93,19 +113,27 @@ export const PaquetesPropiosProvider: React.FC<{ children: React.ReactNode }> = 
       loadingPorAgencia,
       errorPorAgencia,
       paqueteSeleccionado,
+      paqueteActivoParaSalidas,
       modalAbierto,
+      idAgenciaEnCreacion,
+      setIdAgenciaEnCreacion,
       fetchPaquetesDeAgencia,
       eliminarPaquete,
       seleccionarPaquete,
+      seleccionarPaqueteParaSalidas,
+      limpiarPaqueteParaSalidas,
       abrirModal,
-      cerrarModal
+      cerrarModal,
+      abrirModalCreacion
     }),
     [
       paquetesPorAgencia,
       loadingPorAgencia,
       errorPorAgencia,
       paqueteSeleccionado,
-      modalAbierto
+      paqueteActivoParaSalidas,
+      modalAbierto,
+      idAgenciaEnCreacion
     ]
   );
 

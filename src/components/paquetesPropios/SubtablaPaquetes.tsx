@@ -30,20 +30,22 @@ export function SubtablaPaquetes({ agenciaId, nombreAgencia }: SubtablaPaquetesP
     eliminarPaquete,
     seleccionarPaquete,
     abrirModal,
-    loadingPorAgencia,
-    errorPorAgencia,
+    abrirModalCreacion,
+    seleccionarPaqueteParaSalidas,
+    setIdAgenciaEnCreacion, // ✅ Importado correctamente
   } = usePaquetesPropios();
 
-  const loading = loadingPorAgencia[agenciaId];
-  const error = errorPorAgencia[agenciaId];
+  const loading = paquetesPorAgencia[agenciaId] === undefined;
+  const error = false; // Ajustar si tenés lógica de error real
   const paquetes = paquetesPorAgencia[agenciaId] || [];
 
   const handleCrearNuevo = () => {
-    seleccionarPaquete(null as unknown as PaquetePropio); // abrir modal vacío
-    abrirModal();
+    console.log('🟢 Click en crear paquete');
+    abrirModalCreacion(agenciaId);
   };
 
   const handleEditar = (paquete: PaquetePropio) => {
+    console.log('🟠 Click en editar paquete:', paquete);
     seleccionarPaquete(paquete);
     abrirModal();
   };
@@ -53,6 +55,12 @@ export function SubtablaPaquetes({ agenciaId, nombreAgencia }: SubtablaPaquetesP
     if (confirm) {
       await eliminarPaquete(id);
     }
+  };
+
+  const handleVerSalidas = (paquete: PaquetePropio) => {
+    console.log('🔵 Ver salidas del paquete', paquete.id);
+    seleccionarPaqueteParaSalidas(paquete);     // Abre modal
+    setIdAgenciaEnCreacion(agenciaId);          // ✅ Setea la agencia activa para salidas
   };
 
   return (
@@ -72,12 +80,6 @@ export function SubtablaPaquetes({ agenciaId, nombreAgencia }: SubtablaPaquetesP
         </Box>
       )}
 
-      {error && (
-        <Typography color="error" variant="body2">
-          Error al cargar paquetes: {error}
-        </Typography>
-      )}
-
       {!loading && !error && paquetes.length === 0 && (
         <Typography variant="body2" color="text.secondary">
           No hay paquetes propios registrados para esta agencia.
@@ -95,7 +97,7 @@ export function SubtablaPaquetes({ agenciaId, nombreAgencia }: SubtablaPaquetesP
               <TableCell>Hasta</TableCell>
               <TableCell>Noches</TableCell>
               <TableCell>Moneda</TableCell>
-              <TableCell>Precio</TableCell>
+              <TableCell>Salidas</TableCell>
               <TableCell align="right">Acciones</TableCell>
             </TableRow>
           </TableHead>
@@ -109,7 +111,15 @@ export function SubtablaPaquetes({ agenciaId, nombreAgencia }: SubtablaPaquetesP
                 <TableCell>{paquete.fecha_vigencia_hasta}</TableCell>
                 <TableCell>{paquete.cant_noches}</TableCell>
                 <TableCell>{paquete.tipo_moneda}</TableCell>
-                <TableCell>{paquete.descuento}</TableCell>
+                <TableCell>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => handleVerSalidas(paquete)}
+                  >
+                    Ver salidas ({paquete.salidas.length})
+                  </Button>
+                </TableCell>
                 <TableCell align="right">
                   <Tooltip title="Editar">
                     <IconButton onClick={() => handleEditar(paquete)}>

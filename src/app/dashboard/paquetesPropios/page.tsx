@@ -2,6 +2,8 @@
 
 import { Box, Container, Stack, Typography } from '@mui/material';
 import { TablaAgenciasResumen } from '../../../components/paquetesPropios/TablaAgenciasResumen';
+import ModalPaquetePropio from '../../../components/paquetesPropios/modal/ModalPaquetePropio';
+import ModalSalidas from '../../../components/paquetesPropios/modal/ModalSalida'; // ✅ importar el modal de salidas
 
 export default function PaquetesPropiosPage() {
   return (
@@ -14,8 +16,11 @@ export default function PaquetesPropiosPage() {
           Visualizá y gestioná los paquetes propios asociados a cada agencia.
         </Typography>
 
-        {/* Tabla de agencias con opción de expandir paquetes */}
         <TablaAgenciasResumen />
+
+        {/* ✅ Montar ambos modales */}
+        <ModalPaquetePropio />
+        <ModalSalidas />
       </Stack>
     </Container>
   );
