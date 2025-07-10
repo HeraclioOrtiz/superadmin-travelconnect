@@ -34,9 +34,9 @@ interface PaquetesPropiosContextType {
   eliminarPaquete: (paqueteId: number) => Promise<void>
 
   seleccionarPaquete: (paquete: PaquetePropio | null) => void
-  duplicarPaquete: (paquete: PaquetePropio) => void
+  duplicarPaquete: (paquete: PaquetePropio, agenciaId: string) => void
 
-  seleccionarPaqueteParaSalidas: (paquete: PaquetePropio) => void
+  seleccionarPaqueteParaSalidas: (paquete: PaquetePropio, agenciaId: string) => void
   limpiarPaqueteParaSalidas: () => void
 
   duplicarSalida: (salida: Salida, paqueteId: number, agenciaId: string) => void
@@ -128,17 +128,22 @@ export const PaquetesPropiosProvider: React.FC<{ children: React.ReactNode }> = 
   }
 
   /* ------------------------- SELECCIÓN / DUPLICADO -------------------------- */
-  const seleccionarPaquete = (paquete: PaquetePropio | null) => {
-    setPaqueteSeleccionado(paquete)
-    setPaqueteADuplicar(null)
-    setIdAgenciaEnCreacion(paquete?.usuario_id ? paquete.usuario_id.toString() : null)
-    setModalAbierto(true)
+ const seleccionarPaquete = (paquete: PaquetePropio | null) => {
+  setPaqueteSeleccionado(paquete);
+  setPaqueteADuplicar(null);
+
+  // ✅ Solo actualizar si hay paquete, para no borrar el ID cargado desde abrirModalCreacion
+  if (paquete?.usuario_id) {
+    setIdAgenciaEnCreacion(String(paquete.usuario_id));
   }
 
-  const duplicarPaquete = (paquete: PaquetePropio) => {
+  setModalAbierto(true);
+};
+
+  const duplicarPaquete = (paquete: PaquetePropio, agenciaId: string) => {
     setPaqueteADuplicar(paquete)
     setPaqueteSeleccionado(null)
-    setIdAgenciaEnCreacion(paquete.usuario_id ? paquete.usuario_id.toString() : null)
+    setIdAgenciaEnCreacion(agenciaId)
     setModalAbierto(true)
   }
 
@@ -162,8 +167,10 @@ export const PaquetesPropiosProvider: React.FC<{ children: React.ReactNode }> = 
   const limpiarSalidaSeleccionada = () => setSalidaSeleccionada(null)
   const limpiarSalidaADuplicar = () => setSalidaADuplicar(null)
 
-  const seleccionarPaqueteParaSalidas = (paquete: PaquetePropio) =>
+  const seleccionarPaqueteParaSalidas = (paquete: PaquetePropio, agenciaId: string) => {
     setPaqueteActivoParaSalidas(paquete)
+    setIdAgenciaEnCreacion(agenciaId)
+  }
 
   const limpiarPaqueteParaSalidas = () => setPaqueteActivoParaSalidas(null)
 

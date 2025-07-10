@@ -14,7 +14,7 @@ import {
   Typography,
   Tooltip,
 } from '@mui/material';
-import { PencilSimple, Trash, CopySimple } from '@phosphor-icons/react'; // ✅ nuevo ícono
+import { PencilSimple, Trash, CopySimple } from '@phosphor-icons/react';
 
 import { usePaquetesPropios } from '@/contexts/features/PaquetesPropiosProvider/usePaquetesPropios';
 import type { PaquetePropio } from '@/types/PaquetePropio';
@@ -29,15 +29,12 @@ export function SubtablaPaquetes({ agenciaId, nombreAgencia }: SubtablaPaquetesP
     paquetesPorAgencia,
     eliminarPaquete,
     seleccionarPaquete,
-    abrirModal,
     abrirModalCreacion,
     seleccionarPaqueteParaSalidas,
-    setIdAgenciaEnCreacion,
     duplicarPaquete,
   } = usePaquetesPropios();
 
   const loading = paquetesPorAgencia[agenciaId] === undefined;
-  const error = false;
   const paquetes = paquetesPorAgencia[agenciaId] || [];
 
   const handleCrearNuevo = () => {
@@ -47,8 +44,7 @@ export function SubtablaPaquetes({ agenciaId, nombreAgencia }: SubtablaPaquetesP
 
   const handleEditar = (paquete: PaquetePropio) => {
     console.log('🟠 Click en editar paquete:', paquete);
-    seleccionarPaquete(paquete);
-    abrirModal();
+    seleccionarPaquete(paquete); // sigue funcionando igual
   };
 
   const handleEliminar = async (id: number) => {
@@ -60,15 +56,12 @@ export function SubtablaPaquetes({ agenciaId, nombreAgencia }: SubtablaPaquetesP
 
   const handleVerSalidas = (paquete: PaquetePropio) => {
     console.log('🔵 Ver salidas del paquete', paquete.id);
-    seleccionarPaqueteParaSalidas(paquete);
-    setIdAgenciaEnCreacion(agenciaId);
+    seleccionarPaqueteParaSalidas(paquete, agenciaId); // ✅ actualizado
   };
 
   const handleDuplicar = (paquete: PaquetePropio) => {
     console.log('🟣 Duplicar paquete:', paquete);
-    setIdAgenciaEnCreacion(agenciaId); // ✅ clave para evitar error
-    duplicarPaquete(paquete);
-    abrirModal();
+    duplicarPaquete(paquete, agenciaId); // ✅ actualizado
   };
 
   return (
@@ -82,19 +75,15 @@ export function SubtablaPaquetes({ agenciaId, nombreAgencia }: SubtablaPaquetesP
         </Button>
       </Stack>
 
-      {loading && (
+      {loading ? (
         <Box display="flex" justifyContent="center" py={3}>
           <CircularProgress size={32} />
         </Box>
-      )}
-
-      {!loading && !error && paquetes.length === 0 && (
+      ) : paquetes.length === 0 ? (
         <Typography variant="body2" color="text.secondary">
           No hay paquetes propios registrados para esta agencia.
         </Typography>
-      )}
-
-      {!loading && !error && paquetes.length > 0 && (
+      ) : (
         <Table size="small">
           <TableHead>
             <TableRow>
@@ -136,7 +125,7 @@ export function SubtablaPaquetes({ agenciaId, nombreAgencia }: SubtablaPaquetesP
                   </Tooltip>
                   <Tooltip title="Duplicar">
                     <IconButton onClick={() => handleDuplicar(paquete)}>
-                      <CopySimple size={20} /> {/* ✅ nuevo ícono claro */}
+                      <CopySimple size={20} />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Eliminar">
