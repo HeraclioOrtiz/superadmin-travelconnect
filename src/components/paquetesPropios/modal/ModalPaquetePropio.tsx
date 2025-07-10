@@ -15,6 +15,7 @@ import {
   editarPaquetePropio
 } from '@/components/paquetesPropios/paquetespropiosService'
 import { PaquetePropio } from '@/types/PaquetePropio'
+import { Hotel } from '@/types/Hotel'
 
 function limpiarParaDuplicar(paquete: PaquetePropio): Partial<PaquetePropio> {
   const { id, slug, ...rest } = paquete
@@ -56,6 +57,17 @@ export default function ModalPaquetePropio() {
       return
     }
 
+    const hotel: Hotel = {
+      hotel_id: '0',
+      hotel_nombre: form.hotel_nombre?.value || '',
+      hotel_categoria: form.hotel_categoria?.value || '3'
+    }
+
+    if (!hotel.hotel_nombre) {
+      alert('El nombre del hotel es obligatorio.')
+      return
+    }
+
     const formData = new FormData()
     formData.append('titulo', form.titulo.value)
     formData.append('descripcion', form.descripcion.value)
@@ -72,13 +84,12 @@ export default function ModalPaquetePropio() {
     formData.append('tipo_moneda', form.moneda.value)
     formData.append('descuento', '0')
 
-    const estrellas = form.estrellas?.value || '3'
-    formData.append('estrellas', estrellas)
+    // ✅ Enviar campo correcto: "hotel"
+    formData.append('hotel', JSON.stringify(hotel))
 
-    formData.append('componentes[]', '')
-    formData.append('categorias[]', '')
-    formData.append('hoteles[]', form.hotel.value)
-    formData.append('galeria_imagenes[]', '')
+    formData.append('componentes', '[]')
+    formData.append('categorias', '[]')
+    formData.append('galeria_imagenes', '[]')
 
     formData.append('usuario_id', idAgenciaEnCreacion)
 

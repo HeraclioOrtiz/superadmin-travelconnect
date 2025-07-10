@@ -1,5 +1,5 @@
-// types/PaquetePropio.ts
 import { Salida } from './Salidas'
+import { Hotel } from './Hotel'
 
 export interface PaquetePropio {
   id: number
@@ -9,7 +9,7 @@ export interface PaquetePropio {
   ciudad: string
   ciudad_iata: string | null
 
-  fecha_vigencia_desde: string // formato "DD-MM-YYYY" (como lo entrega el backend)
+  fecha_vigencia_desde: string // formato "DD-MM-YYYY"
   fecha_vigencia_hasta: string
 
   cant_noches: number
@@ -21,7 +21,7 @@ export interface PaquetePropio {
   transporte: string | null
   tipo_moneda: string
 
-  descuento: string // viene como "0.00"; podés castearlo a number si preferís
+  descuento: string // viene como "0.00"
 
   componentes: {
     tipo: string
@@ -29,7 +29,7 @@ export interface PaquetePropio {
   }[] // viene como string serializado, parsear antes de usar
 
   categorias: string[]         // lo mismo: parsear
-  hoteles: string[]            // lo mismo
+  hotel: Hotel                 // ✅ actualizado: ahora es un objeto
   galeria_imagenes: string[]   // lo mismo
 
   slug?: string

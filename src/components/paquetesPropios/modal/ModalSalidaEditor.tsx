@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import {
   Dialog,
@@ -6,95 +6,102 @@ import {
   DialogContent,
   DialogActions,
   Button
-} from '@mui/material';
-import { useState, useEffect, FormEvent } from 'react';
-import { Salida } from '@/types/Salidas';
-import FormularioSalida from '../salidas/FomularioSalida';
-import { usePaquetesPropios } from '@/contexts/features/PaquetesPropiosProvider/usePaquetesPropios';
+} from '@mui/material'
+import { useState, useEffect, FormEvent } from 'react'
+import { Salida } from '@/types/Salidas'
+import FormularioSalida from '../salidas/FomularioSalida'
+import { usePaquetesPropios } from '@/contexts/features/PaquetesPropiosProvider/usePaquetesPropios'
 
 interface ModalSalidaEditorProps {
-  open: boolean;
-  onClose: () => void;
-  onSubmit: (salida: Salida) => void;
-  initialData?: Salida | null;
+  open: boolean
+  onClose: () => void
+  onSubmit: (salida: Salida) => void
 }
 
 export default function ModalSalidaEditor({
   open,
   onClose,
-  onSubmit,
-  initialData
+  onSubmit
 }: ModalSalidaEditorProps) {
   const {
+    salidaSeleccionada,
     salidaADuplicar,
+    limpiarSalidaSeleccionada,
     setSalidaADuplicar,
     paqueteActivoParaSalidas,
     idAgenciaEnCreacion
-  } = usePaquetesPropios();
+  } = usePaquetesPropios()
 
-  const [formData, setFormData] = useState<Salida>(getInitialSalida());
+  const [formData, setFormData] = useState<Salida>(getInitialSalida())
 
   useEffect(() => {
-    let base: Salida | null = initialData ?? salidaADuplicar ?? null;
+    let base: Salida | null = salidaSeleccionada ?? salidaADuplicar ?? null
 
     if (base) {
       const fechas = [
         'fecha_desde', 'fecha_hasta', 'fecha_viaje',
         'ida_origen_fecha', 'ida_destino_fecha',
         'vuelta_origen_fecha', 'vuelta_destino_fecha'
-      ] as const;
+      ] as const
 
       const dataNormalizada: any = {
         ...base,
-        id: 0, // ⚠️ limpiar ID siempre
+        id: 0,
         created_at: '',
         updated_at: '',
         paquete_id: paqueteActivoParaSalidas?.id ?? 0,
         usuario_id: idAgenciaEnCreacion ?? ''
-      };
+      }
 
-      fechas.forEach((campo) => {
-        const valor = base[campo];
+      fechas.forEach(campo => {
+        const valor = base[campo]
         if (typeof valor === 'string' && valor) {
           if (valor.includes('T')) {
-            dataNormalizada[campo] = valor.split('T')[0];
+            dataNormalizada[campo] = valor.split('T')[0]
           } else if (/^\d{2}-\d{2}-\d{4}$/.test(valor)) {
-            const [d, m, y] = valor.split('-');
-            dataNormalizada[campo] = `${y}-${m}-${d}`;
+            const [d, m, y] = valor.split('-')
+            dataNormalizada[campo] = `${y}-${m}-${d}`
           }
         } else if (valor === null) {
-          dataNormalizada[campo] = '';
+          dataNormalizada[campo] = ''
         }
-      });
+      })
 
-      setFormData(dataNormalizada);
+      setFormData(dataNormalizada)
     } else {
-      setFormData(getInitialSalida());
+      setFormData(getInitialSalida())
     }
-  }, [initialData, salidaADuplicar, open, paqueteActivoParaSalidas, idAgenciaEnCreacion]);
+  }, [
+    salidaSeleccionada,
+    salidaADuplicar,
+    open,
+    paqueteActivoParaSalidas,
+    idAgenciaEnCreacion
+  ])
 
   const handleChange = (campo: keyof Salida, valor: any) => {
-    setFormData((prev) => ({ ...prev, [campo]: valor }));
-  };
+    setFormData(prev => ({ ...prev, [campo]: valor }))
+  }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    onSubmit(formData);
-    setSalidaADuplicar(null); // 🔄 limpiar duplicado después de usar
-    onClose();
-  };
+    e.preventDefault()
+    onSubmit(formData)
+    limpiarSalidaSeleccionada()
+    setSalidaADuplicar(null)
+    onClose()
+  }
 
   const getTitulo = () => {
-    if (salidaADuplicar) return 'Duplicar salida';
-    if (initialData) return 'Editar salida';
-    return 'Agregar nueva salida';
-  };
+    if (salidaADuplicar) return 'Duplicar salida'
+    if (salidaSeleccionada) return 'Editar salida'
+    return 'Agregar nueva salida'
+  }
 
   const getBoton = () => {
-    if (salidaADuplicar) return 'Crear duplicado';
-    if (initialData) return 'Guardar cambios';
-    return 'Crear salida';
-  };
+    if (salidaADuplicar) return 'Crear duplicado'
+    if (salidaSeleccionada) return 'Guardar cambios'
+    return 'Crear salida'
+  }
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth>
@@ -113,7 +120,7 @@ export default function ModalSalidaEditor({
         </DialogActions>
       </form>
     </Dialog>
-  );
+  )
 }
 
 function getInitialSalida(): Salida {
@@ -182,5 +189,5 @@ function getInitialSalida(): Salida {
 
     created_at: '',
     updated_at: ''
-  };
+  }
 }

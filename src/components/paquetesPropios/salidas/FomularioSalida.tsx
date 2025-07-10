@@ -8,7 +8,6 @@ import {
   FormControlLabel,
 } from '@mui/material';
 import { Salida } from '@/types/Salidas';
-import { useEffect, useState } from 'react';
 
 interface FormularioSalidaProps {
   salida: Partial<Salida>;
@@ -22,12 +21,6 @@ export default function FormularioSalida({
   salida,
   onChange,
 }: FormularioSalidaProps) {
-  const [campos, setCampos] = useState<Partial<Salida>>(salida);
-
-  useEffect(() => {
-    setCampos(salida);
-  }, [salida]);
-
   const handleChange =
     (campo: keyof Salida) => (e: React.ChangeEvent<HTMLInputElement>) => {
       const valor =
@@ -37,7 +30,6 @@ export default function FormularioSalida({
           ? Number(e.target.value)
           : e.target.value;
 
-      setCampos((prev) => ({ ...prev, [campo]: valor }));
       onChange(campo, valor);
     };
 
@@ -64,7 +56,7 @@ export default function FormularioSalida({
           fullWidth
           label="Fecha desde"
           type="date"
-          value={parseFecha(campos.fecha_desde)}
+          value={parseFecha(salida.fecha_desde)}
           onChange={handleChange('fecha_desde')}
           InputLabelProps={{ shrink: true }}
         />
@@ -74,7 +66,7 @@ export default function FormularioSalida({
           fullWidth
           label="Fecha hasta"
           type="date"
-          value={parseFecha(campos.fecha_hasta)}
+          value={parseFecha(salida.fecha_hasta)}
           onChange={handleChange('fecha_hasta')}
           InputLabelProps={{ shrink: true }}
         />
@@ -84,7 +76,7 @@ export default function FormularioSalida({
           fullWidth
           label="Fecha de viaje"
           type="date"
-          value={parseFecha(campos.fecha_viaje)}
+          value={parseFecha(salida.fecha_viaje)}
           onChange={handleChange('fecha_viaje')}
           InputLabelProps={{ shrink: true }}
         />
@@ -94,7 +86,7 @@ export default function FormularioSalida({
           fullWidth
           label="Cupos"
           type="number"
-          value={campos.cupos ?? ''}
+          value={salida.cupos ?? ''}
           onChange={handleChange('cupos')}
         />
       </Grid>
@@ -102,7 +94,7 @@ export default function FormularioSalida({
         <FormControlLabel
           control={
             <Switch
-              checked={campos.venta_online || false}
+              checked={salida.venta_online || false}
               onChange={handleChange('venta_online')}
             />
           }
@@ -113,7 +105,7 @@ export default function FormularioSalida({
         <FormControlLabel
           control={
             <Switch
-              checked={campos.info_tramos || false}
+              checked={salida.info_tramos || false}
               onChange={handleChange('info_tramos')}
             />
           }
@@ -145,8 +137,8 @@ export default function FormularioSalida({
             type={tipo as string}
             value={
               tipo === 'date'
-                ? parseFecha(campos[campo as keyof Salida] as string)
-                : campos[campo as keyof Salida] || ''
+                ? parseFecha(salida[campo as keyof Salida] as string)
+                : salida[campo as keyof Salida] ?? ''
             }
             onChange={handleChange(campo as keyof Salida)}
             InputLabelProps={{ shrink: tipo === 'date' || tipo === 'time' }}
@@ -178,8 +170,8 @@ export default function FormularioSalida({
             type={tipo as string}
             value={
               tipo === 'date'
-                ? parseFecha(campos[campo as keyof Salida] as string)
-                : campos[campo as keyof Salida] || ''
+                ? parseFecha(salida[campo as keyof Salida] as string)
+                : salida[campo as keyof Salida] ?? ''
             }
             onChange={handleChange(campo as keyof Salida)}
             InputLabelProps={{ shrink: tipo === 'date' || tipo === 'time' }}
@@ -201,7 +193,7 @@ export default function FormularioSalida({
                 fullWidth
                 type="number"
                 label={`${tipo} ${campo}`}
-                value={campos[key] ?? ''}
+                value={salida[key] ?? ''}
                 onChange={handleChange(key)}
               />
             </Grid>
