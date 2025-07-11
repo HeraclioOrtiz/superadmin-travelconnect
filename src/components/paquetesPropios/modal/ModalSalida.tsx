@@ -25,7 +25,7 @@ import {
   Trash,
   CaretDown,
   CaretRight,
-  CopySimple, // ✅ icono duplicar
+  CopySimple,
 } from '@phosphor-icons/react';
 import { Fragment, useState } from 'react';
 
@@ -44,11 +44,11 @@ export default function ModalSalidas() {
     limpiarPaqueteParaSalidas,
     fetchPaquetesDeAgencia,
     idAgenciaEnCreacion,
-    setSalidaADuplicar, // ✅ para duplicar
+    setSalidaADuplicar,
+    setSalidaSeleccionada,
   } = usePaquetesPropios();
 
   const [expandida, setExpandida] = useState<number | null>(null);
-  const [salidaSeleccionada, setSalidaSeleccionada] = useState<Salida | null>(null);
   const [modalEditorAbierto, setModalEditorAbierto] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [snackbarAbierto, setSnackbarAbierto] = useState(false);
@@ -62,17 +62,24 @@ export default function ModalSalidas() {
 
   const handleCrear = () => {
     setSalidaSeleccionada(null);
+    setSalidaADuplicar(null);
     setModalEditorAbierto(true);
   };
 
   const handleEditar = (salida: Salida) => {
     setSalidaSeleccionada(salida);
+    setSalidaADuplicar(null);
+    setModalEditorAbierto(true);
+  };
+
+  const handleDuplicar = (salida: Salida) => {
+    setSalidaSeleccionada(null);
+    setSalidaADuplicar(salida);
     setModalEditorAbierto(true);
   };
 
   const handleEliminar = async (salidaId: number) => {
-    const confirmar = confirm('¿Estás seguro de que querés eliminar esta salida?');
-    if (!confirmar) return;
+    if (!confirm('¿Estás seguro de que querés eliminar esta salida?')) return;
 
     setLoadingSubmit(true);
     try {
@@ -81,12 +88,9 @@ export default function ModalSalidas() {
       setSnackbarMensaje('Salida eliminada correctamente');
       setSnackbarAbierto(true);
 
-      if (!idAgenciaEnCreacion) {
-        console.warn('⚠️ No hay idAgenciaEnCreacion disponible');
-        return;
+      if (idAgenciaEnCreacion) {
+        await fetchPaquetesDeAgencia(idAgenciaEnCreacion);
       }
-
-      await fetchPaquetesDeAgencia(idAgenciaEnCreacion);
     } catch (error) {
       console.error('❌ Error al eliminar salida:', error);
       setSnackbarTipo('error');
@@ -98,8 +102,13 @@ export default function ModalSalidas() {
   };
 
   const handleSubmit = async (data: Partial<Salida>) => {
+    console.log('🧪 handleSubmit ejecutado');
+    console.log('🔍 paqueteActivoParaSalidas:', paqueteActivoParaSalidas);
+    console.log('🔍 idAgenciaEnCreacion:', idAgenciaEnCreacion);
+    console.log('📦 data recibida:', data);
+
     if (!paqueteActivoParaSalidas || !idAgenciaEnCreacion) {
-      console.warn('⚠️ Faltan datos clave: paquete o agencia');
+      console.warn('⛔ Falta paqueteActivoParaSalidas o idAgenciaEnCreacion — cancelando envío al backend');
       return;
     }
 
@@ -111,8 +120,10 @@ export default function ModalSalidas() {
         usuario_id: idAgenciaEnCreacion,
       };
 
-      if (salidaSeleccionada) {
-        await editarSalida(salidaSeleccionada.id, payload);
+      console.log('📤 Payload final a enviar:', payload);
+
+      if (data.id && data.id !== 0) {
+        await editarSalida(data.id, payload);
         setSnackbarMensaje('Salida actualizada correctamente');
       } else {
         await crearSalida(payload);
@@ -134,9 +145,7 @@ export default function ModalSalidas() {
   };
 
   if (!paqueteActivoParaSalidas) return null;
-
   const salidas = paqueteActivoParaSalidas.salidas;
-  console.log('📦 Salidas recibidas para el paquete:', salidas);
 
   return (
     <>
@@ -161,23 +170,14 @@ export default function ModalSalidas() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {salidas.map((salida: Salida) => {
+                {salidas.map((salida) => {
                   const abierta = expandida === salida.id;
                   return (
                     <Fragment key={salida.id}>
                       <TableRow>
                         <TableCell>
-                          <IconButton
-                            size="small"
-                            onClick={() =>
-                              setExpandida(abierta ? null : salida.id)
-                            }
-                          >
-                            {abierta ? (
-                              <CaretDown size={18} />
-                            ) : (
-                              <CaretRight size={18} />
-                            )}
+                          <IconButton size="small" onClick={() => setExpandida(abierta ? null : salida.id)}>
+                            {abierta ? <CaretDown size={18} /> : <CaretRight size={18} />}
                           </IconButton>
                         </TableCell>
                         <TableCell>{salida.fecha_desde}</TableCell>
@@ -186,32 +186,19 @@ export default function ModalSalidas() {
                         <TableCell>{salida.doble_precio}</TableCell>
                         <TableCell align="right">
                           <Tooltip title="Editar salida">
-                            <IconButton
-                              onClick={() => handleEditar(salida)}
-                              disabled={loadingSubmit}
-                            >
+                            <IconButton onClick={() => handleEditar(salida)} disabled={loadingSubmit}>
                               <PencilSimple size={20} />
                             </IconButton>
                           </Tooltip>
 
                           <Tooltip title="Eliminar salida">
-                            <IconButton
-                              onClick={() => handleEliminar(salida.id)}
-                              disabled={loadingSubmit}
-                            >
+                            <IconButton onClick={() => handleEliminar(salida.id)} disabled={loadingSubmit}>
                               <Trash size={20} />
                             </IconButton>
                           </Tooltip>
 
                           <Tooltip title="Duplicar salida">
-                            <IconButton
-                              onClick={() => {
-                                setSalidaSeleccionada(null);
-                                setSalidaADuplicar(salida);
-                                setModalEditorAbierto(true);
-                              }}
-                              disabled={loadingSubmit}
-                            >
+                            <IconButton onClick={() => handleDuplicar(salida)} disabled={loadingSubmit}>
                               <CopySimple size={20} />
                             </IconButton>
                           </Tooltip>
@@ -268,7 +255,6 @@ export default function ModalSalidas() {
         open={modalEditorAbierto}
         onClose={() => setModalEditorAbierto(false)}
         onSubmit={handleSubmit}
-        initialData={salidaSeleccionada}
       />
 
       <Snackbar

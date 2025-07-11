@@ -12,42 +12,53 @@ import { PaquetePropio } from '@/types/PaquetePropio'
 import { Hotel } from '@/types/Hotel'
 import BotonAgregarImagen from './BotonAgregarImagen'
 
-const convertirFecha = (fecha: string | undefined) => {
+/* ---------- util ---------- */
+const convertirFecha = (fecha?: string) => {
   if (!fecha) return ''
   const [dd, mm, yyyy] = fecha.split('-')
-  if (!dd || !mm || !yyyy) return ''
-  return `${yyyy}-${mm}-${dd}`
+  return dd && mm && yyyy ? `${yyyy}-${mm}-${dd}` : ''
 }
 
+/* ---------- props ---------- */
 interface FormularioPaquetePropioProps {
   paquete?: Partial<PaquetePropio> | null
 }
 
-export default function FormularioPaquetePropio({ paquete }: FormularioPaquetePropioProps) {
-  const [moneda, setMoneda] = useState(paquete?.tipo_moneda || 'ARS')
-  const [estado, setEstado] = useState(paquete?.activo ? 'activo' : 'inactivo')
+/* ---------- component ---------- */
+export default function FormularioPaquetePropio({
+  paquete
+}: FormularioPaquetePropioProps) {
+  const [moneda, setMoneda] = useState('ARS')
+  const [estado, setEstado] = useState('inactivo')
 
   const [hotel, setHotel] = useState<Hotel>({
-    hotel_id: paquete?.hotel?.hotel_id || '',
-    hotel_nombre: paquete?.hotel?.hotel_nombre || '',
-    hotel_categoria: paquete?.hotel?.hotel_categoria || '3'
+    id_hotel: '',
+    nombre: '',
+    categoria_hotel: '3'
   })
 
+  /* ---------- sync con paquete ---------- */
   useEffect(() => {
-    setMoneda(paquete?.tipo_moneda || 'ARS')
-    setEstado(paquete?.activo ? 'activo' : 'inactivo')
-    setHotel({
-      hotel_id: paquete?.hotel?.hotel_id || '',
-      hotel_nombre: paquete?.hotel?.hotel_nombre || '',
-      hotel_categoria: paquete?.hotel?.hotel_categoria || '3'
-    })
-  }, [paquete])
+    if (paquete?.tipo_moneda) {
+      setMoneda(paquete.tipo_moneda)
+    }
+    if (typeof paquete?.activo === 'boolean') {
+      setEstado(paquete.activo ? 'activo' : 'inactivo')
+    }
+    if (paquete?.hotel) {
+      setHotel({
+        id_hotel: paquete.hotel.id_hotel || '',
+        nombre: paquete.hotel.nombre || '',
+        categoria_hotel: paquete.hotel.categoria_hotel || '3'
+      })
+    }
+  }, [paquete?.hotel, paquete?.tipo_moneda, paquete?.activo])
 
+  /* ---------- fechas formateadas ---------- */
   const fechaInicioFormateada = useMemo(
     () => convertirFecha(paquete?.fecha_vigencia_desde),
     [paquete?.fecha_vigencia_desde]
   )
-
   const fechaFinFormateada = useMemo(
     () => convertirFecha(paquete?.fecha_vigencia_hasta),
     [paquete?.fecha_vigencia_hasta]
@@ -55,6 +66,7 @@ export default function FormularioPaquetePropio({ paquete }: FormularioPaquetePr
 
   return (
     <>
+      {/* datos básicos */}
       <TextField
         id="titulo"
         name="titulo"
@@ -98,6 +110,7 @@ export default function FormularioPaquetePropio({ paquete }: FormularioPaquetePr
         defaultValue={paquete?.cant_noches || ''}
       />
 
+      {/* hotel */}
       <TextField
         id="hotel_nombre"
         name="hotel_nombre"
@@ -105,8 +118,10 @@ export default function FormularioPaquetePropio({ paquete }: FormularioPaquetePr
         required
         fullWidth
         margin="dense"
-        value={hotel.hotel_nombre}
-        onChange={(e) => setHotel((prev) => ({ ...prev, hotel_nombre: e.target.value }))}
+        value={hotel.nombre}
+        onChange={(e) =>
+          setHotel((prev) => ({ ...prev, nombre: e.target.value }))
+        }
       />
 
       <TextField
@@ -116,20 +131,22 @@ export default function FormularioPaquetePropio({ paquete }: FormularioPaquetePr
         required
         fullWidth
         margin="dense"
-        value={hotel.hotel_categoria}
-        onChange={(e) => setHotel((prev) => ({ ...prev, hotel_categoria: e.target.value }))}
+        value={hotel.categoria_hotel}
+        onChange={(e) =>
+          setHotel((prev) => ({ ...prev, categoria_hotel: e.target.value }))
+        }
       />
 
       <Box display="flex" alignItems="center" gap={2} my={1}>
         <Typography variant="subtitle2">Estrellas:</Typography>
         <Rating
           name="rating"
-          value={parseInt(hotel.hotel_categoria) || 0}
+          value={parseInt(hotel.categoria_hotel) || 0}
           max={5}
           onChange={(_, newValue) =>
             setHotel((prev) => ({
               ...prev,
-              hotel_categoria: newValue?.toString() || '0'
+              categoria_hotel: newValue?.toString() || '0'
             }))
           }
         />

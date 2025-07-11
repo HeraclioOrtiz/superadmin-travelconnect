@@ -43,15 +43,15 @@ export default function ModalSalidaEditor({
         'ida_origen_fecha', 'ida_destino_fecha',
         'vuelta_origen_fecha', 'vuelta_destino_fecha'
       ] as const
-
-      const dataNormalizada: any = {
-        ...base,
-        id: 0,
-        created_at: '',
-        updated_at: '',
-        paquete_id: paqueteActivoParaSalidas?.id ?? 0,
-        usuario_id: idAgenciaEnCreacion ?? ''
-      }
+      
+const dataNormalizada: any = {
+  ...base,
+  id: salidaADuplicar ? 0 : base.id, // ✅ mantener id original si es edición
+  created_at: '',
+  updated_at: '',
+  paquete_id: paqueteActivoParaSalidas?.id ?? 0,
+  usuario_id: idAgenciaEnCreacion ?? ''
+}
 
       fechas.forEach(campo => {
         const valor = base[campo]

@@ -43,6 +43,8 @@ export default function ModalPaquetePropio() {
     ? limpiarParaDuplicar(paqueteADuplicar!)
     : paqueteSeleccionado
 
+  console.log('📦 Paquete inicial para formulario:', paqueteInicial)
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const form = e.currentTarget
@@ -58,12 +60,12 @@ export default function ModalPaquetePropio() {
     }
 
     const hotel: Hotel = {
-      hotel_id: '0',
-      hotel_nombre: form.hotel_nombre?.value || '',
-      hotel_categoria: form.hotel_categoria?.value || '3'
+      id_hotel: '0',
+      nombre: form.hotel_nombre?.value || '',
+      categoria_hotel: form.hotel_categoria?.value || '3'
     }
 
-    if (!hotel.hotel_nombre) {
+    if (!hotel.nombre) {
       alert('El nombre del hotel es obligatorio.')
       return
     }
@@ -84,7 +86,7 @@ export default function ModalPaquetePropio() {
     formData.append('tipo_moneda', form.moneda.value)
     formData.append('descuento', '0')
 
-    // ✅ Enviar campo correcto: "hotel"
+    // ✅ Hotel adaptado al nuevo tipo
     formData.append('hotel', JSON.stringify(hotel))
 
     formData.append('componentes', '[]')
@@ -123,7 +125,10 @@ export default function ModalPaquetePropio() {
             : 'Crear nuevo paquete propio'}
         </DialogTitle>
         <DialogContent>
-          <FormularioPaquetePropio paquete={paqueteInicial ?? undefined} />
+          <FormularioPaquetePropio
+            key={paqueteInicial?.id ?? 'nuevo'}
+            paquete={paqueteInicial ?? undefined}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={cerrarModal}>Cancelar</Button>

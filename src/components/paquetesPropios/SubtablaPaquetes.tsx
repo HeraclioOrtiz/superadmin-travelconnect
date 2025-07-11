@@ -31,7 +31,7 @@ export function SubtablaPaquetes({ agenciaId, nombreAgencia }: SubtablaPaquetesP
     seleccionarPaquete,
     abrirModalCreacion,
     seleccionarPaqueteParaSalidas,
-    duplicarPaquete,
+    prepararDuplicadoPaquete, // ✅ actualizado
   } = usePaquetesPropios();
 
   const loading = paquetesPorAgencia[agenciaId] === undefined;
@@ -44,7 +44,8 @@ export function SubtablaPaquetes({ agenciaId, nombreAgencia }: SubtablaPaquetesP
 
   const handleEditar = (paquete: PaquetePropio) => {
     console.log('🟠 Click en editar paquete:', paquete);
-    seleccionarPaquete(paquete); // sigue funcionando igual
+     
+    seleccionarPaquete(paquete);
   };
 
   const handleEliminar = async (id: number) => {
@@ -56,12 +57,12 @@ export function SubtablaPaquetes({ agenciaId, nombreAgencia }: SubtablaPaquetesP
 
   const handleVerSalidas = (paquete: PaquetePropio) => {
     console.log('🔵 Ver salidas del paquete', paquete.id);
-    seleccionarPaqueteParaSalidas(paquete, agenciaId); // ✅ actualizado
+    seleccionarPaqueteParaSalidas(paquete, agenciaId);
   };
 
   const handleDuplicar = (paquete: PaquetePropio) => {
     console.log('🟣 Duplicar paquete:', paquete);
-    duplicarPaquete(paquete, agenciaId); // ✅ actualizado
+    prepararDuplicadoPaquete(paquete, agenciaId); // ✅ corregido
   };
 
   return (

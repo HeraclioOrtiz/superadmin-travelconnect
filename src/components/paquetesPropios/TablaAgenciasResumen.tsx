@@ -16,7 +16,7 @@ import { CaretDown, CaretRight } from '@phosphor-icons/react';
 import { Fragment, useState } from 'react';
 
 import { useAgenciasContext } from '@/contexts/features/Agencias/AgenciaProvider';
-import { useFetchPaquetesDeAgencia } from '@/contexts/features/PaquetesPropiosProvider/actions/useFetchPaquetesDeAgencia';
+import { useFetchPaquetesDeAgencia } from '@/contexts/features/PaquetesPropiosProvider/queris/useFetchPaquetesDeAgencia';
 import { SubtablaPaquetes } from './SubtablaPaquetes';
 
 export function TablaAgenciasResumen(): React.JSX.Element {
