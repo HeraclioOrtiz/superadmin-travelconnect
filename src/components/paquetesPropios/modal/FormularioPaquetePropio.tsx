@@ -98,6 +98,16 @@ export default function FormularioPaquetePropio({
         margin="dense"
         defaultValue={paquete?.ciudad || ''}
       />
+      <TextField
+        id="pais"
+        name="pais"
+        label="País"
+       required
+       fullWidth
+        margin="dense"
+        defaultValue={paquete?.pais || ''}
+/>
+
 
       <TextField
         id="noches"

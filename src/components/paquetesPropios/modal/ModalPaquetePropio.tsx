@@ -73,7 +73,8 @@ export default function ModalPaquetePropio() {
     const formData = new FormData()
     formData.append('titulo', form.titulo.value)
     formData.append('descripcion', form.descripcion.value)
-    formData.append('pais', 'Argentina')
+    formData.append('pais', form.pais.value)
+
     formData.append('ciudad', form.ciudad.value)
     formData.append('ciudad_iata', '')
     formData.append('fecha_vigencia_desde', form.fecha_inicio.value)
