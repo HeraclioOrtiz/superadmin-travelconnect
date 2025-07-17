@@ -1,20 +1,29 @@
-import type { Icon } from '@phosphor-icons/react/dist/lib/types';
-import { ChartPie as ChartPieIcon } from '@phosphor-icons/react/dist/ssr/ChartPie';
-import { GearSix as GearSixIcon } from '@phosphor-icons/react/dist/ssr/GearSix';
-import { PlugsConnected as PlugsConnectedIcon } from '@phosphor-icons/react/dist/ssr/PlugsConnected';
-import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User';
-import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
+import { ChartPie } from '@phosphor-icons/react/dist/ssr/ChartPie';
+import { GearSix } from '@phosphor-icons/react/dist/ssr/GearSix';
+import { PlugsConnected } from '@phosphor-icons/react/dist/ssr/PlugsConnected';
+import { User } from '@phosphor-icons/react/dist/ssr/User';
+import { Users } from '@phosphor-icons/react/dist/ssr/Users';
 import { XSquare } from '@phosphor-icons/react/dist/ssr/XSquare';
-import { Wrench as WrenchIcon } from '@phosphor-icons/react/dist/ssr/Wrench';
-import { FolderOpen as PackageIcon } from '@phosphor-icons/react/dist/ssr/FolderOpen'; // ✅ reemplazo funcional
+import { Wrench } from '@phosphor-icons/react/dist/ssr/Wrench';
+import { FolderOpen } from '@phosphor-icons/react/dist/ssr/FolderOpen';
+import { Palette } from '@phosphor-icons/react/dist/ssr/Palette';
+import { PaintBrush } from '@phosphor-icons/react/dist/ssr/PaintBrush';
+import { SlidersHorizontal } from '@phosphor-icons/react/dist/ssr/SlidersHorizontal';
+import { Shapes } from '@phosphor-icons/react/dist/ssr/Shapes';
+import { MagicWand } from '@phosphor-icons/react/dist/ssr/MagicWand';
 
 export const navIcons = {
-  'chart-pie': ChartPieIcon,
-  'gear-six': GearSixIcon,
-  'plugs-connected': PlugsConnectedIcon,
+  'chart-pie': ChartPie,
+  'gear-six': GearSix,
+  'plugs-connected': PlugsConnected,
   'x-square': XSquare,
-  user: UserIcon,
-  users: UsersIcon,
-  servicios: WrenchIcon,
-  package: PackageIcon, // ✅ ícono para "Paquetes Propios"
-} as Record<string, Icon>;
+  user: User,
+  users: Users,
+  servicios: Wrench,
+  package: FolderOpen,      // 🟢 Paquetes Propios
+  palette: Palette,         // 🎨 Estilos
+  'paint-brush': PaintBrush,
+  sliders: SlidersHorizontal,
+  shapes: Shapes,
+  magic: MagicWand,
+};

@@ -51,6 +51,7 @@ class AuthClient {
         nombre: rawUser.nombre,
         dominio: rawUser.dominio ?? null,
         rol: isSuperadmin ? 'superadmin' : 'admin',
+        agencia_id: isSuperadmin ? undefined : rawUser.id.toString(), // ✅ agregado para admin
       };
 
       localStorage.setItem(TOKEN_KEY, token);
@@ -98,4 +99,3 @@ class AuthClient {
 }
 
 export const authClient = new AuthClient();
-
