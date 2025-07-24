@@ -13,6 +13,8 @@ export const fetchAgencias = async (): Promise<AgenciaBackData[]> => {
 
   const data = await response.json();
 
+  console.log('📦 Datos crudos recibidos del backend (agencias):', data); // <-- Agregado
+
   // 🔧 Transformar idAgencia a string
   const agencias: AgenciaBackData[] = data.map((agencia: any) => ({
     ...agencia,
