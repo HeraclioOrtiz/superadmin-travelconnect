@@ -1,6 +1,6 @@
 'use client';
 
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, Controller } from 'react-hook-form';
 import {
   Box,
   Typography,
@@ -8,18 +8,40 @@ import {
   Divider,
   Checkbox,
   FormControlLabel,
+  Link,
 } from '@mui/material';
+import { useMemo, useEffect, useState } from 'react';
+
 import InputFormulario from './InputFormulario';
 import BotonImportarArchivo from './ImportButton';
 import { usePrevisualizacionArchivo } from './hooks/usePrevisualizacionArchivo';
 import { useModalAgenciaGlobal } from '@/contexts/ModalAgenciaProvider';
 
+const getFileNameFromPath = (p?: string): string => {
+  if (!p) return '';
+  const clean = p.split('?')[0];
+  const parts = clean.split('/');
+  return parts[parts.length - 1] || clean;
+};
+
+const toAbsoluteUrl = (url?: string): string => {
+  if (!url) return '';
+  if (/^https?:\/\//i.test(url)) return url;
+  const base = 'https://travelconnect.com.ar';
+  return `${base}/${url.replace(/^\/+/, '')}`;
+};
+
 const Step1Basic = () => {
-  const { register, watch, setValue } = useFormContext();
+  const { control, register, watch, setValue } = useFormContext();
   const { datosEdicion } = useModalAgenciaGlobal();
 
   const logoFile = watch('logo');
-  const faviconFile = watch('favicon');
+  const estado = watch('estado');
+
+  // Campo de términos y condiciones
+  const terminosValor = watch('terminos_y_condiciones');
+
+  console.log('[Step1Basic] Estado desde RHF:', estado);
 
   const logoPreview = usePrevisualizacionArchivo({
     campo: 'logo',
@@ -28,12 +50,58 @@ const Step1Basic = () => {
     setValue,
   });
 
-  const faviconPreview = usePrevisualizacionArchivo({
-    campo: 'favicon',
-    archivo: faviconFile instanceof File ? faviconFile : null,
-    urlOriginal: null,
-    setValue,
-  });
+  // onChange: normaliza FileList -> File | null
+  const handleTerminosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    setValue('terminos_y_condiciones', file, { shouldDirty: true, shouldTouch: true });
+  };
+
+  // URL para "Ver documento" (File -> objectURL, backend string -> absoluta)
+  const [terminosUrlVer, setTerminosUrlVer] = useState<string | null>(null);
+  useEffect(() => {
+    // Si el usuario seleccionó un archivo nuevo
+    if (terminosValor instanceof File) {
+      const obj = URL.createObjectURL(terminosValor);
+      setTerminosUrlVer(obj);
+      return () => URL.revokeObjectURL(obj);
+    }
+
+    // Si viene del backend como string (ruta/URL)
+    const raw =
+      typeof datosEdicion?.terminos_y_condiciones === 'string'
+        ? datosEdicion.terminos_y_condiciones
+        : '';
+
+    // Sanitizar valores inválidos tipo "{}"
+    if (raw && raw !== '{}' && raw.trim() !== '') {
+      setTerminosUrlVer(toAbsoluteUrl(raw));
+    } else {
+      setTerminosUrlVer(null);
+    }
+    return;
+  }, [terminosValor, datosEdicion?.terminos_y_condiciones]);
+
+  // Determinar el nombre a mostrar para Términos y Condiciones
+  const terminosNombreParaMostrar = useMemo(() => {
+    const v = terminosValor as unknown;
+    // Si es File directamente
+    if (v instanceof File) return v.name;
+    // Si es FileList
+    if (v && typeof v === 'object' && 'length' in (v as FileList)) {
+      const first = (v as FileList)[0];
+      if (first) return first.name;
+    }
+    // Si viene del backend como string (ruta o URL)
+    const backVal =
+      typeof datosEdicion?.terminos_y_condiciones === 'string'
+        ? datosEdicion.terminos_y_condiciones
+        : null;
+    if (backVal && backVal !== '{}' && backVal.trim() !== '') {
+      return getFileNameFromPath(backVal);
+    }
+    // Nada cargado
+    return '';
+  }, [terminosValor, datosEdicion?.terminos_y_condiciones]);
 
   return (
     <Box
@@ -51,9 +119,21 @@ const Step1Basic = () => {
           Información Básica
         </Typography>
 
-        <FormControlLabel
-          control={<Checkbox {...register('estado')} color="primary" />}
-          label="Activar agencia"
+        <Controller
+          name="estado"
+          control={control}
+          render={({ field }) => (
+            <FormControlLabel
+              control={
+                <Checkbox
+                  {...field}
+                  checked={!!field.value} // Asegura que sea booleano
+                  color="primary"
+                />
+              }
+              label="Activar agencia"
+            />
+          )}
         />
 
         <Grid container spacing={3} sx={{ mt: 1 }}>
@@ -81,14 +161,29 @@ const Step1Basic = () => {
           Quiénes Somos
         </Typography>
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <InputFormulario label="Español" {...register('quienes_somos_es')} />
+          <Grid item xs={12}>
+            <InputFormulario
+              label="Español"
+              multiline
+              minRows={4}
+              {...register('quienes_somos_es')}
+            />
           </Grid>
-          <Grid item xs={12} md={6}>
-            <InputFormulario label="Inglés" {...register('quienes_somos_en')} />
+          <Grid item xs={12}>
+            <InputFormulario
+              label="Inglés"
+              multiline
+              minRows={4}
+              {...register('quienes_somos_en')}
+            />
           </Grid>
-          <Grid item xs={12} md={6}>
-            <InputFormulario label="Portugués" {...register('quienes_somos_pt')} />
+          <Grid item xs={12}>
+            <InputFormulario
+              label="Portugués"
+              multiline
+              minRows={4}
+              {...register('quienes_somos_pt')}
+            />
           </Grid>
         </Grid>
       </Box>
@@ -125,31 +220,6 @@ const Step1Basic = () => {
               />
             )}
           </Grid>
-
-          <Grid item xs={12} md={6}>
-            <BotonImportarArchivo
-              label="Importar Favicon"
-              accept="image/*"
-              multiple={false}
-              onChange={faviconPreview.manejarCambio}
-              register={register('favicon')}
-            />
-            {faviconPreview.urlPreview && (
-              <Box
-                component="img"
-                src={faviconPreview.urlPreview}
-                alt="Favicon"
-                sx={{
-                  width: 64,
-                  height: 64,
-                  objectFit: 'contain',
-                  border: '1px solid #ccc',
-                  borderRadius: 2,
-                  mb: 2,
-                }}
-              />
-            )}
-          </Grid>
         </Grid>
       </Box>
 
@@ -161,13 +231,26 @@ const Step1Basic = () => {
           Documentos Legales
         </Typography>
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={8}>
             <BotonImportarArchivo
               label="Términos y Condiciones"
               accept=".pdf,.doc,.docx"
               multiple={false}
+              onChange={handleTerminosChange}
               register={register('terminos_y_condiciones')}
             />
+            <Typography variant="body2" sx={{ mt: 1, color: 'text.secondary' }}>
+              {terminosNombreParaMostrar
+                ? `Archivo: ${terminosNombreParaMostrar}`
+                : 'Aún no se ha subido archivo.'}
+            </Typography>
+            {terminosUrlVer && (
+              <Typography variant="body2" sx={{ mt: 0.5 }}>
+                <Link href={terminosUrlVer} target="_blank" rel="noopener noreferrer">
+                  Ver documento
+                </Link>
+              </Typography>
+            )}
           </Grid>
         </Grid>
       </Box>
@@ -176,4 +259,3 @@ const Step1Basic = () => {
 };
 
 export default Step1Basic;
-

@@ -35,42 +35,34 @@ export default function ModalSalidaEditor({
   const [formData, setFormData] = useState<Salida>(getInitialSalida())
 
   useEffect(() => {
-    let base: Salida | null = salidaSeleccionada ?? salidaADuplicar ?? null
+    const origen = salidaSeleccionada ?? salidaADuplicar ?? null
 
-    if (base) {
-      const fechas = [
-        'fecha_desde', 'fecha_hasta', 'fecha_viaje',
-        'ida_origen_fecha', 'ida_destino_fecha',
-        'vuelta_origen_fecha', 'vuelta_destino_fecha'
-      ] as const
-      
-const dataNormalizada: any = {
-  ...base,
-  id: salidaADuplicar ? 0 : base.id, // ✅ mantener id original si es edición
-  created_at: '',
-  updated_at: '',
-  paquete_id: paqueteActivoParaSalidas?.id ?? 0,
-  usuario_id: idAgenciaEnCreacion ?? ''
-}
-
-      fechas.forEach(campo => {
-        const valor = base[campo]
-        if (typeof valor === 'string' && valor) {
-          if (valor.includes('T')) {
-            dataNormalizada[campo] = valor.split('T')[0]
-          } else if (/^\d{2}-\d{2}-\d{4}$/.test(valor)) {
-            const [d, m, y] = valor.split('-')
-            dataNormalizada[campo] = `${y}-${m}-${d}`
-          }
-        } else if (valor === null) {
-          dataNormalizada[campo] = ''
-        }
-      })
-
-      setFormData(dataNormalizada)
-    } else {
+    if (!origen) {
       setFormData(getInitialSalida())
+      return
     }
+
+    // Construir base completa (no perder campos)
+    const full: Salida = {
+      ...getInitialSalida(), // defaults seguros
+      ...origen,             // datos reales del backend
+      paquete_id: paqueteActivoParaSalidas?.id ?? origen.paquete_id ?? 0,
+      tipo_transporte: (origen.tipo_transporte as Salida['tipo_transporte']) ?? 'sin_transporte',
+    }
+
+    // Normalizar SOLO fechas a formato de input (YYYY-MM-DD)
+    const fechas: (keyof Salida)[] = [
+      'fecha_desde', 'fecha_hasta', 'fecha_viaje',
+      'ida_origen_fecha', 'ida_destino_fecha',
+      'vuelta_origen_fecha', 'vuelta_destino_fecha'
+    ]
+
+    fechas.forEach((campo) => {
+      const val = full[campo] as unknown as string | null | undefined
+      ;(full as any)[campo] = toInputDate(val)
+    })
+
+    setFormData(full)
   }, [
     salidaSeleccionada,
     salidaADuplicar,
@@ -79,13 +71,14 @@ const dataNormalizada: any = {
     idAgenciaEnCreacion
   ])
 
-  const handleChange = (campo: keyof Salida, valor: any) => {
-    setFormData(prev => ({ ...prev, [campo]: valor }))
+  const handleChange = (campo: keyof Salida, valor: string | number | boolean | null) => {
+    setFormData(prev => ({ ...prev, [campo]: valor }) as Salida)
   }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    onSubmit(formData)
+    const salidaFinal = limpiarCamposDeVueloSiNoCorresponde(formData)
+    onSubmit(salidaFinal)
     limpiarSalidaSeleccionada()
     setSalidaADuplicar(null)
     onClose()
@@ -108,7 +101,11 @@ const dataNormalizada: any = {
       <form onSubmit={handleSubmit}>
         <DialogTitle>{getTitulo()}</DialogTitle>
         <DialogContent dividers>
-          <FormularioSalida salida={formData} onChange={handleChange} />
+          <FormularioSalida
+            key={salidaSeleccionada?.id ?? salidaADuplicar?.id ?? 'new'} // fuerza remonte al cambiar
+            salida={formData}
+            onChange={handleChange}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose} variant="outlined">
@@ -123,24 +120,64 @@ const dataNormalizada: any = {
   )
 }
 
+/** Convierte varias variantes ('YYYY-MM-DD', 'DD-MM-YYYY', 'YYYY-MM-DDTHH:mm:ss') a 'YYYY-MM-DD' para inputs date */
+function toInputDate(v?: string | null): string {
+  if (!v) return ''
+  const raw = v.includes('T') ? v.split('T')[0] : v
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw // ya OK
+  if (/^\d{2}-\d{2}-\d{4}$/.test(raw)) {
+    const [dd, mm, yyyy] = raw.split('-')
+    return `${yyyy}-${mm}-${dd}`
+  }
+  return ''
+}
+
+// ✅ Limpia todos los campos de tramos si no corresponde enviarlos
+function limpiarCamposDeVueloSiNoCorresponde(salida: Salida): Salida {
+  if (salida.tipo_transporte !== 'sin_transporte') return salida
+
+  const camposVuelo: (keyof Salida)[] = [
+    'ida_origen_fecha', 'ida_origen_hora', 'ida_origen_ciudad',
+    'ida_destino_fecha', 'ida_destino_hora', 'ida_destino_ciudad',
+    'ida_clase_vuelo', 'ida_linea_aerea', 'ida_vuelo', 'ida_escalas',
+    'vuelta_origen_fecha', 'vuelta_origen_hora', 'vuelta_origen_ciudad',
+    'vuelta_destino_fecha', 'vuelta_destino_hora', 'vuelta_destino_ciudad',
+    'vuelta_clase_vuelo', 'vuelta_linea_aerea', 'vuelta_vuelo', 'vuelta_escalas',
+  ]
+
+  const salidaLimpia = { ...salida }
+  for (const campo of camposVuelo) {
+    (salidaLimpia as Record<keyof Salida, unknown>)[campo] = null
+  }
+
+  return salidaLimpia as Salida
+}
+
 function getInitialSalida(): Salida {
   return {
     id: 0,
     paquete_id: 0,
     salida_externo_id: null,
+
     venta_online: false,
     cupos: 0,
+
     fecha_viaje: '',
     fecha_desde: '',
     fecha_hasta: '',
+
     info_tramos: false,
+
+    tipo_transporte: 'sin_transporte',
 
     ida_origen_fecha: '',
     ida_origen_hora: null,
     ida_origen_ciudad: null,
+
     ida_destino_fecha: null,
     ida_destino_hora: null,
     ida_destino_ciudad: null,
+
     ida_clase_vuelo: null,
     ida_linea_aerea: null,
     ida_vuelo: null,
@@ -149,9 +186,11 @@ function getInitialSalida(): Salida {
     vuelta_origen_fecha: null,
     vuelta_origen_hora: null,
     vuelta_origen_ciudad: null,
+
     vuelta_destino_fecha: null,
     vuelta_destino_hora: null,
     vuelta_destino_ciudad: null,
+
     vuelta_clase_vuelo: null,
     vuelta_linea_aerea: null,
     vuelta_vuelo: null,

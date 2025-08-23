@@ -1,4 +1,5 @@
 'use client';
+
 import { useFormContext } from 'react-hook-form';
 import { Box, Typography } from '@mui/material';
 import InputFormulario from './InputFormulario';
@@ -29,15 +30,15 @@ const StepHeader = () => {
       sx={{
         py: 4,
         px: { xs: 2, sm: 3, md: 4 },
-        '& .section': {
-          mb: 4,
+        '& section': {
+          mb: 6,
         },
       }}
     >
-      {/* ----- Imagen de fondo ----- */}
-      <Box className="section">
-        <Typography variant="h6" component="h3" sx={{ mb: 2, fontWeight: 600 }}>
-          Imagen de Fondo
+      {/* ======= Imagen de fondo ======= */}
+      <Box component="section">
+        <Typography variant="h6" component="h2" sx={{ mb: 3, fontWeight: 600 }}>
+          Imagen de Fondo del Header
         </Typography>
 
         {imagenHeader.urlPreview && typeof imagenHeader.urlPreview === 'string' && (
@@ -72,10 +73,10 @@ const StepHeader = () => {
         />
       </Box>
 
-      {/* ----- Video de fondo ----- */}
-      <Box className="section">
-        <Typography variant="h6" component="h3" sx={{ mb: 2, fontWeight: 600 }}>
-          Video de Fondo
+      {/* ======= Video de fondo ======= */}
+      <Box component="section">
+        <Typography variant="h6" component="h2" sx={{ mb: 3, fontWeight: 600 }}>
+          Video de Fondo del Header
         </Typography>
 
         {videoHeader.urlPreview && typeof videoHeader.urlPreview === 'string' && (
@@ -114,4 +115,3 @@ const StepHeader = () => {
 };
 
 export default StepHeader;
-

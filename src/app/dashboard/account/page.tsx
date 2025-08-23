@@ -7,25 +7,21 @@ import Grid from '@mui/material/Unstable_Grid2';
 
 import { AccountDetailsForm } from '@/components/dashboard/account/account-details-form';
 import { AccountInfo } from '@/components/dashboard/account/account-info';
-import { AgenciaEdicionProvider } from '@/contexts/features/Agencias/AgenciaEdicionProvider';
 
 export default function Page(): React.JSX.Element {
   return (
-    <AgenciaEdicionProvider>
-      <Stack spacing={3}>
-        <div>
-          <Typography variant="h4">Agencia</Typography>
-        </div>
-        <Grid container spacing={3}>
-          <Grid lg={4} md={6} xs={12}>
-            <AccountInfo />
-          </Grid>
-          <Grid lg={8} md={6} xs={12}>
-            <AccountDetailsForm />
-          </Grid>
+    <Stack spacing={3}>
+      <div>
+        <Typography variant="h4">Agencia</Typography>
+      </div>
+      <Grid container spacing={3}>
+        <Grid lg={4} md={6} xs={12}>
+          <AccountInfo />
         </Grid>
-      </Stack>
-    </AgenciaEdicionProvider>
+        <Grid lg={8} md={6} xs={12}>
+          <AccountDetailsForm />
+        </Grid>
+      </Grid>
+    </Stack>
   );
 }
-

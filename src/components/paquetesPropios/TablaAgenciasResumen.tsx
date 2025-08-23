@@ -19,19 +19,32 @@ import { useAgenciasContext } from '@/contexts/features/Agencias/AgenciaProvider
 import { useFetchPaquetesDeAgencia } from '@/contexts/features/PaquetesPropiosProvider/queris/useFetchPaquetesDeAgencia';
 import { SubtablaPaquetes } from './SubtablaPaquetes';
 
+function ensureHttp(u?: string | null): string | undefined {
+  if (!u) return undefined;
+  return /^https?:\/\//i.test(u) ? u : `https://${u}`;
+}
+
+function getHrefFromAgencia(agencia: any): string | undefined {
+  if (agencia?.url) return ensureHttp(agencia.url);
+  if (agencia?.dominio) return ensureHttp(agencia.dominio);
+  return undefined;
+}
+
 export function TablaAgenciasResumen(): React.JSX.Element {
   const {
     state: { agencias, loading, error }
   } = useAgenciasContext();
 
-  const [openRows, setOpenRows] = useState<Record<string, boolean>>({});
+  // Solo una fila abierta a la vez
+  const [openId, setOpenId] = useState<string | null>(null);
   const { cargarSiNoExiste } = useFetchPaquetesDeAgencia();
 
-  const toggleRow = (id: string) => {
-    setOpenRows((prev) => {
-      const isOpening = !prev[id];
-      if (isOpening) cargarSiNoExiste(id);
-      return { ...prev, [id]: isOpening };
+  const toggleRow = (id: string | null) => {
+    if (!id) return;
+    setOpenId(prev => {
+      const next = prev === id ? null : id;
+      if (next && next !== prev) cargarSiNoExiste(next);
+      return next;
     });
   };
 
@@ -67,45 +80,85 @@ export function TablaAgenciasResumen(): React.JSX.Element {
             <TableCell />
             <TableCell>Logo</TableCell>
             <TableCell>Nombre</TableCell>
+            <TableCell>Dominio</TableCell>
           </TableRow>
         </TableHead>
-
         <TableBody>
-          {agencias.map((agencia) => (
-            <Fragment key={agencia.idAgencia}>
-              <TableRow hover>
-                <TableCell width="64px">
-                  <IconButton onClick={() => toggleRow(agencia.idAgencia)}>
-                    {openRows[agencia.idAgencia] ? <CaretDown /> : <CaretRight />}
-                  </IconButton>
-                </TableCell>
+          {agencias.map((agencia: any) => {
+            // Id seguro (evita que 'undefined' abra todas las filas)
+            const safeId =
+              agencia?.agencia_id ??
+              agencia?.idAgencia ??
+              agencia?.id ??
+              null;
 
-                <TableCell>
-                  <Box
-                    component="img"
-                    src={agencia.logo}
-                    alt={agencia.nombre}
-                    sx={{ width: 40, height: 40, borderRadius: 1 }}
-                  />
-                </TableCell>
+            const idStr = safeId !== null ? String(safeId) : null;
 
-                <TableCell>{agencia.nombre}</TableCell>
-              </TableRow>
+            const href = getHrefFromAgencia(agencia);
+            const label = agencia?.dominio || agencia?.url || 'Sin dominio';
+            const isOpen = !!idStr && openId === idStr;
 
-              <TableRow>
-                <TableCell colSpan={3} sx={{ p: 0, border: 0 }}>
-                  <Collapse in={openRows[agencia.idAgencia]} timeout="auto" unmountOnExit>
-                    <Box sx={{ p: 2 }}>
-                      <SubtablaPaquetes
-                        agenciaId={agencia.idAgencia}
-                        nombreAgencia={agencia.nombre}
+            return (
+              <Fragment key={idStr ?? `agencia-row-${Math.random()}`}>
+                <TableRow hover>
+                  <TableCell width="64px">
+                    <IconButton
+                      onClick={() => toggleRow(idStr)}
+                      disabled={!idStr}
+                      aria-label={isOpen ? 'Contraer paquetes' : 'Expandir paquetes'}
+                    >
+                      {isOpen ? <CaretDown /> : <CaretRight />}
+                    </IconButton>
+                  </TableCell>
+                  <TableCell>
+                    {agencia?.logo ? (
+                      <Box
+                        component="img"
+                        src={agencia.logo}
+                        alt={agencia?.nombre || 'Agencia'}
+                        sx={{ width: 40, height: 40, borderRadius: 1, objectFit: 'cover' }}
                       />
-                    </Box>
-                  </Collapse>
-                </TableCell>
-              </TableRow>
-            </Fragment>
-          ))}
+                    ) : (
+                      <Box sx={{ width: 40, height: 40, borderRadius: 1, bgcolor: 'action.hover' }} />
+                    )}
+                  </TableCell>
+                  <TableCell>{agencia?.nombre || 'Sin nombre'}</TableCell>
+                  <TableCell>
+                    {href ? (
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: '#1976d2', textDecoration: 'underline' }}
+                        title={href}
+                        aria-label={`Abrir sitio de ${agencia?.nombre ?? 'agencia'}`}
+                      >
+                        {label}
+                      </a>
+                    ) : (
+                      <Typography variant="body2" color="text.secondary">
+                        Sin dominio
+                      </Typography>
+                    )}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell colSpan={4} sx={{ p: 0, border: 0 }}>
+                    <Collapse in={isOpen} timeout="auto" unmountOnExit>
+                      <Box sx={{ p: 2 }}>
+                        {idStr && (
+                          <SubtablaPaquetes
+                            agenciaId={idStr}
+                            nombreAgencia={agencia.nombre}
+                          />
+                        )}
+                      </Box>
+                    </Collapse>
+                  </TableCell>
+                </TableRow>
+              </Fragment>
+            );
+          })}
         </TableBody>
       </Table>
     </Box>

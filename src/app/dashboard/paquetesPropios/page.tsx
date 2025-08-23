@@ -1,15 +1,29 @@
 'use client';
 
 import { Container, Stack, Typography } from '@mui/material';
+import { useEffect } from 'react';
 import { useUserContext } from '@/contexts/user-context';
+import { useAgenciasContext } from '@/contexts/features/Agencias/AgenciaProvider';
 
 import { TablaAgenciasResumen } from '@/components/paquetesPropios/TablaAgenciasResumen';
 import ModalPaquetePropio from '@/components/paquetesPropios/modal/ModalPaquetePropio';
 import ModalSalidas from '@/components/paquetesPropios/modal/ModalSalida';
-import VistaPaquetesAdmin from '@/components/paquetesPropios/VistaPaquetesAdmin'; // ✅ nuevo componente admin
+import VistaPaquetesAdmin from '@/components/paquetesPropios/VistaPaquetesAdmin';
 
 export default function PaquetesPropiosPage() {
   const { user, isLoading } = useUserContext();
+  const { state, actions } = useAgenciasContext();
+  const { agencias } = state;
+
+  const esSuperadmin = user?.rol === 'superadmin';
+  const esAdminConAgencia = user?.rol === 'admin' && !!user?.agencia_id;
+
+  // 🔄 Cargar listado de agencias cuando es superadmin (como en la página de agencias)
+  useEffect(() => {
+    if (esSuperadmin && agencias.length === 0) {
+      actions.fetchAgencias();
+    }
+  }, [esSuperadmin, agencias.length, actions]);
 
   if (isLoading) return null;
 
@@ -23,8 +37,8 @@ export default function PaquetesPropiosPage() {
     );
   }
 
-  const esSuperadmin = user.rol === 'superadmin';
-  const esAdminConAgencia = user.rol === 'admin' && !!user.agencia_id;
+  // Alias para evitar camelcase lint al pasar props
+  const agenciaId = user?.agencia_id ? String(user.agencia_id) : undefined;
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
@@ -41,8 +55,8 @@ export default function PaquetesPropiosPage() {
 
         {esSuperadmin && <TablaAgenciasResumen />}
 
-        {esAdminConAgencia && (
-          <VistaPaquetesAdmin agenciaId={user.agencia_id!} />
+        {esAdminConAgencia && agenciaId && (
+          <VistaPaquetesAdmin agenciaId={agenciaId} />
         )}
 
         <ModalPaquetePropio />

@@ -14,6 +14,9 @@ export interface Salida {
 
   info_tramos: boolean
 
+  // ✅ NUEVO CAMPO
+  tipo_transporte: 'avion' | 'bus' | 'sin_transporte'
+
   ida_origen_fecha: string
   ida_origen_hora: string | null
   ida_origen_ciudad: string | null

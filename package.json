@@ -32,6 +32,7 @@
     "@phosphor-icons/react": "2.1.6",
     "apexcharts": "3.49.2",
     "dayjs": "1.11.11",
+    "lucide-react": "^0.539.0",
     "miragejs": "^0.1.48",
     "next": "^14.2.30",
     "notistack": "^3.0.2",

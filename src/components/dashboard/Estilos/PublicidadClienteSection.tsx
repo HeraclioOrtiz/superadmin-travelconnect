@@ -1,30 +1,86 @@
 // components/dashboard/Estilos/sections/PublicidadClienteSection.tsx
 'use client';
 
-import {
-  Box,
-  FormControl,
-  Grid,
-  InputLabel,
-  OutlinedInput,
-  Switch,
-  Typography,
-} from '@mui/material';
-import { useAgenciaEdicionContext } from '@/contexts/features/Agencias/AgenciaEdicionProvider';
-import type { AgenciaFormValues } from '@/contexts/features/Agencias/forms';
+import * as React from 'react';
+import { Box, FormControl, Grid, InputLabel, OutlinedInput, Switch, Typography } from '@mui/material';
+import { useFormContext, useWatch } from 'react-hook-form';
+// ✅ Tipo correcto desde el mapper
+import type { AgenciaFormValues } from '@/contexts/features/Agencias/services/agenciaMapper';
 
 export function PublicidadClienteSection(): JSX.Element {
-  const { values, setValue } = useAgenciaEdicionContext();
+  const { control, watch, setValue } = useFormContext<AgenciaFormValues>();
 
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    const parsed = type === 'checkbox' ? checked : value;
-    setValue(name as keyof AgenciaFormValues, parsed);
-  };
+  // Claves (contrato snake_case, pero constantes camelCase-friendly)
+  const kPublicidadExiste = 'publicidad_existe' as const;
+  const kPublicidadTitulo = 'publicidad_titulo' as const;
+  const kPublicidadTipografiaColor = 'publicidad_tipografia_color' as const;
+  const kPublicidadColorPrimario = 'publicidad_color_primario' as const;
+  const kPublicidadColorSecundario = 'publicidad_color_secundario' as const;
+  const kPublicidadColorTerciario = 'publicidad_color_terciario' as const;
 
-  const handleColor = (name: keyof AgenciaFormValues, value: string) => {
-    setValue(name, value);
-  };
+  // 🔍 Watch de todos los campos de la sección
+  const [
+    publicidadExiste,
+    publicidadTitulo,
+    publicidadTipografiaColor,
+    publicidadColorPrimario,
+    publicidadColorSecundario,
+    publicidadColorTerciario,
+  ] = useWatch({
+    control,
+    name: [
+      kPublicidadExiste,
+      kPublicidadTitulo,
+      kPublicidadTipografiaColor,
+      kPublicidadColorPrimario,
+      kPublicidadColorSecundario,
+      kPublicidadColorTerciario,
+    ],
+  });
+
+  // 🔍 Log snapshot
+  React.useEffect(() => {
+    console.groupCollapsed('[PublicidadClienteSection] values snapshot');
+    console.info({
+      publicidadExiste,
+      publicidadTitulo,
+      publicidadTipografiaColor,
+      publicidadColorPrimario,
+      publicidadColorSecundario,
+      publicidadColorTerciario,
+    });
+    console.groupEnd();
+  }, [
+    publicidadExiste,
+    publicidadTitulo,
+    publicidadTipografiaColor,
+    publicidadColorPrimario,
+    publicidadColorSecundario,
+    publicidadColorTerciario,
+  ]);
+
+  const onText =
+    (
+      name:
+        | typeof kPublicidadTitulo
+        | typeof kPublicidadTipografiaColor
+        | typeof kPublicidadColorPrimario
+        | typeof kPublicidadColorSecundario
+        | typeof kPublicidadColorTerciario
+    ) =>
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      setValue(name, e.target.value, { shouldDirty: true, shouldTouch: true });
+
+  const onColor =
+    (
+      name:
+        | typeof kPublicidadTipografiaColor
+        | typeof kPublicidadColorPrimario
+        | typeof kPublicidadColorSecundario
+        | typeof kPublicidadColorTerciario
+    ) =>
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      setValue(name, e.target.value, { shouldDirty: true, shouldTouch: true });
 
   return (
     <>
@@ -33,11 +89,10 @@ export function PublicidadClienteSection(): JSX.Element {
         <Grid item xs={12}>
           <Typography variant="body2">¿Mostrar publicidad?</Typography>
           <Switch
-            checked={values.publicidad_existe ?? false}
-            onChange={(e) => handleInput({
-              ...e,
-              target: { ...e.target, name: 'publicidad_existe', type: 'checkbox' }
-            } as React.ChangeEvent<HTMLInputElement>)}
+            checked={!!publicidadExiste}
+            onChange={(e) =>
+              setValue(kPublicidadExiste, e.target.checked, { shouldDirty: true, shouldTouch: true })
+            }
             color="primary"
           />
         </Grid>
@@ -46,10 +101,10 @@ export function PublicidadClienteSection(): JSX.Element {
           <FormControl fullWidth>
             <InputLabel>Título de la Publicidad</InputLabel>
             <OutlinedInput
-              name="publicidad_titulo"
-              value={values.publicidad_titulo || ''}
-              onChange={handleInput}
-              label="Título"
+              name={kPublicidadTitulo}
+              label="Título de la Publicidad"
+              value={publicidadTitulo || ''}
+              onChange={onText(kPublicidadTitulo)}
             />
           </FormControl>
         </Grid>
@@ -59,40 +114,69 @@ export function PublicidadClienteSection(): JSX.Element {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <input
               type="color"
-              value={values.publicidad_tipografia_color || '#000000'}
-              onChange={(e) => handleColor('publicidad_tipografia_color', e.target.value)}
+              value={publicidadTipografiaColor || '#000000'}
+              onChange={onColor(kPublicidadTipografiaColor)}
               style={{ width: 40, height: 40, borderRadius: '50%', border: 'none' }}
             />
             <OutlinedInput
-              name="publicidad_tipografia_color"
-              value={values.publicidad_tipografia_color || ''}
-              onChange={handleInput}
+              name={kPublicidadTipografiaColor}
+              value={publicidadTipografiaColor || ''}
+              onChange={onText(kPublicidadTipografiaColor)}
             />
           </Box>
         </Grid>
 
-        {(['publicidad_color_primario', 'publicidad_color_secundario', 'publicidad_color_terciario'] as const).map((campo) => (
-          <Grid item md={4} xs={12} key={campo}>
-            <Typography variant="body2">
-              {campo.replace('publicidad_color_', 'Color ')}
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <input
-                type="color"
-                value={values[campo] || '#000000'}
-                onChange={(e) => handleColor(campo, e.target.value)}
-                style={{ width: 40, height: 40, borderRadius: '50%', border: 'none' }}
-              />
-              <OutlinedInput
-                name={campo}
-                value={values[campo] || ''}
-                onChange={handleInput}
-              />
-            </Box>
-          </Grid>
-        ))}
+        <Grid item md={4} xs={12}>
+          <Typography variant="body2">Color primario</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <input
+              type="color"
+              value={publicidadColorPrimario || '#000000'}
+              onChange={onColor(kPublicidadColorPrimario)}
+              style={{ width: 40, height: 40, borderRadius: '50%', border: 'none' }}
+            />
+            <OutlinedInput
+              name={kPublicidadColorPrimario}
+              value={publicidadColorPrimario || ''}
+              onChange={onText(kPublicidadColorPrimario)}
+            />
+          </Box>
+        </Grid>
+
+        <Grid item md={4} xs={12}>
+          <Typography variant="body2">Color secundario</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <input
+              type="color"
+              value={publicidadColorSecundario || '#000000'}
+              onChange={onColor(kPublicidadColorSecundario)}
+              style={{ width: 40, height: 40, borderRadius: '50%', border: 'none' }}
+            />
+            <OutlinedInput
+              name={kPublicidadColorSecundario}
+              value={publicidadColorSecundario || ''}
+              onChange={onText(kPublicidadColorSecundario)}
+            />
+          </Box>
+        </Grid>
+
+        <Grid item md={4} xs={12}>
+          <Typography variant="body2">Color terciario</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <input
+              type="color"
+              value={publicidadColorTerciario || '#000000'}
+              onChange={onColor(kPublicidadColorTerciario)}
+              style={{ width: 40, height: 40, borderRadius: '50%', border: 'none' }}
+            />
+            <OutlinedInput
+              name={kPublicidadColorTerciario}
+              value={publicidadColorTerciario || ''}
+              onChange={onText(kPublicidadColorTerciario)}
+            />
+          </Box>
+        </Grid>
       </Grid>
     </>
   );
 }
-

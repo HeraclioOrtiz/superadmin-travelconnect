@@ -12,11 +12,21 @@ import { PaquetePropio } from '@/types/PaquetePropio'
 import { Hotel } from '@/types/Hotel'
 import BotonAgregarImagen from './BotonAgregarImagen'
 
-/* ---------- util ---------- */
+/* ---------- utils ---------- */
 const convertirFecha = (fecha?: string) => {
   if (!fecha) return ''
   const [dd, mm, yyyy] = fecha.split('-')
   return dd && mm && yyyy ? `${yyyy}-${mm}-${dd}` : ''
+}
+
+/** Si el back devuelve un path relativo, lo convierto a absoluto */
+const toAbsoluteUrl = (url?: string): string => {
+  if (!url) return ''
+  // ya es absoluta
+  if (/^https?:\/\//i.test(url)) return url
+  // normalizo slash
+  const base = 'https://travelconnect.com.ar'
+  return `${base}/${url.replace(/^\/+/, '')}`
 }
 
 /* ---------- props ---------- */
@@ -30,6 +40,7 @@ export default function FormularioPaquetePropio({
 }: FormularioPaquetePropioProps) {
   const [moneda, setMoneda] = useState('ARS')
   const [estado, setEstado] = useState('inactivo')
+  const [prioridad, setPrioridad] = useState<'alta' | 'media' | 'baja'>('media')
 
   const [hotel, setHotel] = useState<Hotel>({
     id_hotel: '',
@@ -39,12 +50,11 @@ export default function FormularioPaquetePropio({
 
   /* ---------- sync con paquete ---------- */
   useEffect(() => {
-    if (paquete?.tipo_moneda) {
-      setMoneda(paquete.tipo_moneda)
-    }
+    if (paquete?.tipo_moneda) setMoneda(paquete.tipo_moneda)
     if (typeof paquete?.activo === 'boolean') {
       setEstado(paquete.activo ? 'activo' : 'inactivo')
     }
+    if (paquete?.prioridad) setPrioridad(paquete.prioridad)
     if (paquete?.hotel) {
       setHotel({
         id_hotel: paquete.hotel.id_hotel || '',
@@ -52,7 +62,7 @@ export default function FormularioPaquetePropio({
         categoria_hotel: paquete.hotel.categoria_hotel || '3'
       })
     }
-  }, [paquete?.hotel, paquete?.tipo_moneda, paquete?.activo])
+  }, [paquete?.hotel, paquete?.tipo_moneda, paquete?.activo, paquete?.prioridad])
 
   /* ---------- fechas formateadas ---------- */
   const fechaInicioFormateada = useMemo(
@@ -63,6 +73,13 @@ export default function FormularioPaquetePropio({
     () => convertirFecha(paquete?.fecha_vigencia_hasta),
     [paquete?.fecha_vigencia_hasta]
   )
+
+  /* ---------- imagen del back (preview) ---------- */
+  const imagenBackUrl = useMemo(() => {
+    const raw = paquete?.imagen_principal as string | undefined
+    if (!raw) return ''
+    return toAbsoluteUrl(raw)
+  }, [paquete])
 
   return (
     <>
@@ -102,12 +119,11 @@ export default function FormularioPaquetePropio({
         id="pais"
         name="pais"
         label="País"
-       required
-       fullWidth
+        required
+        fullWidth
         margin="dense"
         defaultValue={paquete?.pais || ''}
-/>
-
+      />
 
       <TextField
         id="noches"
@@ -216,6 +232,47 @@ export default function FormularioPaquetePropio({
         <MenuItem value="inactivo">Inactivo</MenuItem>
       </TextField>
 
+      {/* NUEVO CAMPO: PRIORIDAD */}
+      <TextField
+        id="prioridad"
+        name="prioridad"
+        label="Prioridad"
+        select
+        required
+        fullWidth
+        margin="dense"
+        value={prioridad}
+        onChange={(e) =>
+          setPrioridad(e.target.value as 'alta' | 'media' | 'baja')
+        }
+      >
+        <MenuItem value="alta">Alta</MenuItem>
+        <MenuItem value="media">Media</MenuItem>
+        <MenuItem value="baja">Baja</MenuItem>
+      </TextField>
+
+      {/* PREVIEW de imagen actual si viene del backend */}
+      {imagenBackUrl && (
+        <Box my={2}>
+          <Typography variant="subtitle2" gutterBottom>Imagen actual</Typography>
+          <Box
+            component="img"
+            src={imagenBackUrl}
+            alt="Imagen principal del paquete"
+            sx={{
+              width: '100%',
+              maxWidth: 480,
+              height: 'auto',
+              borderRadius: 2,
+              display: 'block',
+              objectFit: 'cover',
+              boxShadow: 1
+            }}
+          />
+        </Box>
+      )}
+
+      {/* Selector para reemplazar/añadir imagen */}
       <BotonAgregarImagen name="imagen_principal" />
     </>
   )

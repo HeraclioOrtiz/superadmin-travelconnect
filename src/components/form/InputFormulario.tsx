@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import {
   Box,
@@ -7,17 +7,21 @@ import {
   OutlinedInput,
   FormHelperText,
   OutlinedInputProps,
-} from '@mui/material';
-import { forwardRef } from 'react';
-import { SelectorFuente } from '@/components/ConfigAgencia/SelectorFuente';
+} from '@mui/material'
+import { forwardRef } from 'react'
+import { SelectorFuente } from '@/components/ConfigAgencia/SelectorFuente'
 
-interface InputFormularioProps extends OutlinedInputProps {
-  label: string;
-  name: string;
-  helperText?: string;
-  fullWidth?: boolean;
-  optional?: boolean;
-  esTipografia?: boolean;
+interface InputFormularioProps extends Omit<OutlinedInputProps, 'onChange' | 'value'> {
+  label: string
+  name: string
+  helperText?: string
+  fullWidth?: boolean
+  optional?: boolean
+  esTipografia?: boolean
+
+  // Props solo para modo controlado
+  value?: string
+  onChange?: (event: { target: { name: string; value: string } }) => void
 }
 
 const InputFormulario = forwardRef<HTMLInputElement, InputFormularioProps>(
@@ -55,9 +59,9 @@ const InputFormulario = forwardRef<HTMLInputElement, InputFormularioProps>(
 
           {esTipografia ? (
             <SelectorFuente
-              value={value as string}
+              value={value ?? ''}
               onChange={(nueva) =>
-                onChange?.({ target: { name, value: nueva } } as any)
+                onChange?.({ target: { name, value: nueva } })
               }
               label={label}
             />
@@ -65,12 +69,10 @@ const InputFormulario = forwardRef<HTMLInputElement, InputFormularioProps>(
             <OutlinedInput
               id={name}
               name={name}
-              value={value}
-              onChange={onChange}
-              label={`${label}${optional ? ' (Opcional)' : ''}`}
+              inputRef={ref}
               type={type}
               placeholder={placeholder}
-              inputRef={ref}
+              label={`${label}${optional ? ' (Opcional)' : ''}`}
               {...props}
             />
           )}
@@ -78,10 +80,10 @@ const InputFormulario = forwardRef<HTMLInputElement, InputFormularioProps>(
           {helperText && <FormHelperText>{helperText}</FormHelperText>}
         </FormControl>
       </Box>
-    );
+    )
   }
-);
+)
 
-InputFormulario.displayName = 'InputFormulario';
+InputFormulario.displayName = 'InputFormulario'
 
-export default InputFormulario;
+export default InputFormulario

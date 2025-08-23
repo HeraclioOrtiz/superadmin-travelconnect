@@ -1,3 +1,4 @@
+// src/components/ConfigAgencia/useModalServiciosAgencia.ts
 'use client';
 
 import { useState } from 'react';
@@ -27,4 +28,3 @@ export function useModalServiciosAgencia() {
     seccionHabilitada,
   };
 }
-

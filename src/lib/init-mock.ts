@@ -1,5 +1,6 @@
 // src/mirage/init-mock.ts
-import { makeServer } from '../mirage/handler';
+
+import { makeServer } from '../mirage/handler'; // Asegurate que `handler.ts` sea el archivo con makeServer
 
 let server: any;
 

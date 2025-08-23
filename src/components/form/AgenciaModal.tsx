@@ -1,15 +1,10 @@
+// components/form/AgenciaModal.tsx
 'use client';
 
 import React from 'react';
 import { FormProvider } from 'react-hook-form';
 import { stepsConfig } from './configStep';
-import {
-  Modal,
-  Box,
-  Typography,
-  Divider,
-  IconButton,
-} from '@mui/material';
+import { Modal, Box, Typography, Divider, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
 import EstadoEnvioMensaje from './EstadoEnvioMensaje';
@@ -18,18 +13,19 @@ import ControlesStep from './ControlesStep';
 import { useAgenciaForm } from './hooks/useAgenciaForm';
 import { useModalAgenciaGlobal } from '@/contexts/ModalAgenciaProvider';
 import { useAgenciaModalHandler } from './hooks/useAgenciaModalHandler';
+import type { AgenciaBackData } from '@/types/AgenciaBackData';
 
 const AgenciaModal = () => {
   const [currentStep, setCurrentStep] = React.useState(0);
   const { isOpen, closeModal, datosEdicion } = useModalAgenciaGlobal();
 
+  // RHF + hidratación (se encarga de resetear según datosEdicion/isOpen)
   const methods = useAgenciaForm();
   const StepComponent = stepsConfig[currentStep]?.component;
 
+  // Al cerrar, volver al primer paso
   React.useEffect(() => {
-    if (!isOpen) {
-      setCurrentStep(0);
-    }
+    if (!isOpen) setCurrentStep(0);
   }, [isOpen]);
 
   return (
@@ -60,7 +56,7 @@ const AgenciaModal = () => {
             outline: 'none',
             display: 'flex',
             flexDirection: 'column',
-            height: '100%',
+            height: 'auto',
             overflow: 'hidden',
           }}
         >
@@ -86,14 +82,15 @@ const AgenciaModal = () => {
 
 export default AgenciaModal;
 
-// ===============================
-// ✅ Subcomponente interno
-// ===============================
+/* ===============================
+   Subcomponente interno
+   =============================== */
+
 interface PropsContenidoInterno {
   currentStep: number;
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
   StepComponent: React.ElementType | undefined;
-  datosEdicion: any;
+  datosEdicion?: AgenciaBackData; // ← crear = undefined, editar = objeto
 }
 
 const AgenciaContenidoInterno = ({
@@ -109,41 +106,51 @@ const AgenciaContenidoInterno = ({
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+      {/* Encabezado */}
       <Box sx={{ mb: 2 }}>
-        <Typography variant="h6" fontWeight={600} id="modal-title">
+        <Typography variant="h6" fontWeight={600} id="modal-title" textAlign="center">
           {stepsConfig[currentStep]?.title}
         </Typography>
         <Divider sx={{ mt: 1 }} />
       </Box>
 
+      {/* Contenido del paso */}
       <Box
         sx={{
           flex: 1,
           overflowY: 'auto',
-          pr: 1,
-          mb: 2,
-          minHeight: 0,
+          px: 2,
+          py: 1,
+          display: 'flex',
+          justifyContent: 'center',
         }}
       >
-        {StepComponent && <StepComponent />}
+        <Box sx={{ width: '100%', maxWidth: 600 }}>
+          {StepComponent && <StepComponent />}
+        </Box>
       </Box>
 
-      <EstadoEnvioMensaje
-        status={submissionState.status}
-        message={submissionState.message}
-        modoEdicion={!!datosEdicion}
-      />
+      {/* Estado de envío */}
+      <Box sx={{ mt: 1 }}>
+        <EstadoEnvioMensaje
+          status={submissionState.status}
+          message={submissionState.message}
+          modoEdicion={!!datosEdicion}
+        />
+      </Box>
 
-      <ControlesStep
-        currentStep={currentStep}
-        totalSteps={stepsConfig.length}
-        isLoading={submissionState.status === 'loading'}
-        isEditMode={!!datosEdicion}
-        onBack={handleBack}
-        onNext={handleNext}
-        onSubmit={handleSubmitClick}
-      />
+      {/* Controles de paso */}
+      <Box sx={{ mt: 2 }}>
+        <ControlesStep
+          currentStep={currentStep}
+          totalSteps={stepsConfig.length}
+          isLoading={submissionState.status === 'loading'}
+          isEditMode={!!datosEdicion}
+          onBack={handleBack}
+          onNext={handleNext}
+          onSubmit={handleSubmitClick}
+        />
+      </Box>
     </Box>
   );
 };
-

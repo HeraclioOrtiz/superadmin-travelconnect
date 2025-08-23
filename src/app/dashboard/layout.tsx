@@ -1,17 +1,52 @@
+// app/dashboard/layout.tsx
+'use client';
+
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import GlobalStyles from '@mui/material/GlobalStyles';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { AuthGuard } from '@/components/auth/auth-guard';
 import { MainNav } from '@/components/dashboard/layout/main-nav';
 import { SideNav } from '@/components/dashboard/layout/side-nav';
 
+import { navItems } from '@/config/role-navigation';
+import { useUserContext } from '@/contexts/user-context';
+import { paths } from '@/paths';
+import type { RolUsuario } from '@/config/role-navigation';
+
 interface LayoutProps {
   children: React.ReactNode;
 }
 
+function isAllowed(pathname: string, role: RolUsuario): boolean {
+  // Permitir siempre el overview
+  if (pathname === paths.dashboard.overview) return true;
+
+  return navItems.some((item) => {
+    if (!item.roles.includes(role)) return false;
+
+    const matchHref = item.matcher?.href ?? item.href;
+    const type = item.matcher?.type ?? 'equals';
+
+    if (type === 'startsWith') return pathname.startsWith(matchHref);
+    return pathname === matchHref;
+  });
+}
+
 export default function Layout({ children }: LayoutProps): React.JSX.Element {
+  const pathname = usePathname();
+  const router = useRouter();
+  const { user, isLoading } = useUserContext();
+
+  React.useEffect(() => {
+    if (isLoading || !user) return;
+    if (!isAllowed(pathname, user.rol)) {
+      router.replace(paths.dashboard.overview);
+    }
+  }, [isLoading, user, pathname, router]);
+
   return (
     <AuthGuard>
       <GlobalStyles
@@ -48,4 +83,3 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
     </AuthGuard>
   );
 }
-

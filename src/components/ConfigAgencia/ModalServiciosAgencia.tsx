@@ -64,7 +64,8 @@ export const ModalServiciosAgencia = ({
 
         {/* 📄 Contenido dinámico */}
         {Componente ? (
-          <Componente agencia={agencia} />
+          // Pasamos ambos para compatibilidad: agencia (objeto) y agenciaId (contrato unificado)
+          <Componente {...({ agencia, agenciaId: agencia.idAgencia } as any)} />
         ) : (
           <Box sx={{ p: 3 }}>Sección no implementada.</Box>
         )}
@@ -72,4 +73,3 @@ export const ModalServiciosAgencia = ({
     </Modal>
   );
 };
-

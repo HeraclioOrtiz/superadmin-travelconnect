@@ -1,186 +1,172 @@
 'use client';
 
 import { useFormContext, Controller } from 'react-hook-form';
+import {
+  Box,
+  Typography,
+  Grid,
+  FormControlLabel,
+  Checkbox,
+} from '@mui/material';
+import { useEffect } from 'react';
 import InputFormulario from './InputFormulario';
 import SelectorColorCampo from './SelectorCampoColor';
 import BotonImportarArchivo from './ImportButton';
 import { useAgenciaForm } from './hooks/useAgenciaForm';
 import { usePrevisualizacionArchivo } from './hooks/usePrevisualizacionArchivo';
-import { Box } from '@mui/material';
 
 const StepPublicidadCliente = () => {
   const { register, watch, setValue, control } = useFormContext();
   const { urlsAgencia } = useAgenciaForm();
 
+  const imagen1 = watch('publicidad_imagen_1');
+  const imagen2 = watch('publicidad_imagen_2');
+  const imagen3 = watch('publicidad_imagen_3');
+
   const preview1 = usePrevisualizacionArchivo({
     campo: 'publicidad_imagen_1',
-    archivo: watch('publicidad_imagen_1'),
+    archivo: imagen1,
     urlOriginal: urlsAgencia?.publicidadUrls?.[0] ?? null,
     setValue,
   });
 
   const preview2 = usePrevisualizacionArchivo({
     campo: 'publicidad_imagen_2',
-    archivo: watch('publicidad_imagen_2'),
+    archivo: imagen2,
     urlOriginal: urlsAgencia?.publicidadUrls?.[1] ?? null,
     setValue,
   });
 
   const preview3 = usePrevisualizacionArchivo({
     campo: 'publicidad_imagen_3',
-    archivo: watch('publicidad_imagen_3'),
+    archivo: imagen3,
     urlOriginal: urlsAgencia?.publicidadUrls?.[2] ?? null,
     setValue,
   });
 
+  // Forzar regeneración de previews si cambia el archivo
+  useEffect(() => {}, [imagen1, imagen2, imagen3]);
+
   return (
-    <div className="space-y-8 px-4 md:px-6 lg:px-8 py-6">
-      {/* ----- Activar Publicidad ----- */}
-      <div className="flex items-center gap-3">
-        <input
-          type="checkbox"
-          id="publicidad_existe"
-          {...register('publicidad_existe')}
-          className="h-4 w-4"
+    <Box
+      sx={{
+        py: 4,
+        px: { xs: 2, sm: 3, md: 4 },
+        '& section': {
+          mb: 6,
+        },
+      }}
+    >
+      {/* ======= Activar Publicidad ======= */}
+      <Box component="section">
+        <FormControlLabel
+          control={<Checkbox {...register('publicidad_existe')} />}
+          label="Activar sección de publicidad"
         />
-        <label htmlFor="publicidad_existe">Activar sección de publicidad</label>
-      </div>
+      </Box>
 
-      {/* ----- Título y colores de texto ----- */}
-      <div className="space-y-4">
-        <InputFormulario
-          label="Título de la Publicidad"
-          {...register('publicidad_titulo')}
-        />
+      {/* ======= Título y Color ======= */}
+      <Box component="section">
+        <Typography variant="h6" component="h2" sx={{ mb: 3, fontWeight: 600 }}>
+          Título y Color de la Publicidad
+        </Typography>
 
-        <Controller
-          name="publicidad_tipografia_color"
-          control={control}
-          render={({ field }) => (
-            <SelectorColorCampo
-              label="Color de la Tipografía"
-              {...field}
+        <Grid container spacing={3} alignItems="flex-end">
+          <Grid item xs={12} md={6}>
+            <InputFormulario
+              label="Título de la Publicidad"
+              {...register('publicidad_titulo')}
             />
-          )}
-        />
-      </div>
-
-      {/* ----- Paleta de colores ----- */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Controller
-          name="publicidad_color_primario"
-          control={control}
-          render={({ field }) => (
-            <SelectorColorCampo
-              label="Color Primario"
-              {...field}
+          </Grid>
+          <Grid item xs={12} md={6} sx={{ display: 'flex', alignItems: 'flex-end' }}>
+            <Controller
+              name="publicidad_tipografia_color"
+              control={control}
+              render={({ field }) => (
+                <SelectorColorCampo
+                  label="Color de la Tipografía"
+                  {...field}
+                />
+              )}
             />
-          )}
-        />
+          </Grid>
+        </Grid>
+      </Box>
 
-        <Controller
-          name="publicidad_color_secundario"
-          control={control}
-          render={({ field }) => (
-            <SelectorColorCampo
-              label="Color Secundario"
-              {...field}
-            />
-          )}
-        />
+      {/* ======= Paleta de Colores ======= */}
+      <Box component="section">
+        <Typography variant="h6" component="h2" sx={{ mb: 3, fontWeight: 600 }}>
+          Paleta de Colores
+        </Typography>
 
-        <Controller
-          name="publicidad_color_terciario"
-          control={control}
-          render={({ field }) => (
-            <SelectorColorCampo
-              label="Color Terciario"
-              {...field}
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={4}>
+            <Controller
+              name="publicidad_color_primario"
+              control={control}
+              render={({ field }) => (
+                <SelectorColorCampo label="Color Primario" {...field} />
+              )}
             />
-          )}
-        />
-      </div>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Controller
+              name="publicidad_color_secundario"
+              control={control}
+              render={({ field }) => (
+                <SelectorColorCampo label="Color Secundario" {...field} />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Controller
+              name="publicidad_color_terciario"
+              control={control}
+              render={({ field }) => (
+                <SelectorColorCampo label="Color Terciario" {...field} />
+              )}
+            />
+          </Grid>
+        </Grid>
+      </Box>
 
-      {/* ----- Imágenes ----- */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div>
-          <BotonImportarArchivo
-            label="Imagen 1 de Publicidad"
-            accept="image/*"
-            multiple={false}
-            onChange={preview1.manejarCambio}
-            register={register('publicidad_imagen_1')}
-          />
-          {preview1.urlPreview && (
-            <Box
-              component="img"
-              src={preview1.urlPreview}
-              alt="Preview Imagen 1"
-              sx={{
-                width: '100%',
-                height: 140,
-                objectFit: 'cover',
-                border: '1px solid #ccc',
-                borderRadius: 2,
-                mt: 1,
-              }}
-            />
-          )}
-        </div>
+      {/* ======= Imágenes de Publicidad ======= */}
+      <Box component="section">
+        <Typography variant="h6" component="h2" sx={{ mb: 3, fontWeight: 600 }}>
+          Imágenes de Publicidad
+        </Typography>
 
-        <div>
-          <BotonImportarArchivo
-            label="Imagen 2 de Publicidad"
-            accept="image/*"
-            multiple={false}
-            onChange={preview2.manejarCambio}
-            register={register('publicidad_imagen_2')}
-          />
-          {preview2.urlPreview && (
-            <Box
-              component="img"
-              src={preview2.urlPreview}
-              alt="Preview Imagen 2"
-              sx={{
-                width: '100%',
-                height: 140,
-                objectFit: 'cover',
-                border: '1px solid #ccc',
-                borderRadius: 2,
-                mt: 1,
-              }}
-            />
-          )}
-        </div>
-
-        <div>
-          <BotonImportarArchivo
-            label="Imagen 3 de Publicidad"
-            accept="image/*"
-            multiple={false}
-            onChange={preview3.manejarCambio}
-            register={register('publicidad_imagen_3')}
-          />
-          {preview3.urlPreview && (
-            <Box
-              component="img"
-              src={preview3.urlPreview}
-              alt="Preview Imagen 3"
-              sx={{
-                width: '100%',
-                height: 140,
-                objectFit: 'cover',
-                border: '1px solid #ccc',
-                borderRadius: 2,
-                mt: 1,
-              }}
-            />
-          )}
-        </div>
-      </div>
-    </div>
+        <Grid container spacing={3}>
+          {[preview1, preview2, preview3].map((preview, index) => (
+            <Grid item xs={12} md={4} key={index}>
+              <BotonImportarArchivo
+                label={`Imagen ${index + 1} de Publicidad`}
+                accept="image/*"
+                multiple={false}
+                onChange={preview.manejarCambio}
+                register={register(`publicidad_imagen_${index + 1}`)}
+              />
+              {preview.urlPreview && (
+                <Box
+                  component="img"
+                  src={preview.urlPreview}
+                  alt={`Preview Imagen ${index + 1}`}
+                  sx={{
+                    width: '100%',
+                    height: 140,
+                    objectFit: 'cover',
+                    border: '1px solid #ccc',
+                    borderRadius: 2,
+                    mt: 1,
+                  }}
+                />
+              )}
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+    </Box>
   );
 };
 
 export default StepPublicidadCliente;
-

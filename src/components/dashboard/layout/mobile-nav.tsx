@@ -1,3 +1,4 @@
+// components/dashboard/layout/mobile-nav.tsx
 'use client';
 
 import * as React from 'react';
@@ -29,7 +30,10 @@ export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element 
 
   if (isLoading || !user) return <></>;
 
-  const visibleNavItems = navItems.filter((item) => item.roles.includes(user.rol));
+  const hiddenHrefs = new Set(['/dashboard', '/dashboard/settings']);
+  const visibleNavItems = navItems
+    .filter((item) => item.roles.includes(user.rol))
+    .filter((item) => !hiddenHrefs.has(item.href));
 
   return (
     <Drawer
@@ -69,7 +73,7 @@ export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element 
             backgroundColor: 'var(--mui-palette-neutral-950)',
             border: '1px solid var(--mui-palette-neutral-700)',
             borderRadius: '12px',
-            cursor: 'pointer',
+            cursor: 'default',
             display: 'flex',
             p: '4px 12px',
           }}
@@ -185,10 +189,7 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
           ) : null}
         </Box>
         <Box sx={{ flex: '1 1 auto' }}>
-          <Typography
-            component="span"
-            sx={{ color: 'inherit', fontSize: '0.875rem', fontWeight: 500, lineHeight: '28px' }}
-          >
+          <Typography component="span" sx={{ color: 'inherit', fontSize: '0.875rem', fontWeight: 500, lineHeight: '28px' }}>
             {title}
           </Typography>
         </Box>
@@ -196,4 +197,3 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
     </li>
   );
 }
-

@@ -74,7 +74,6 @@ export default function ModalPaquetePropio() {
     formData.append('titulo', form.titulo.value)
     formData.append('descripcion', form.descripcion.value)
     formData.append('pais', form.pais.value)
-
     formData.append('ciudad', form.ciudad.value)
     formData.append('ciudad_iata', '')
     formData.append('fecha_vigencia_desde', form.fecha_inicio.value)
@@ -87,14 +86,18 @@ export default function ModalPaquetePropio() {
     formData.append('tipo_moneda', form.moneda.value)
     formData.append('descuento', '0')
 
-    // ✅ Hotel adaptado al nuevo tipo
+    // ✅ Hotel como JSON
     formData.append('hotel', JSON.stringify(hotel))
+
+    // ✅ Prioridad
+    formData.append('prioridad', form.prioridad.value)
 
     formData.append('componentes', '[]')
     formData.append('categorias', '[]')
     formData.append('galeria_imagenes', '[]')
 
-    formData.append('usuario_id', idAgenciaEnCreacion)
+    // ✅ Enviar agencia_id (no usuario_id)
+    formData.append('agencia_id', idAgenciaEnCreacion)
 
     if (form.imagen_principal?.files?.[0]) {
       formData.append('imagen_principal', form.imagen_principal.files[0])

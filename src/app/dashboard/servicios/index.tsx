@@ -1,25 +1,35 @@
+// src/app/dashboard/servicios/index.ts
 'use client';
+
 import { Typography } from '@mui/material';
+import { useUserContext } from '@/contexts/user-context';
 import type { AgenciaBackData } from '@/types/AgenciaBackData';
 
-// ✅ Importación del componente real
 import PaquetesPropios from './PaquetesPropios';
+import { VistaApisServicio } from '@/components/ConfigAgencia/VistaApisServicio';
+import { TablaAgenciasAtlas } from './TablaAgenciasAtlas';
+import { VistaAtlasServicio } from '@/components/ConfigAgencia/VistaAtlasServicio';
 
 interface VistaServicioProps {
-  agencia: AgenciaBackData;
+  agencia?: AgenciaBackData;          // usado por varias vistas
+  agenciaId?: string | number;        // contrato unificado para sub-vistas
 }
 
-export const VistaApisTerceros: React.FC<VistaServicioProps> = () => (
-  <Typography variant="body2">
-    Aquí irá la configuración de <strong>APIs de terceros</strong>.
-  </Typography>
-);
+// Wrapper para compatibilizar el registro con el contrato unificado (agenciaId)
+export const VistaApisTerceros: React.FC<VistaServicioProps> = ({ agencia, agenciaId }) => {
+  const id = agenciaId ?? agencia?.idAgencia ?? '';
+  return <VistaApisServicio agenciaId={id} />;
+};
 
-export const VistaCrmAtlas: React.FC<VistaServicioProps> = () => (
-  <Typography variant="body2">
-    Aquí irá la configuración de <strong>CRM Atlas</strong>.
-  </Typography>
-);
+// Wrapper con ruteo por rol para CRM Atlas:
+// - superadmin → tabla de agencias con subtabla
+// - admin      → vista directa de su agencia
+export const VistaCrmAtlas: React.FC<VistaServicioProps> = ({ agencia, agenciaId }) => {
+  const { user } = useUserContext();
+  const esSuperadmin = user?.rol === 'superadmin';
+  const id = agenciaId ?? agencia?.idAgencia ?? '';
+  return esSuperadmin ? <TablaAgenciasAtlas /> : <VistaAtlasServicio agenciaId={id} />;
+};
 
 export const VistaHoteleria: React.FC<VistaServicioProps> = () => (
   <Typography variant="body2">
@@ -47,11 +57,10 @@ export const VistaMercadoPago: React.FC<VistaServicioProps> = () => (
 
 export const VistasServicios: Record<string, React.FC<VistaServicioProps>> = {
   'APIs de terceros': VistaApisTerceros,
-  'Paquetes propios': PaquetesPropios,
+  'Paquetes propios': PaquetesPropios as React.FC<VistaServicioProps>,
   'CRM Atlas': VistaCrmAtlas,
   'Hotelería': VistaHoteleria,
   'Circuitos': VistaCircuitos,
   'Vuelos': VistaVuelos,
   'MercadoPago': VistaMercadoPago,
 };
-

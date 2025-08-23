@@ -218,6 +218,7 @@ export default function ModalSalidas() {
                                 <Field label="Venta online" value={salida.venta_online ? 'Sí' : 'No'} />
                                 <Field label="Fecha viaje" value={salida.fecha_viaje} />
                                 <Field label="Info tramos" value={salida.info_tramos ? 'Sí' : 'No'} />
+                                <Field label="Tipo de transporte" value={salida.tipo_transporte} />
                                 <Field label="Ida origen" value={salida.ida_origen_ciudad} />
                                 <Field label="Ida destino" value={salida.ida_destino_ciudad} />
                                 <Field label="Vuelta origen" value={salida.vuelta_origen_ciudad} />

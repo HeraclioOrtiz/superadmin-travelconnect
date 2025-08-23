@@ -1,6 +1,7 @@
 'use client';
 
 import { useFormContext, Controller } from 'react-hook-form';
+import { Box, Typography, Grid } from '@mui/material';
 import InputFormulario from './InputFormulario';
 import SelectorColorCampo from './SelectorCampoColor';
 
@@ -8,76 +9,146 @@ const StepFooter = () => {
   const { register, control } = useFormContext();
 
   return (
-    <div className="space-y-8 px-4 md:px-6 lg:px-8 py-6">
-      {/* ----- Texto y Tipografía ----- */}
-      <div className="space-y-4">
-        <InputFormulario
-          label="Texto del Footer"
-          {...register('footer_texto')}
-        />
+    <Box
+      sx={{
+        py: 4,
+        px: { xs: 2, sm: 3, md: 4 },
+        '& section': {
+          mb: 6,
+        },
+      }}
+    >
+      {/* ======= Texto y Tipografía ======= */}
+      <Box component="section">
+        <Typography variant="h6" component="h2" sx={{ mb: 3, fontWeight: 600 }}>
+          Texto y Tipografía
+        </Typography>
 
-        <InputFormulario
-          label="Tipografía"
-          esTipografia
-          {...register('footer_tipografia')}
-        />
-
-        <Controller
-          name="footer_tipografia_color"
-          control={control}
-          render={({ field }) => (
-            <SelectorColorCampo
-              label="Color de la Tipografía"
-              {...field}
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <InputFormulario
+              label="Texto del Footer"
+              {...register('footer_texto')}
             />
-          )}
-        />
-      </div>
+          </Grid>
+        </Grid>
 
-      {/* ----- Paleta de Colores ----- */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Controller
-          name="footer_color_primario"
-          control={control}
-          render={({ field }) => (
-            <SelectorColorCampo label="Color Primario" {...field} />
-          )}
-        />
+        <Grid container spacing={3} alignItems="flex-end">
+          <Grid item xs={12} md={6}>
+            <Controller
+              name="footer_tipografia"
+              control={control}
+              render={({ field }) => (
+                <InputFormulario
+                  label="Tipografía"
+                  esTipografia
+                  value={field.value}
+                  onChange={field.onChange}
+                  name={field.name}
+                />
+              )}
+            />
+          </Grid>
 
-        <Controller
-          name="footer_color_secundario"
-          control={control}
-          render={({ field }) => (
-            <SelectorColorCampo label="Color Secundario" {...field} />
-          )}
-        />
+          <Grid item xs={12} md={6} sx={{ display: 'flex', alignItems: 'flex-end' }}>
+            <Controller
+              name="footer_tipografia_color"
+              control={control}
+              render={({ field }) => (
+                <SelectorColorCampo
+                  label="Color de la Tipografía"
+                  {...field}
+                />
+              )}
+            />
+          </Grid>
+        </Grid>
+      </Box>
 
-        <Controller
-          name="footer_color_terciario"
-          control={control}
-          render={({ field }) => (
-            <SelectorColorCampo label="Color Terciario" {...field} />
-          )}
-        />
-      </div>
+      {/* ======= Paleta de Colores ======= */}
+      <Box component="section">
+        <Typography variant="h6" component="h2" sx={{ mb: 3, fontWeight: 600 }}>
+          Paleta de Colores
+        </Typography>
 
-      {/* ----- Redes Sociales ----- */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <InputFormulario label="Facebook" {...register('footer_facebook')} />
-        <InputFormulario label="Twitter" {...register('footer_twitter')} />
-        <InputFormulario label="Instagram" {...register('footer_instagram')} />
-        <InputFormulario label="WhatsApp" {...register('footer_whatsapp')} />
-      </div>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={4}>
+            <Controller
+              name="footer_color_primario"
+              control={control}
+              render={({ field }) => (
+                <SelectorColorCampo label="Color Primario" {...field} />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Controller
+              name="footer_color_secundario"
+              control={control}
+              render={({ field }) => (
+                <SelectorColorCampo label="Color Secundario" {...field} />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Controller
+              name="footer_color_terciario"
+              control={control}
+              render={({ field }) => (
+                <SelectorColorCampo label="Color Terciario" {...field} />
+              )}
+            />
+          </Grid>
+        </Grid>
+      </Box>
 
-      {/* ----- Contacto y Ubicación ----- */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <InputFormulario label="Teléfono" {...register('contacto_telefono')} />
-        <InputFormulario label="Email" {...register('contacto_email')} />
-        <InputFormulario label="Dirección" {...register('ubicacion_direccion')} />
-        <InputFormulario label="Ciudad" {...register('ubicacion_ciudad')} />
-        <InputFormulario label="País" {...register('ubicacion_pais')} />
-      </div>
-    </div>
+      {/* ======= Redes Sociales ======= */}
+      <Box component="section">
+        <Typography variant="h6" component="h2" sx={{ mb: 3, fontWeight: 600 }}>
+          Redes Sociales
+        </Typography>
+
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <InputFormulario label="Facebook" {...register('footer_facebook')} />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <InputFormulario label="Twitter" {...register('footer_twitter')} />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <InputFormulario label="Instagram" {...register('footer_instagram')} />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <InputFormulario label="WhatsApp" {...register('footer_whatsapp')} />
+          </Grid>
+        </Grid>
+      </Box>
+
+      {/* ======= Contacto y Ubicación ======= */}
+      <Box component="section">
+        <Typography variant="h6" component="h2" sx={{ mb: 3, fontWeight: 600 }}>
+          Contacto y Ubicación
+        </Typography>
+
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <InputFormulario label="Teléfono" {...register('footer_telefono')} />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <InputFormulario label="Email" {...register('footer_email')} />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <InputFormulario label="Dirección" {...register('footer_direccion')} />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <InputFormulario label="Ciudad" {...register('footer_ciudad')} />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <InputFormulario label="País" {...register('footer_pais')} />
+          </Grid>
+        </Grid>
+      </Box>
+    </Box>
   );
 };
 

@@ -1,6 +1,7 @@
+// src/app/dashboard/servicios/page.tsx
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
@@ -10,21 +11,33 @@ import { ServiciosNavbar } from './ServiciosNavbar';
 import { VistaServicioSeleccionado } from './VistaServicioSeleccionado';
 import { useServiciosUI } from './useServiciosUI';
 
-import { useAgenciaActiva } from '@/contexts/features/Agencias/AgenciaActivaProvider';
+import { useUserContext } from '@/contexts/user-context';
+import { useAgenciasContext } from '@/contexts/features/Agencias/AgenciaProvider';
 
 export default function ServiciosPage() {
+  const { secciones, seccionActiva, setSeccionActiva, seccionHabilitada } = useServiciosUI();
+  const { isLoading, error, agenciaRaw, user } = useUserContext();
+
+  // 👇 Traemos agencias al entrar si es superadmin
   const {
-    secciones,
-    seccionActiva,
-    setSeccionActiva,
-    seccionHabilitada,
-  } = useServiciosUI();
+    state: { agencias },
+    actions,
+  } = useAgenciasContext();
 
-  const { agencia, cargando, error } = useAgenciaActiva(); // ✅ Desestructuración correcta
+  const esSuperadmin = user?.rol === 'superadmin';
 
-  if (cargando || !agencia) {
-    return null; // o un loading spinner si querés
-  }
+  useEffect(() => {
+    // Evita refetches innecesarios
+    if (esSuperadmin && Array.isArray(agencias) && agencias.length === 0) {
+      actions?.fetchAgencias?.().catch((e: unknown) => {
+        console.error('[ServiciosPage] Error al cargar agencias:', e);
+      });
+    }
+    // deps minimizadas para no entrar en loops
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [esSuperadmin]);
+
+  if (isLoading || !agenciaRaw) return null;
 
   return (
     <Box sx={{ py: 4 }}>
@@ -48,11 +61,10 @@ export default function ServiciosPage() {
         <Box sx={{ mt: 4 }}>
           <VistaServicioSeleccionado
             seccion={seccionActiva}
-            agencia={agencia}
+            agencia={agenciaRaw}
           />
         </Box>
       </Container>
     </Box>
   );
 }
-

@@ -1,34 +1,52 @@
-'use client';
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import Divider from '@mui/material/Divider';
-import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import { useSelection } from '@/hooks/use-selection';
-import { AgenciaBackData } from '@/types/AgenciaBackData';
+'use client'
+import * as React from 'react'
+import {
+  Avatar,
+  Box,
+  Card,
+  Divider,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TablePagination,
+  TableRow,
+  Typography,
+  IconButton,
+  Tooltip,
+  Button,
+} from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete'
+import AssignmentIcon from '@mui/icons-material/Assignment'
+
+import { useSelection } from '@/hooks/use-selection'
+import { AgenciaBackData } from '@/types/AgenciaBackData'
 
 interface CustomersTableProps {
-  rows: AgenciaBackData[];
-  count: number;
-  page: number;
-  rowsPerPage: number;
-  onEdit?: (agencia: AgenciaBackData) => void;
-  onServicios?: (agencia: AgenciaBackData) => void;
-  onEliminar?: (agencia: AgenciaBackData) => void;
-  onPageChange: (page: number) => void;
-  onRowsPerPageChange: (rowsPerPage: number) => void;
+  rows: AgenciaBackData[]
+  count: number
+  page: number
+  rowsPerPage: number
+  onEdit?: (agencia: AgenciaBackData) => void
+  onServicios?: (agencia: AgenciaBackData) => void
+  onEliminar?: (agencia: AgenciaBackData) => void
+  onPageChange: (page: number) => void
+  onRowsPerPageChange: (rowsPerPage: number) => void
+}
+
+/** Asegura que la URL tenga esquema http/https */
+function ensureHttp(u?: string | null): string | undefined {
+  if (!u) return undefined
+  const hasProtocol = /^https?:\/\//i.test(u)
+  return hasProtocol ? u : `https://${u}`
+}
+
+/** Devuelve el href preferido: primero `url`, luego `dominio` */
+function getHrefFromRow(row: AgenciaBackData): string | undefined {
+  if (row.url) return ensureHttp(row.url)
+  if (row.dominio) return ensureHttp(row.dominio)
+  return undefined
 }
 
 export function CustomersTable({
@@ -42,95 +60,131 @@ export function CustomersTable({
   onPageChange,
   onRowsPerPageChange,
 }: CustomersTableProps): React.JSX.Element {
-  const rowIds = React.useMemo(() => rows.map((agencia) => agencia.idAgencia), [rows]);
-  const { selected } = useSelection(rowIds);
+  const rowIds = React.useMemo(() => rows.map((agencia) => agencia.idAgencia), [rows])
+  const { selected } = useSelection(rowIds)
 
   React.useEffect(() => {
-    const ids = rows.map(r => r.idAgencia);
-    const uniqueIds = new Set(ids);
+    const ids = rows.map((r) => r.idAgencia)
+    const uniqueIds = new Set(ids)
     if (ids.length !== uniqueIds.size) {
-      console.warn('⚠️ IDs duplicados detectados en CustomersTable:', ids);
+      console.warn('⚠️ IDs duplicados detectados en CustomersTable:', ids)
     }
-    if (ids.some(id => !id)) {
-      console.warn('⚠️ IDs nulos o indefinidos en CustomersTable:', ids);
+    if (ids.some((id) => !id)) {
+      console.warn('⚠️ IDs nulos o indefinidos en CustomersTable:', ids)
     }
-  }, [rows]);
+  }, [rows])
 
   const handleChangePage = (_event: unknown, newPage: number) => {
-    onPageChange(newPage);
-  };
+    onPageChange(newPage)
+  }
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onRowsPerPageChange(parseInt(event.target.value, 10));
-    onPageChange(0);
-  };
+    onRowsPerPageChange(parseInt(event.target.value, 10))
+    onPageChange(0)
+  }
 
   const paginatedRows = React.useMemo(() => {
-    const start = page * rowsPerPage;
-    return rows.slice(start, start + rowsPerPage);
-  }, [page, rowsPerPage, rows]);
+    const start = page * rowsPerPage
+    return rows.slice(start, start + rowsPerPage)
+  }, [page, rowsPerPage, rows])
 
   return (
     <Card>
       <Box sx={{ overflowX: 'auto' }}>
-        <Table sx={{ minWidth: '900px' }}>
+        <Table sx={{ minWidth: 900 }} aria-label="Tabla de agencias">
           <TableHead>
             <TableRow>
               <TableCell>Nombre</TableCell>
               <TableCell>Email</TableCell>
-              {/* <TableCell>Estado</TableCell> */}
+              <TableCell>Dominio</TableCell>
               <TableCell>Modificar</TableCell>
               <TableCell>Servicios</TableCell>
               <TableCell>Eliminar</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedRows.map((row, index) => {
-              const isSelected = selected?.has(row.idAgencia);
-              const key = row.idAgencia || `row-fallback-${index}`;
+            {paginatedRows.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6}>
+                  <Typography variant="body2" color="text.secondary" sx={{ py: 2, textAlign: 'center' }}>
+                    No hay agencias para mostrar.
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            ) : (
+              paginatedRows.map((row, index) => {
+                const isSelected = selected?.has(row.idAgencia)
+                const key = row.idAgencia || `row-fallback-${index}`
+                const href = getHrefFromRow(row)
+                const linkLabel = row.dominio || row.url || 'Sin dominio'
 
-              return (
-                <TableRow hover key={key} selected={isSelected}>
-                  <TableCell>
-                    <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                      <Avatar src={row.logo} />
-                      <Typography variant="subtitle2">{row.nombre}</Typography>
-                    </Stack>
-                  </TableCell>
-                  <TableCell>{row.contacto?.email || '—'}</TableCell>
-                  {/* <TableCell>{row.estado ? 'Activa' : 'Inactiva'}</TableCell> */}
-                  <TableCell>
-                    <button
-                      onClick={() => onEdit?.(row)}
-                      style={{
-                        background: '#1976d2',
-                        color: 'white',
-                        border: 'none',
-                        padding: '6px 12px',
-                        borderRadius: 4,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Modificar
-                    </button>
-                  </TableCell>
-                  <TableCell>
-                    <Tooltip title="Servicios de la agencia">
-                      <IconButton onClick={() => onServicios?.(row)}>
-                        <AssignmentIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </TableCell>
-                  <TableCell>
-                    <Tooltip title="Eliminar agencia">
-                      <IconButton color="error" onClick={() => onEliminar?.(row)}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+                return (
+                  <TableRow hover key={key} selected={isSelected}>
+                    <TableCell>
+                      <Stack direction="row" spacing={2} alignItems="center">
+                        <Avatar src={row.logo ?? undefined} alt={row.nombre ?? 'Agencia'} />
+                        <Typography variant="subtitle2">
+                          {row.nombre || 'Sin nombre'}
+                        </Typography>
+                      </Stack>
+                    </TableCell>
+
+                    <TableCell>{row.footer_email || '—'}</TableCell>
+
+                    <TableCell>
+                      {href ? (
+                        <a
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`Abrir sitio de ${row.nombre ?? 'agencia'}`}
+                          style={{ color: '#1976d2', textDecoration: 'underline' }}
+                          title={href}
+                        >
+                          {linkLabel}
+                        </a>
+                      ) : (
+                        <Typography variant="body2" color="text.secondary">
+                          Sin dominio
+                        </Typography>
+                      )}
+                    </TableCell>
+
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        onClick={() => onEdit?.(row)}
+                        disabled={!onEdit}
+                      >
+                        Modificar
+                      </Button>
+                    </TableCell>
+
+                    <TableCell>
+                      <Tooltip title="Servicios de la agencia">
+                        <span>
+                          <IconButton onClick={() => onServicios?.(row)} disabled={!onServicios}>
+                            <AssignmentIcon />
+                          </IconButton>
+                        </span>
+                      </Tooltip>
+                    </TableCell>
+
+                    <TableCell>
+                      <Tooltip title="Eliminar agencia">
+                        <span>
+                          <IconButton color="error" onClick={() => onEliminar?.(row)} disabled={!onEliminar}>
+                            <DeleteIcon />
+                          </IconButton>
+                        </span>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                )
+              })
+            )}
           </TableBody>
         </Table>
       </Box>
@@ -145,6 +199,5 @@ export function CustomersTable({
         rowsPerPageOptions={[5, 10, 25]}
       />
     </Card>
-  );
+  )
 }
-

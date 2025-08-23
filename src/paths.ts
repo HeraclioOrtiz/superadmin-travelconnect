@@ -2,7 +2,6 @@ export const paths = {
   home: '/',
   auth: {
     signIn: '/auth/sign-in',
-    signUp: '/auth/sign-up',
     resetPassword: '/auth/reset-password',
   },
   dashboard: {
@@ -11,7 +10,8 @@ export const paths = {
     customers: '/dashboard/customers',
     integrations: '/dashboard/integrations',
     settings: '/dashboard/settings',
-    paquetesPropios: '/dashboard/paquetesPropios', // ✅ agregado
+    paquetesPropios: '/dashboard/paquetesPropios',
+    mensajes: '/dashboard/mensajes', // ✅ agregado
   },
   errors: {
     notFound: '/errors/not-found',

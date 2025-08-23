@@ -7,4 +7,3 @@ if (typeof window !== 'undefined') {
   console.log('[Mirage] Evaluando si iniciar Mirage...');
   initMock();
 }
-

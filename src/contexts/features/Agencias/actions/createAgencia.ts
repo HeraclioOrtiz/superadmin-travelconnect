@@ -1,7 +1,9 @@
+import { AgenciaPayload } from '@/types/AgenciaPayload';
+import { buildAgenciaFormData } from '@/components/form/buildAgenciaFormData';
 import type { AgenciasContextState } from '../../../../types/types';
 
 export const createAgencia = async (
-  formData: FormData,
+  payload: AgenciaPayload,
   contextState: AgenciasContextState,
   stateMethods: { setError: (error: string | null) => void }
 ): Promise<{
@@ -15,8 +17,10 @@ export const createAgencia = async (
   try {
     console.group('[createAgencia] Inicio');
 
-    // 🔍 Log: FormData recibido
-    console.log('[createAgencia] FormData recibido:');
+    const formData = buildAgenciaFormData(payload);
+
+    // 🔍 Log: FormData generado
+    console.log('[createAgencia] FormData generado:');
     Array.from(formData.entries()).forEach(([clave, valor]) => {
       const tipo = valor instanceof File ? 'File' : typeof valor;
       console.log(`→ ${clave}:`, valor, `(tipo: ${tipo})`);
@@ -25,7 +29,7 @@ export const createAgencia = async (
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-    const response = await fetch('https://travelconnect.com.ar/store_agencia', {
+    const response = await fetch('https://travelconnect.com.ar/agencia/new', {
       method: 'POST',
       body: formData,
       signal: controller.signal,
@@ -55,7 +59,7 @@ export const createAgencia = async (
       success: true,
       user: data.user,
       token: data.token,
-      agencia: data.agencia, // opcional, si también viene
+      agencia: data.agencia,
       statusCode: response.status,
     };
 
@@ -73,4 +77,3 @@ export const createAgencia = async (
     console.groupEnd();
   }
 };
-

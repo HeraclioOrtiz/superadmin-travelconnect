@@ -16,6 +16,7 @@ interface BotonImportarArchivoProps {
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   urlPreview?: string | null;
   onClearPreview?: () => void;
+  disabled?: boolean;
 }
 
 const BotonImportarArchivo = forwardRef<HTMLInputElement, BotonImportarArchivoProps>(
@@ -28,6 +29,7 @@ const BotonImportarArchivo = forwardRef<HTMLInputElement, BotonImportarArchivoPr
       onChange,
       urlPreview,
       onClearPreview,
+      disabled,
       ...props
     },
     ref
@@ -35,24 +37,30 @@ const BotonImportarArchivo = forwardRef<HTMLInputElement, BotonImportarArchivoPr
     const inputRef = useRef<HTMLInputElement>(null);
 
     const handleClick = () => {
-      inputRef.current?.click();
+      if (!disabled) inputRef.current?.click();
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      onChange?.(e);
+      // 1) Notificar primero a RHF
       register?.onChange(e);
+      // 2) Luego tu normalización (setValue con files[0], etc.)
+      onChange?.(e);
     };
 
+    // Compose refs (local + forwardRef + RHF)
     const setRefs = (element: HTMLInputElement | null) => {
       (inputRef as React.MutableRefObject<HTMLInputElement | null>).current = element;
 
-      if (typeof ref === 'function') {
-        ref(element);
-      } else if (ref) {
-        (ref as React.MutableRefObject<HTMLInputElement | null>).current = element;
-      }
+      if (typeof ref === 'function') ref(element);
+      else if (ref) (ref as React.MutableRefObject<HTMLInputElement | null>).current = element;
 
       register?.ref(element);
+    };
+
+    const handleClearPreview = () => {
+      if (inputRef.current) inputRef.current.value = '';
+      onClearPreview?.();
+      // Si necesitás reflejar el “clear” en RHF, hacelo con setValue desde el caller.
     };
 
     return (
@@ -63,7 +71,10 @@ const BotonImportarArchivo = forwardRef<HTMLInputElement, BotonImportarArchivoPr
           multiple={multiple}
           accept={accept}
           ref={setRefs}
+          name={register?.name}       // ✅ necesario para RHF
+          onBlur={register?.onBlur}   // ✅ propagar onBlur de RHF
           onChange={handleChange}
+          disabled={disabled}
           {...props}
         />
 
@@ -73,6 +84,7 @@ const BotonImportarArchivo = forwardRef<HTMLInputElement, BotonImportarArchivoPr
             color="inherit"
             startIcon={<UploadIcon fontSize="medium" />}
             onClick={handleClick}
+            disabled={disabled}
           >
             {label}
           </Button>
@@ -83,7 +95,7 @@ const BotonImportarArchivo = forwardRef<HTMLInputElement, BotonImportarArchivoPr
               <Typography variant="body2" sx={{ maxWidth: 200 }} noWrap>
                 Vista previa
               </Typography>
-              <IconButton onClick={onClearPreview} aria-label="Eliminar vista previa">
+              <IconButton onClick={handleClearPreview} aria-label="Eliminar vista previa">
                 <DeleteIcon />
               </IconButton>
             </Stack>
@@ -112,4 +124,3 @@ const BotonImportarArchivo = forwardRef<HTMLInputElement, BotonImportarArchivoPr
 BotonImportarArchivo.displayName = 'BotonImportarArchivo';
 
 export default BotonImportarArchivo;
-

@@ -20,7 +20,7 @@ import { usePaquetesPropios } from '@/contexts/features/PaquetesPropiosProvider/
 import type { PaquetePropio } from '@/types/PaquetePropio';
 
 interface SubtablaPaquetesProps {
-  agenciaId: string;
+  agenciaId: string;   // ✅ camelCase en front
   nombreAgencia: string;
 }
 
@@ -29,22 +29,21 @@ export function SubtablaPaquetes({ agenciaId, nombreAgencia }: SubtablaPaquetesP
     paquetesPorAgencia,
     eliminarPaquete,
     seleccionarPaquete,
-    abrirModalCreacion,
+    abrirModalCreacion,              // <- setea idAgenciaEnCreacion en el contexto
     seleccionarPaqueteParaSalidas,
-    prepararDuplicadoPaquete, // ✅ actualizado
+    prepararDuplicadoPaquete,
   } = usePaquetesPropios();
 
   const loading = paquetesPorAgencia[agenciaId] === undefined;
   const paquetes = paquetesPorAgencia[agenciaId] || [];
 
   const handleCrearNuevo = () => {
-    console.log('🟢 Click en crear paquete');
-    abrirModalCreacion(agenciaId);
+    console.log('🟢 Click en crear paquete (agenciaId:', agenciaId, ')');
+    abrirModalCreacion(agenciaId);   // ✅ inyecta el id de la agencia en el flujo
   };
 
   const handleEditar = (paquete: PaquetePropio) => {
-    console.log('🟠 Click en editar paquete:', paquete);
-     
+    console.log('🟠 Editar paquete:', paquete);
     seleccionarPaquete(paquete);
   };
 
@@ -56,13 +55,13 @@ export function SubtablaPaquetes({ agenciaId, nombreAgencia }: SubtablaPaquetesP
   };
 
   const handleVerSalidas = (paquete: PaquetePropio) => {
-    console.log('🔵 Ver salidas del paquete', paquete.id);
+    console.log('🔵 Ver salidas del paquete', paquete.id, 'de agencia', agenciaId);
     seleccionarPaqueteParaSalidas(paquete, agenciaId);
   };
 
   const handleDuplicar = (paquete: PaquetePropio) => {
-    console.log('🟣 Duplicar paquete:', paquete);
-    prepararDuplicadoPaquete(paquete, agenciaId); // ✅ corregido
+    console.log('🟣 Duplicar paquete:', paquete, 'para agencia', agenciaId);
+    prepararDuplicadoPaquete(paquete, agenciaId);
   };
 
   return (
@@ -71,7 +70,7 @@ export function SubtablaPaquetes({ agenciaId, nombreAgencia }: SubtablaPaquetesP
         <Typography variant="h6">
           Paquetes propios de <strong>{nombreAgencia}</strong>
         </Typography>
-        <Button variant="contained" onClick={handleCrearNuevo}>
+        <Button variant="contained" onClick={handleCrearNuevo} disabled={!agenciaId}>
           + Crear paquete propio
         </Button>
       </Stack>

@@ -19,33 +19,49 @@ export const usePrevisualizacionArchivo = ({
 }: UsePrevisualizacionArchivoParams) => {
   const [urlPreview, setUrlPreview] = useState<string | null>(urlOriginal ?? null);
 
-  // 🧠 Si archivo es File, crear URL temporal
   useEffect(() => {
+    console.log('[usePrevisualizacionArchivo] ▶️ Ejecutando efecto con:', {
+      campo,
+      archivo,
+      urlOriginal
+    });
+
     if (archivo instanceof File) {
+      console.log('[usePrevisualizacionArchivo] 🟩 Archivo es File → creando URL temporal');
       const objectUrl = URL.createObjectURL(archivo);
       setUrlPreview(objectUrl);
-      setValue(campo, archivo); // ✅ sincroniza con RHF
+      setValue(campo, archivo);
 
-      return () => URL.revokeObjectURL(objectUrl); // Limpieza
+      return () => URL.revokeObjectURL(objectUrl);
     }
 
-    // Si no hay archivo pero sí url original, usarla
     if (!archivo && urlOriginal) {
+      console.log('[usePrevisualizacionArchivo] 🟦 No hay archivo nuevo, usando urlOriginal');
       setUrlPreview(urlOriginal);
+      return;
     }
 
-    // Si archivo es string (ya cargado), usarlo como preview
     if (typeof archivo === 'string') {
+      console.log('[usePrevisualizacionArchivo] 🟨 Archivo es string, usándolo como preview');
       setUrlPreview(archivo);
+      return;
     }
+
+    console.warn('[usePrevisualizacionArchivo] ⚠️ No se detectó fuente válida para preview');
+
   }, [archivo, urlOriginal, campo, setValue]);
 
-  const manejarCambio = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const nuevoArchivo = e.target.files?.[0] ?? null;
-    setValue(campo, nuevoArchivo); // ✅ actualiza RHF
-  }, [campo, setValue]);
+  const manejarCambio = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const nuevoArchivo = e.target.files?.[0] ?? null;
+      console.log('[usePrevisualizacionArchivo] 📤 Cambio detectado:', nuevoArchivo);
+      setValue(campo, nuevoArchivo);
+    },
+    [campo, setValue]
+  );
 
   const limpiarArchivo = useCallback(() => {
+    console.log('[usePrevisualizacionArchivo] 🧹 Limpiando archivo');
     setValue(campo, null);
     setUrlPreview(urlOriginal ?? null);
   }, [campo, setValue, urlOriginal]);
@@ -56,5 +72,3 @@ export const usePrevisualizacionArchivo = ({
     limpiarArchivo
   };
 };
-
-

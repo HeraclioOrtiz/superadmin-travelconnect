@@ -1,3 +1,4 @@
+// components/layout/main-nav.tsx (o donde corresponda)
 'use client';
 
 import * as React from 'react';
@@ -13,7 +14,7 @@ import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/di
 import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
 
 import { usePopover } from '@/hooks/use-popover';
-import { useAgenciaActiva } from '@/contexts/features/Agencias/AgenciaActivaProvider';
+import { useUserContext } from '@/contexts/user-context';
 
 import { MobileNav } from './mobile-nav';
 import { UserPopover } from './user-popover';
@@ -21,9 +22,36 @@ import { UserPopover } from './user-popover';
 export function MainNav(): React.JSX.Element {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
   const userPopover = usePopover<HTMLDivElement>();
-  const { agencia } = useAgenciaActiva();
+  const { agenciaView, user } = useUserContext();
 
-  const logoUrl = agencia?.logo ?? '/assets/avatar.png';
+  // Soporte logo: string (URL) o File (objectURL)
+  const [logoObjectUrl, setLogoObjectUrl] = React.useState<string | null>(null);
+
+  const logoSrc = React.useMemo(() => {
+    const logo = agenciaView?.logo;
+
+    if (!logo) return '/assets/avatar.png';
+    if (typeof logo === 'string') return logo;
+
+    // File → generar/reusar objectURL
+    if (logo instanceof File) {
+      if (logoObjectUrl) return logoObjectUrl;
+      const url = URL.createObjectURL(logo);
+      setLogoObjectUrl(url);
+      return url;
+    }
+
+    return '/assets/avatar.png';
+  }, [agenciaView?.logo, logoObjectUrl]);
+
+  // Revocar el objectURL cuando cambie el File o se desmonte
+  React.useEffect(() => {
+    return () => {
+      if (logoObjectUrl) {
+        URL.revokeObjectURL(logoObjectUrl);
+      }
+    };
+  }, [logoObjectUrl]);
 
   return (
     <>
@@ -34,7 +62,7 @@ export function MainNav(): React.JSX.Element {
           backgroundColor: 'var(--mui-palette-background-paper)',
           position: 'sticky',
           top: 0,
-          zIndex: 'var(--mui-zIndex-appBar)',
+          zIndex: 'var(--muiZIndex-appBar)',
         }}
       >
         <Stack
@@ -43,11 +71,16 @@ export function MainNav(): React.JSX.Element {
           sx={{ alignItems: 'center', justifyContent: 'space-between', minHeight: '64px', px: 2 }}
         >
           <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-            <IconButton onClick={() => setOpenNav(true)} sx={{ display: { lg: 'none' } }}>
+            <IconButton
+              aria-label="Abrir navegación"
+              onClick={() => setOpenNav(true)}
+              sx={{ display: { lg: 'none' } }}
+            >
               <ListIcon />
             </IconButton>
+
             <Tooltip title="Búsqueda">
-              <IconButton>
+              <IconButton aria-label="Abrir búsqueda">
                 <MagnifyingGlassIcon />
               </IconButton>
             </Tooltip>
@@ -55,21 +88,24 @@ export function MainNav(): React.JSX.Element {
 
           <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
             <Tooltip title="Contactos">
-              <IconButton>
+              <IconButton aria-label="Abrir contactos">
                 <UsersIcon />
               </IconButton>
             </Tooltip>
+
             <Tooltip title="Notificaciones">
               <Badge badgeContent={4} color="success" variant="dot">
-                <IconButton>
+                <IconButton aria-label="Abrir notificaciones">
                   <BellIcon />
                 </IconButton>
               </Badge>
             </Tooltip>
+
             <Avatar
+              alt={agenciaView?.nombre || user?.nombre || 'Agencia'}
               onClick={userPopover.handleOpen}
               ref={userPopover.anchorRef}
-              src={logoUrl}
+              src={logoSrc}
               sx={{ cursor: 'pointer' }}
             />
           </Stack>
@@ -85,4 +121,3 @@ export function MainNav(): React.JSX.Element {
     </>
   );
 }
-

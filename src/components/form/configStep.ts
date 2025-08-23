@@ -18,11 +18,10 @@ export const stepsConfig = [
       'dominio',
       'password',
       'logo',
-      'favicon',
+      'terminos_y_condiciones',
       'quienes_somos_es',
       'quienes_somos_en',
       'quienes_somos_pt',
-      'terminos_y_condiciones',
     ],
   },
   {
@@ -112,29 +111,30 @@ export const stepsConfig = [
     description: 'Pie de página, redes y contacto',
     component: StepFooter,
     fields: [
+      // Visual
       'footer_texto',
       'footer_tipografia',
       'footer_tipografia_color',
       'footer_color_primario',
       'footer_color_secundario',
       'footer_color_terciario',
+
+      // Redes sociales
       'footer_facebook',
       'footer_twitter',
       'footer_instagram',
       'footer_whatsapp',
-      'footer_telefono',
+
+      // Contacto
       'footer_email',
+      'footer_telefono',
+
+      // Ubicación
       'footer_direccion',
       'footer_ciudad',
       'footer_pais',
-      'contacto_email',
-      'contacto_telefono',
-      'ubicacion_direccion',
-      'ubicacion_ciudad',
-      'ubicacion_pais',
     ],
   },
 ] as const;
 
 export type AgenciaFormFields = typeof stepsConfig[number]['fields'][number];
-

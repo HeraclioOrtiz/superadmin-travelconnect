@@ -9,7 +9,7 @@ import { LocalizationProvider } from '@/components/core/localization-provider';
 import { ThemeProvider } from '@/components/core/theme-provider/theme-provider';
 import { AgenciasProvider } from '@/contexts/features/Agencias/AgenciaProvider';
 import { ModalAgenciaProvider } from '@/contexts/ModalAgenciaProvider';
-import { AgenciaActivaProvider } from '@/contexts/features/Agencias/AgenciaActivaProvider';
+
 import { PaquetesPropiosProvider } from '@/contexts/features/PaquetesPropiosProvider/PaquetesPropiosProvider';
 
 import { initMock } from '../lib/init-mock';
@@ -33,11 +33,10 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           <UserProvider>
             <AgenciasProvider>
               <ModalAgenciaProvider>
-                <AgenciaActivaProvider>
-                  <PaquetesPropiosProvider>
+                                  <PaquetesPropiosProvider>
                     <ThemeProvider>{children}</ThemeProvider>
                   </PaquetesPropiosProvider>
-                </AgenciaActivaProvider>
+                
               </ModalAgenciaProvider>
             </AgenciasProvider>
           </UserProvider>

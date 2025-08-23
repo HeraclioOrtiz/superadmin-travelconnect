@@ -1,29 +1,33 @@
 'use client';
 
-import { useState } from 'react';
-
-const SECCIONES_SERVICIOS_ADMIN = [
-  'Paquetes propios',
-  'CRM Atlas',
-  'Hotelería',
-  'Circuitos',
-  'Vuelos',
-  'MercadoPago',
-];
+import { useMemo, useState } from 'react';
+import { useUserContext } from '@/contexts/user-context';
 
 export function useServiciosUI() {
-  const [seccionActiva, setSeccionActiva] = useState(SECCIONES_SERVICIOS_ADMIN[0]);
+  const { user } = useUserContext();
 
-  const seccionHabilitada = (seccion: string) => {
-    // Por ahora, todas están habilitadas
-    return true;
-  };
+  const SECCIONES = useMemo(() => {
+    // Podés condicionar por rol si hiciera falta (p.ej. ocultar algo a admins)
+    // const esSuperadmin = user?.rol === 'superadmin';
+    return [
+      'APIs de terceros',
+      'Paquetes propios',
+      'CRM Atlas',
+      'Hotelería',
+      'Circuitos',
+      'Vuelos',
+      'MercadoPago',
+    ];
+  }, [user?.rol]);
+
+  const [seccionActiva, setSeccionActiva] = useState(SECCIONES[0]);
+
+  const seccionHabilitada = (_: string) => true; // todas habilitadas por ahora
 
   return {
-    secciones: SECCIONES_SERVICIOS_ADMIN,
+    secciones: SECCIONES,
     seccionActiva,
     setSeccionActiva,
     seccionHabilitada,
   };
 }
-

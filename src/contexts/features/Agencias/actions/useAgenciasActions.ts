@@ -1,8 +1,7 @@
+// contexts/features/Agencias/actions/useAgenciasActions.ts
 import { useCallback } from 'react';
-import { createAgencia } from './createAgencia';
-import { editAgencia } from './editAgencia';
 import { deleteAgencia as deleteAgenciaAction } from './deleteAgencia';
-import { fetchAgencias } from './fetchAgencias';
+import { agenciasService } from '../services/agenciasService';
 import type { AgenciasContextState } from '../../../../types/types';
 import type { AgenciaBackData } from '@/types/AgenciaBackData';
 
@@ -11,108 +10,57 @@ const useAgenciasActions = (
   stateMethods: {
     setAgencias: (agencias: AgenciaBackData[]) => void;
     setError: (error: string | null) => void;
+    setLoading?: (v: boolean) => void;
+    setLastUpdated?: (d: Date) => void;
   }
 ) => {
+  // Listar agencias desde el service y refrescar el estado
   const cargarAgencias = useCallback(async (): Promise<boolean> => {
     try {
-      const data = await fetchAgencias();
+      stateMethods.setLoading?.(true);
+      const data = await agenciasService.list();
       stateMethods.setAgencias(data);
+      stateMethods.setLastUpdated?.(new Date());
       return true;
     } catch (error) {
       stateMethods.setError(error instanceof Error ? error.message : 'Error desconocido');
       return false;
+    } finally {
+      stateMethods.setLoading?.(false);
     }
   }, [stateMethods]);
 
-  const handleCreateAgencia = useCallback(async (
-    formData: FormData
-  ): Promise<{ success: boolean; error?: string }> => {
-    try {
-      const creationResult = await createAgencia(formData, state, {
-        setError: stateMethods.setError
-      });
+  // Eliminar agencia por id (string consistente con AgenciaBackData)
+  const handleDeleteAgencia = useCallback(
+    async (id: string): Promise<{ success: boolean; error?: string }> => {
+      try {
+        const result = await deleteAgenciaAction(id, {
+          setError: stateMethods.setError,
+        });
 
-      if (!creationResult.success) {
-        return {
-          success: false,
-          error: creationResult.error
-        };
+        if (!result.success) {
+          return { success: false, error: result.error };
+        }
+
+        // Actualizamos cache local sin refetch (fase actual)
+        const agenciasActualizadas = state.agencias.filter((a) => a.idAgencia !== id);
+        stateMethods.setAgencias(agenciasActualizadas);
+        stateMethods.setLastUpdated?.(new Date());
+
+        return { success: true };
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Error desconocido';
+        stateMethods.setError(message);
+        return { success: false, error: message };
       }
-
-      const refreshSuccess = await cargarAgencias();
-      return {
-        success: refreshSuccess,
-        error: refreshSuccess ? undefined : 'Error actualizando lista'
-      };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Error desconocido';
-      stateMethods.setError(message);
-      return {
-        success: false,
-        error: message
-      };
-    }
-  }, [state, stateMethods, cargarAgencias]);
-
-  const handleEditAgencia = useCallback(async (
-    formData: FormData
-  ): Promise<{ success: boolean; error?: string }> => {
-    try {
-      const updateResult = await editAgencia(formData, state, {
-        setError: stateMethods.setError
-      });
-
-      if (!updateResult.success) {
-        return {
-          success: false,
-          error: updateResult.error
-        };
-      }
-
-      const refreshSuccess = await cargarAgencias();
-      return {
-        success: refreshSuccess,
-        error: refreshSuccess ? undefined : 'Error actualizando lista'
-      };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Error desconocido';
-      stateMethods.setError(message);
-      return { success: false, error: message };
-    }
-  }, [state, stateMethods, cargarAgencias]);
-
-  const handleDeleteAgencia = useCallback(async (
-    id: number
-  ): Promise<{ success: boolean; error?: string }> => {
-    try {
-      const result = await deleteAgenciaAction(id, {
-        setError: stateMethods.setError
-      });
-
-      if (!result.success) {
-        return { success: false, error: result.error };
-      }
-
-      const agenciasActualizadas = state.agencias.filter(
-        a => a.idAgencia !== id.toString()
-      );
-      stateMethods.setAgencias(agenciasActualizadas);
-
-      return { success: true };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Error desconocido';
-      stateMethods.setError(message);
-      return { success: false, error: message };
-    }
-  }, [state, stateMethods]);
+    },
+    [state, stateMethods]
+  );
 
   return {
     fetchAgencias: cargarAgencias,
-    createAgencia: handleCreateAgencia,
-    editAgencia: handleEditAgencia,
-    deleteAgencia: handleDeleteAgencia
+    deleteAgencia: handleDeleteAgencia,
   };
 };
 
 export default useAgenciasActions;
-

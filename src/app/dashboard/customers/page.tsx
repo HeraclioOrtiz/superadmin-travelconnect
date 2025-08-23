@@ -1,3 +1,4 @@
+// app/dashboard/customers/page.tsx
 'use client';
 
 import * as React from 'react';
@@ -16,12 +17,23 @@ import { AgenciaBackData } from '@/types/AgenciaBackData';
 
 import { ModalServiciosAgencia } from '@/components/ConfigAgencia/ModalServiciosAgencia';
 import { useModalServiciosAgenciaSuper } from './useModalServiciosAgenciaSuper';
+import { useUser } from '@/hooks/use-user';
 
 export default function Page(): React.JSX.Element {
   const { state, actions } = useAgenciasContext();
   const { agencias } = state;
+  const { user } = useUser();
 
-  const { isOpen, openModal, setDatosEdicion } = useModalAgenciaGlobal();
+  React.useEffect(() => {
+    if (user?.rol === 'superadmin' && agencias.length === 0) {
+      console.log('👑 Cargando agencias (solo superadmin)');
+      actions.fetchAgencias();
+    }
+  }, [user?.rol, agencias.length, actions]);
+
+  // 🔧 Modal Agencia (contrato nuevo)
+  const { isOpen, openModalCrear, openModalEditar } = useModalAgenciaGlobal();
+
   const {
     modalServiciosOpen,
     agenciaSeleccionada,
@@ -33,25 +45,25 @@ export default function Page(): React.JSX.Element {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const handleAbrirCreacion = () => {
-    setDatosEdicion(null);
-    openModal();
+    openModalCrear(); // crear => datosEdicion = undefined
   };
 
   const handleEditarAgencia = (agencia: AgenciaBackData) => {
     const agenciaOriginal = agencias.find((a) => a.idAgencia === agencia.idAgencia);
     if (agenciaOriginal) {
-      openModal(agenciaOriginal);
+      openModalEditar(agenciaOriginal); // editar => pasa objeto completo
     } else {
-      console.warn("No se encontró la agencia para editar:", agencia.idAgencia);
+      console.warn('No se encontró la agencia para editar:', agencia.idAgencia);
     }
   };
 
   const handleEliminarAgencia = async (agencia: AgenciaBackData) => {
-    const confirmado = window.confirm(`¿Estás seguro de que querés eliminar la agencia "${agencia.nombre}"?`);
+    const confirmado = window.confirm(
+      `¿Estás seguro de que querés eliminar la agencia "${agencia.nombre}"?`
+    );
     if (!confirmado) return;
 
-    const result = await actions.deleteAgencia(Number(agencia.idAgencia));
-
+    const result = await actions.deleteAgencia(agencia.idAgencia);
     if (result.success) {
       console.log(`✅ Agencia eliminada: ${agencia.nombre}`);
     } else {

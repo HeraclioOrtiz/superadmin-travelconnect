@@ -1,3 +1,4 @@
+// src/components/ConfigAgencia/ServiciosNavbar.tsx
 'use client';
 import * as React from 'react';
 import {
@@ -16,6 +17,7 @@ interface ServiciosNavbarProps {
   seccionSeleccionada: string;
   onSeleccionarSeccion: (seccion: string) => void;
   onImplementarCambios: () => void;
+  /** Si no se provee, todas habilitadas por defecto */
   seccionHabilitada?: (seccion: string) => boolean;
 }
 
@@ -26,23 +28,29 @@ export const ServiciosNavbar = ({
   onImplementarCambios,
   seccionHabilitada,
 }: ServiciosNavbarProps) => {
-  // Estado interno solo si no hay prop externa
-  const [activados, setActivados] = React.useState<Record<string, boolean>>(() => {
-    const initial: Record<string, boolean> = {};
-    secciones.forEach((s) => {
-      initial[s] = true;
+  // Estado interno sólo si no hay prop externa (fallback visual)
+  const [activados, setActivados] = React.useState<Record<string, boolean>>({});
+
+  // Inicializa / resetea activados cuando cambian las secciones
+  React.useEffect(() => {
+    setActivados((prev) => {
+      const next: Record<string, boolean> = {};
+      secciones.forEach((s) => {
+        next[s] = prev[s] ?? true;
+      });
+      return next;
     });
-    return initial;
-  });
+  }, [secciones]);
 
   const isHabilitada = (seccion: string) =>
-    seccionHabilitada ? seccionHabilitada(seccion) : activados[seccion];
+    seccionHabilitada ? seccionHabilitada(seccion) : !!activados[seccion];
 
   const handleToggle = (
     seccion: string,
     event: React.MouseEvent | React.ChangeEvent<HTMLInputElement>
   ) => {
     event.stopPropagation();
+    // Sólo afecta al fallback local
     setActivados((prev) => ({ ...prev, [seccion]: !prev[seccion] }));
   };
 
@@ -55,15 +63,17 @@ export const ServiciosNavbar = ({
       <List sx={{ flexGrow: 1 }}>
         {secciones.map((seccion) => {
           const habilitada = isHabilitada(seccion);
+          const selected = seccionSeleccionada === seccion;
+
           return (
             <ListItemButton
               key={seccion}
-              selected={seccionSeleccionada === seccion}
+              selected={selected}
               onClick={() => {
-                if (habilitada) {
-                  onSeleccionarSeccion(seccion);
-                }
+                if (habilitada) onSeleccionarSeccion(seccion);
               }}
+              aria-selected={selected}
+              aria-disabled={!habilitada}
             >
               <Switch
                 edge="start"
@@ -72,18 +82,21 @@ export const ServiciosNavbar = ({
                 onClick={(e) => e.stopPropagation()}
                 size="small"
                 color="primary"
+                inputProps={{ 'aria-label': `Habilitar sección ${seccion}` }}
               />
               <ListItemText primary={seccion} />
             </ListItemButton>
           );
         })}
       </List>
+
+      <Divider />
       <Box sx={{ p: 2 }}>
         <Button
           fullWidth
           variant="contained"
-          color="primary"
           onClick={onImplementarCambios}
+          aria-label="Implementar cambios"
         >
           Implementar cambios
         </Button>
@@ -91,4 +104,3 @@ export const ServiciosNavbar = ({
     </Box>
   );
 };
-

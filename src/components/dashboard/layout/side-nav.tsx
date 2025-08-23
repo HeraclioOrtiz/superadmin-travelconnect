@@ -1,3 +1,4 @@
+// components/dashboard/layout/side-nav.tsx
 'use client';
 
 import * as React from 'react';
@@ -9,24 +10,56 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { CaretUpDown as CaretUpDownIcon } from '@phosphor-icons/react/dist/ssr/CaretUpDown';
 
-import { paths } from '@/paths';
 import { isNavItemActive } from '@/lib/is-nav-item-active';
 import { navItems } from '@/config/role-navigation';
 import { navIcons } from './nav-icons';
 
 import { useUserContext } from '@/contexts/user-context';
-import { useAgenciaActiva } from '@/contexts/features/Agencias/AgenciaActivaProvider';
 import type { NavItem as NavItemConfig } from '@/config/role-navigation';
 
 export function SideNav(): React.JSX.Element {
   const pathname = usePathname();
-  const { user, isLoading } = useUserContext();
-  const { agencia } = useAgenciaActiva();
+  const { user, isLoading, agenciaView } = useUserContext();
+
+  // Soporte logo: string (URL) o File (objectURL)
+  const [logoObjectUrl, setLogoObjectUrl] = React.useState<string | null>(null);
+
+  const logoSrc = React.useMemo(() => {
+    const logo = (agenciaView as any)?.logo;
+    if (!logo) return '/assets/avatar.png';
+    if (typeof logo === 'string') return logo;
+    if (logo instanceof File) {
+      if (logoObjectUrl) return logoObjectUrl;
+      const url = URL.createObjectURL(logo);
+      setLogoObjectUrl(url);
+      return url;
+    }
+    return '/assets/avatar.png';
+  }, [agenciaView, logoObjectUrl]);
+
+  React.useEffect(() => {
+    return () => {
+      if (logoObjectUrl) URL.revokeObjectURL(logoObjectUrl);
+    };
+  }, [logoObjectUrl]);
 
   if (isLoading || !user) return <></>;
 
-  const visibleNavItems = navItems.filter((item) => item.roles.includes(user.rol));
-  const logoUrl = agencia?.logo ?? '/assets/avatar.png';
+  // Ocultamos enlaces específicos (independiente del role-navigation)
+  const hiddenHrefs = new Set<string>([
+    '/dashboard',            // inicio ya se resalta con matcher
+    '/dashboard/settings',
+    '/dashboard/account',    // ocultar Perfil del menú
+  ]);
+
+  // ⛔ Ocultar Servicios si NO es superadmin (defensa extra)
+  if (user.rol !== 'superadmin') {
+    hiddenHrefs.add('/dashboard/servicios');
+  }
+
+  const visibleNavItems = navItems
+    .filter((item) => item.roles.includes(user.rol))
+    .filter((item) => !hiddenHrefs.has(item.href));
 
   return (
     <Box
@@ -57,27 +90,24 @@ export function SideNav(): React.JSX.Element {
       }}
     >
       <Stack spacing={2} sx={{ p: 3 }}>
-        {/* Solo bloque de agencia activa */}
         <Box
           sx={{
             alignItems: 'center',
             backgroundColor: 'var(--mui-palette-neutral-950)',
             border: '1px solid var(--mui-palette-neutral-700)',
             borderRadius: '12px',
-            cursor: 'pointer',
+            cursor: 'default',
             display: 'flex',
             p: '4px 12px',
             gap: 1.5,
           }}
         >
-          {logoUrl && (
-            <Box
-              component="img"
-              src={logoUrl}
-              alt="Logo agencia"
-              sx={{ width: 32, height: 32, borderRadius: 1 }}
-            />
-          )}
+          <Box
+            component="img"
+            src={logoSrc}
+            alt="Logo agencia"
+            sx={{ width: 32, height: 32, borderRadius: 1, objectFit: 'cover' }}
+          />
           <Box sx={{ flex: '1 1 auto', overflow: 'hidden' }}>
             <Typography color="var(--mui-palette-neutral-400)" variant="body2">
               Área de trabajo
@@ -88,7 +118,7 @@ export function SideNav(): React.JSX.Element {
               noWrap
               sx={{ fontWeight: 600, fontSize: '0.95rem' }}
             >
-              {agencia?.nombre ?? 'Agencia'}
+              {(agenciaView as any)?.nombre ?? 'Agencia'}
             </Typography>
           </Box>
           <CaretUpDownIcon />
@@ -146,9 +176,17 @@ interface NavItemProps {
   title: string;
 }
 
-function NavItem({ disabled, external, href, icon, matcher, pathname, title }: NavItemProps): React.JSX.Element {
+function NavItem({
+  disabled,
+  external,
+  href,
+  icon,
+  matcher,
+  pathname,
+  title,
+}: NavItemProps): React.JSX.Element {
   const active = isNavItemActive({ disabled, external, href, matcher, pathname });
-  const Icon = icon ? navIcons[icon] : null;
+  const IconComp = icon ? navIcons[icon] : null;
 
   return (
     <li>
@@ -157,7 +195,7 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
           ? {
               component: external ? 'a' : RouterLink,
               href,
-              target: external ? '_blank' : undefined,
+              target: external ? '._blank' : undefined,
               rel: external ? 'noreferrer' : undefined,
             }
           : { role: 'button' })}
@@ -165,7 +203,7 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
           alignItems: 'center',
           borderRadius: 1,
           color: 'var(--NavItem-color)',
-          cursor: 'pointer',
+          cursor: disabled ? 'not-allowed' : 'pointer',
           display: 'flex',
           flex: '0 0 auto',
           gap: 1,
@@ -176,20 +214,27 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
           ...(disabled && {
             bgcolor: 'var(--NavItem-disabled-background)',
             color: 'var(--NavItem-disabled-color)',
-            cursor: 'not-allowed',
           }),
           ...(active && {
             bgcolor: 'var(--NavItem-active-background)',
             color: 'var(--NavItem-active-color)',
           }),
+          '&:hover': !disabled ? { bgcolor: 'var(--NavItem-hover-background)' } : undefined,
         }}
       >
-        <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center', flex: '0 0 auto' }}>
-          {Icon ? (
-            <Icon
-              fill={active ? 'var(--NavItem-icon-active-color)' : 'var(--NavItem-icon-color)'}
-              fontSize="var(--icon-fontSize-md)"
-              weight={active ? 'fill' : undefined}
+        <Box
+          sx={{
+            alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+            flex: '0 0 auto',
+          }}
+        >
+          {IconComp ? (
+            <IconComp
+              size={20}
+              color={active ? 'var(--NavItem-icon-active-color)' : 'var(--NavItem-icon-color)'}
+              weight={active ? 'fill' : 'regular'}
             />
           ) : null}
         </Box>
@@ -205,4 +250,3 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
     </li>
   );
 }
-

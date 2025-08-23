@@ -1,70 +1,93 @@
-import { useAgenciasContext } from '@/contexts/features/Agencias/AgenciaProvider';
-import type { AgenciaFormValues } from '@/contexts/features/Agencias/forms';
-import { transformarAgenciaParaEnvio } from '@/contexts/features/Agencias/transformarAgenciaParaEnvio';
+// src/components/form/hooks/useSubmitAgencia.ts
+'use client';
+
+import { mapFormToPayload } from '@/contexts/features/Agencias/services/agenciaMapper';
+import { agenciasService } from '@/contexts/features/Agencias/services/agenciasService';
+import type { AgenciaFormValues } from '@/contexts/features/Agencias/services/agenciaMapper';
+import type { AgenciaBackData } from '@/types/AgenciaBackData';
 
 type AgenciaId = { id: number };
 
-export const useSubmitAgencia = (datosEdicion?: AgenciaId) => {
-  const context = useAgenciasContext();
-  if (!context) {
-    throw new Error('useAgenciasContext debe usarse dentro de AgenciasProvider');
-  }
+type SubmitOk = {
+  success: true;
+  agencia?: AgenciaBackData;
+};
 
-  const submitAgencia = async (formData: AgenciaFormValues) => {
-    console.group('[useSubmitAgencia] Flujo completo');
+type SubmitErr = {
+  success: false;
+  message?: string;
+  fieldErrors?: Record<string, string[]>;
+};
+
+export const useSubmitAgencia = (datosEdicion?: AgenciaId) => {
+  const submitAgencia = async (values: AgenciaFormValues): Promise<SubmitOk | SubmitErr> => {
+    console.group('[useSubmitAgencia] submit');
 
     try {
-      console.log('🔹 Paso 1/5: Datos recibidos del formulario', JSON.parse(JSON.stringify(formData)));
-
-      if (!formData || Object.keys(formData).length === 0) {
+      if (!values || Object.keys(values).length === 0) {
         throw new Error('Datos del formulario vacíos');
       }
 
-      const controller = new AbortController();
-      const timeout = setTimeout(() => {
-        controller.abort();
-        throw new Error('Timeout: La acción tardó demasiado');
-      }, 10000);
+      const payload = mapFormToPayload(values);
+      const isEdit = typeof datosEdicion?.id === 'number' && !Number.isNaN(datosEdicion.id);
 
-      const datosTransformados = transformarAgenciaParaEnvio(formData);
+      if (isEdit) {
+        // UPDATE
+        const idStr = String(datosEdicion!.id);
+        const resp = await agenciasService.update(idStr, payload); // resp: { success, data?, error? }
+        console.log('[useSubmitAgencia] update resp:', resp);
 
-      let result;
-      if (datosEdicion?.id) {
-        console.log('🛠 Modo edición activado');
-        const datosConId = new FormData();
-        datosTransformados.forEach((valor, clave) => datosConId.append(clave, valor));
-        datosConId.append('id', datosEdicion.id.toString());
-        result = await context.actions.editAgencia(datosConId);
-      } else {
-        console.log('🆕 Modo creación activado');
-        result = await context.actions.createAgencia(datosTransformados);
+        if (!resp?.success) {
+          return {
+            success: false,
+            message: resp?.error || 'Error al actualizar la agencia',
+            // fieldErrors: resp?.fieldErrors // <- si el service los expone, propágalos aquí
+          };
+        }
+
+        // Refetch para obtener la entidad tipada completa
+        let agencia: AgenciaBackData | undefined;
+        try {
+          agencia = await agenciasService.getById(idStr);
+        } catch (e) {
+          console.warn('[useSubmitAgencia] Update OK, pero no se pudo obtener la agencia por ID:', e);
+        }
+
+        console.groupEnd();
+        return { success: true, agencia };
       }
 
-      clearTimeout(timeout);
-      console.log('🔹 Paso 5/5: Resultado recibido', result);
+      // CREATE
+      const createResp = await agenciasService.create(payload); // { success, id?, data?, error? }
+      console.log('[useSubmitAgencia] create resp:', createResp);
 
-      return {
-        success: true,
-        data: result,
-        status: 'completed',
-      };
-    } catch (error) {
-      console.error('❌ Error crítico:', {
-        name: error instanceof Error ? error.name : 'UnknownError',
-        message: error instanceof Error ? error.message : 'Fallo desconocido',
-        stack: error instanceof Error ? error.stack : undefined,
-      });
+      if (!createResp?.success) {
+        return {
+          success: false,
+          message: createResp?.error || 'Error al crear la agencia',
+        };
+      }
 
+      let agenciaCreada: AgenciaBackData | undefined;
+      if (typeof createResp.id !== 'undefined') {
+        try {
+          agenciaCreada = await agenciasService.getById(String(createResp.id));
+        } catch (e) {
+          console.warn('[useSubmitAgencia] Create OK, pero no se pudo obtener la agencia por ID:', e);
+        }
+      }
+
+      console.groupEnd();
+      return { success: true, agencia: agenciaCreada };
+    } catch (err) {
+      console.error('[useSubmitAgencia] error:', err);
+      console.groupEnd();
       return {
         success: false,
-        status: 'error',
-        message: error instanceof Error ? error.message : 'Fallo desconocido',
+        message: err instanceof Error ? err.message : 'Fallo desconocido',
       };
-    } finally {
-      console.groupEnd();
     }
   };
 
   return submitAgencia;
 };
-

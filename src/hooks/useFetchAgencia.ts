@@ -20,7 +20,7 @@ export const useFetchAgencia = (
       setError(null);
 
       try {
-        const response = await fetch(`https://travelconnect.com.ar/agencias/${idAgencia}`);
+        const response = await fetch(`https://travelconnect.com.ar/agencias2/${idAgencia}`);
         if (!response.ok) throw new Error(`Error ${response.status}`);
 
         const data: AgenciaBackData = await response.json();
