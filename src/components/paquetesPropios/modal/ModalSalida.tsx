@@ -55,6 +55,9 @@ export default function ModalSalidas() {
   const [snackbarMensaje, setSnackbarMensaje] = useState('');
   const [snackbarTipo, setSnackbarTipo] = useState<'success' | 'error'>('success');
 
+  // 👇 NUEVO: modo duplicado
+  const [modoDuplicado, setModoDuplicado] = useState(false);
+
   const handleClose = () => {
     limpiarPaqueteParaSalidas();
     setExpandida(null);
@@ -63,18 +66,21 @@ export default function ModalSalidas() {
   const handleCrear = () => {
     setSalidaSeleccionada(null);
     setSalidaADuplicar(null);
+    setModoDuplicado(false); // creación normal
     setModalEditorAbierto(true);
   };
 
   const handleEditar = (salida: Salida) => {
     setSalidaSeleccionada(salida);
     setSalidaADuplicar(null);
+    setModoDuplicado(false); // edición
     setModalEditorAbierto(true);
   };
 
   const handleDuplicar = (salida: Salida) => {
     setSalidaSeleccionada(null);
     setSalidaADuplicar(salida);
+    setModoDuplicado(true); // 👈 duplicado → forzar CREAR
     setModalEditorAbierto(true);
   };
 
@@ -106,6 +112,7 @@ export default function ModalSalidas() {
     console.log('🔍 paqueteActivoParaSalidas:', paqueteActivoParaSalidas);
     console.log('🔍 idAgenciaEnCreacion:', idAgenciaEnCreacion);
     console.log('📦 data recibida:', data);
+    console.log('🧭 modoDuplicado:', modoDuplicado);
 
     if (!paqueteActivoParaSalidas || !idAgenciaEnCreacion) {
       console.warn('⛔ Falta paqueteActivoParaSalidas o idAgenciaEnCreacion — cancelando envío al backend');
@@ -114,26 +121,40 @@ export default function ModalSalidas() {
 
     setLoadingSubmit(true);
     try {
-      const payload = {
+      // Payload base con ids obligatorios
+      const payloadBase = {
         ...data,
         paquete_id: paqueteActivoParaSalidas.id,
         usuario_id: idAgenciaEnCreacion,
-      };
+      } as any;
 
-      console.log('📤 Payload final a enviar:', payload);
+      console.log('📤 Payload base:', payloadBase);
 
-      if (data.id && data.id !== 0) {
-        await editarSalida(data.id, payload);
+      if (modoDuplicado) {
+        // 👇 Forzar CREAR: remover id si viniera desde el form
+        const { id: _omitId, ...payloadCrear } = payloadBase;
+        console.log('🟢 crearSalida() por duplicado', payloadCrear);
+        await crearSalida(payloadCrear);
+        setSnackbarMensaje('Salida duplicada como nueva correctamente');
+      } else if (data.id && data.id !== 0) {
+        console.log('🟠 editarSalida()', data.id, payloadBase);
+        await editarSalida(data.id, payloadBase);
         setSnackbarMensaje('Salida actualizada correctamente');
       } else {
-        await crearSalida(payload);
+        const { id: _omitId, ...payloadCrear } = payloadBase;
+        console.log('🟢 crearSalida()', payloadCrear);
+        await crearSalida(payloadCrear);
         setSnackbarMensaje('Salida creada correctamente');
       }
 
       setSnackbarTipo('success');
       setSnackbarAbierto(true);
-      await fetchPaquetesDeAgencia(idAgenciaEnCreacion);
+
+      if (idAgenciaEnCreacion) {
+        await fetchPaquetesDeAgencia(idAgenciaEnCreacion);
+      }
       setModalEditorAbierto(false);
+      setModoDuplicado(false); // reset
     } catch (error) {
       console.error('❌ Error al guardar salida:', error);
       setSnackbarTipo('error');
@@ -254,7 +275,10 @@ export default function ModalSalidas() {
 
       <ModalSalidaEditor
         open={modalEditorAbierto}
-        onClose={() => setModalEditorAbierto(false)}
+        onClose={() => {
+          setModalEditorAbierto(false);
+          setModoDuplicado(false); // reset de seguridad al cerrar
+        }}
         onSubmit={handleSubmit}
       />
 

@@ -91,16 +91,7 @@ export const ServiciosNavbar = ({
       </List>
 
       <Divider />
-      <Box sx={{ p: 2 }}>
-        <Button
-          fullWidth
-          variant="contained"
-          onClick={onImplementarCambios}
-          aria-label="Implementar cambios"
-        >
-          Implementar cambios
-        </Button>
-      </Box>
+      
     </Box>
   );
 };

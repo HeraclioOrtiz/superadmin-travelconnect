@@ -11,7 +11,9 @@ import AgenciaModal from '@/components/form/AgenciaModal';
 import { useAgenciasContext } from '@/contexts/features/Agencias/AgenciaProvider';
 import { useModalAgenciaGlobal } from '@/contexts/ModalAgenciaProvider';
 
-import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
+// ⬇️ Eliminado: CustomersFilters
+// import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
+
 import { CustomersTable } from '@/components/dashboard/customer/customers-table';
 import { AgenciaBackData } from '@/types/AgenciaBackData';
 
@@ -88,7 +90,8 @@ export default function Page(): React.JSX.Element {
         </div>
       </Stack>
 
-      <CustomersFilters />
+      {/* ⬇️ Eliminado el filtro */}
+      {/* <CustomersFilters /> */}
 
       <CustomersTable
         rows={agencias}
@@ -96,7 +99,7 @@ export default function Page(): React.JSX.Element {
         page={page}
         rowsPerPage={rowsPerPage}
         onEdit={handleEditarAgencia}
-        onServicios={abrirModalServicios}
+        onServicios={abrirModalServicios} // no se muestra si quitaste la columna en la tabla
         onEliminar={handleEliminarAgencia}
         onPageChange={setPage}
         onRowsPerPageChange={setRowsPerPage}

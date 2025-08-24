@@ -18,7 +18,6 @@ import {
   Button,
 } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
-import AssignmentIcon from '@mui/icons-material/Assignment'
 
 import { useSelection } from '@/hooks/use-selection'
 import { AgenciaBackData } from '@/types/AgenciaBackData'
@@ -29,6 +28,7 @@ interface CustomersTableProps {
   page: number
   rowsPerPage: number
   onEdit?: (agencia: AgenciaBackData) => void
+  /** (deprecated) ya no se muestra la columna Servicios */
   onServicios?: (agencia: AgenciaBackData) => void
   onEliminar?: (agencia: AgenciaBackData) => void
   onPageChange: (page: number) => void
@@ -55,7 +55,7 @@ export function CustomersTable({
   page,
   rowsPerPage,
   onEdit,
-  onServicios,
+  onServicios: _onServicios, // deprecated / no usado
   onEliminar,
   onPageChange,
   onRowsPerPageChange,
@@ -98,14 +98,13 @@ export function CustomersTable({
               <TableCell>Email</TableCell>
               <TableCell>Dominio</TableCell>
               <TableCell>Modificar</TableCell>
-              <TableCell>Servicios</TableCell>
               <TableCell>Eliminar</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {paginatedRows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6}>
+                <TableCell colSpan={5}>
                   <Typography variant="body2" color="text.secondary" sx={{ py: 2, textAlign: 'center' }}>
                     No hay agencias para mostrar.
                   </Typography>
@@ -160,16 +159,6 @@ export function CustomersTable({
                       >
                         Modificar
                       </Button>
-                    </TableCell>
-
-                    <TableCell>
-                      <Tooltip title="Servicios de la agencia">
-                        <span>
-                          <IconButton onClick={() => onServicios?.(row)} disabled={!onServicios}>
-                            <AssignmentIcon />
-                          </IconButton>
-                        </span>
-                      </Tooltip>
                     </TableCell>
 
                     <TableCell>
