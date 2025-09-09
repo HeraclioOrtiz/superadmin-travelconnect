@@ -99,8 +99,16 @@ export default function ModalPaquetePropio() {
     // ✅ Enviar agencia_id (no usuario_id)
     formData.append('agencia_id', idAgenciaEnCreacion)
 
+    // ✅ Manejar imagen_principal para duplicación y creación
     if (form.imagen_principal?.files?.[0]) {
+      // Si se seleccionó una nueva imagen, usarla
       formData.append('imagen_principal', form.imagen_principal.files[0])
+    } else if (isDuplicando && paqueteADuplicar?.imagen_principal) {
+      // Si estamos duplicando y existe imagen original, enviar la URL como string
+      formData.append('imagen_principal', paqueteADuplicar.imagen_principal)
+    } else if (!isEditando) {
+      // Si es creación nueva sin imagen, usar imagen por defecto
+      formData.append('imagen_principal', 'default-package.jpg')
     }
 
     try {

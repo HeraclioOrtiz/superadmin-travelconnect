@@ -9,6 +9,9 @@ import {
   Checkbox,
   FormControlLabel,
   Link,
+  Alert,
+  Chip,
+  Stack,
 } from '@mui/material';
 import { useMemo, useEffect, useState } from 'react';
 
@@ -37,6 +40,7 @@ const Step1Basic = () => {
 
   const logoFile = watch('logo');
   const estado = watch('estado');
+  const dominio = watch('dominio');
 
   // Campo de términos y condiciones
   const terminosValor = watch('terminos_y_condiciones');
@@ -147,8 +151,60 @@ const Step1Basic = () => {
               {...register('password')}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
-            <InputFormulario label="Dominio" {...register('dominio')} />
+          <Grid item xs={12}>
+            <Box sx={{ mb: 2 }}>
+              <InputFormulario 
+                label="Dominio" 
+                placeholder="tunombre"
+                helperText="Solo ingresa el nombre, sin espacios ni caracteres especiales"
+                {...register('dominio')} 
+              />
+              
+              {/* Preview del dominio completo */}
+              {dominio && (
+                <Box sx={{ mt: 2 }}>
+                  <Alert 
+                    severity="info" 
+                    sx={{ 
+                      bgcolor: 'primary.50',
+                      border: '1px solid',
+                      borderColor: 'primary.200',
+                      '& .MuiAlert-icon': {
+                        color: 'primary.main'
+                      }
+                    }}
+                  >
+                    <Stack spacing={1}>
+                      <Typography variant="body2" fontWeight={600}>
+                        Tu sitio web será creado en:
+                      </Typography>
+                      <Chip
+                        label={`${dominio}.travelconnect.com.ar`}
+                        color="primary"
+                        variant="outlined"
+                        sx={{
+                          fontFamily: 'monospace',
+                          fontSize: '0.875rem',
+                          fontWeight: 600,
+                          alignSelf: 'flex-start',
+                          bgcolor: 'background.paper',
+                          '&:hover': {
+                            bgcolor: 'primary.50'
+                          }
+                        }}
+                      />
+                    </Stack>
+                  </Alert>
+                </Box>
+              )}
+              
+              {/* Explicación adicional */}
+              <Box sx={{ mt: 1 }}>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', lineHeight: 1.4 }}>
+                  💡 <strong>Ejemplo:</strong> Si ingresas "miagencia", tu sitio será: <code>miagencia.travelconnect.com.ar</code>
+                </Typography>
+              </Box>
+            </Box>
           </Grid>
         </Grid>
       </Box>

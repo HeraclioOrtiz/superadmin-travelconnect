@@ -2,7 +2,13 @@
 
 export type MensajesTab = 'consultas' | 'reservas' | 'emails';
 
-export type EmailRegistrado = string;
+export type EmailRegistrado = {
+  id: number;
+  agencia_id: number;
+  email: string;
+  created_at: string;
+  updated_at: string;
+};
 
 export type Consulta = {
   id: number;

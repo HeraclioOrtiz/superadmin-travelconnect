@@ -153,9 +153,9 @@ export default function EmailsTable({
                 </TableRow>
               )}
 
-              {items.map((email, idx) => (
-                <TableRow key={`${email}-${idx}`} hover>
-                  <TableCell>{email}</TableCell>
+              {items.map((emailObj, idx) => (
+                <TableRow key={`${emailObj.id}-${idx}`} hover>
+                  <TableCell>{emailObj.email}</TableCell>
                 </TableRow>
               ))}
 
